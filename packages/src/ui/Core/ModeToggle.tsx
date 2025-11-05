@@ -1,0 +1,52 @@
+import clsx from "clsx";
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type Dispatch,
+  type ForwardedRef,
+  type SetStateAction,
+} from "react";
+import type { WindowCorner } from "../../types";
+
+interface ModeToggleProps
+  extends Omit<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    "type" | "children" | "onToggle"
+  > {
+  corner: WindowCorner;
+  isActive: boolean;
+  onToggle: Dispatch<SetStateAction<boolean>>;
+}
+
+function ModeToggleComponent(
+  {
+    className,
+    corner,
+    style,
+    isActive,
+    onToggle,
+    onClick,
+    ...props
+  }: ModeToggleProps,
+  ref?: ForwardedRef<HTMLButtonElement>
+) {
+  const classNames = clsx("caddy-mode-toggle", corner, className);
+
+  return (
+    <button
+      className={classNames}
+      type="button"
+      style={{ ...style }}
+      ref={ref}
+      {...props}
+      onClick={(ev) => {
+        onToggle((v) => !v);
+        onClick?.(ev);
+      }}
+    >
+      𖦏
+    </button>
+  );
+}
+
+export const ModeToggle = forwardRef(ModeToggleComponent);

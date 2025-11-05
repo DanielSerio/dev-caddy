@@ -1,0 +1,11 @@
+.caddy-mode-toggle {
+  display: inline-grid;
+  place-content: center;
+  line-height: 0;
+  padding: 0;
+  height: 38px;
+  width: 38px;
+  border-radius: 39px;
+  background: var(--dc-primary);
+  color: white;
+}

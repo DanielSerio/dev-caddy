@@ -32,6 +32,9 @@
 .dev-caddy {
   color-scheme: dark;
   accent-color: var(--dc-primary-highlight);
-  background-color: var(--dc-background);
   color: var(--dc-text);
+
+  .caddy-window {
+    background-color: var(--dc-background);
+  }
 }

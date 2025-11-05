@@ -16,6 +16,15 @@ export default defineConfig({
       name: 'DevCaddy',
       formats: ['es', 'cjs'],
       fileName: (format, entryName) => `${entryName}.${format}.js`,
+    },
+    rollupOptions: {
+      external: ['react', 'reactDOM'],
+      output: {
+        globals: {
+          'react': 'React',
+          'react-dom': 'ReactDOM'
+        }
+      }
     }
   },
 });

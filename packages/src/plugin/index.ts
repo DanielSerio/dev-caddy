@@ -41,6 +41,13 @@ export function DevCaddyPlugin(options: DevCaddyPluginOptions): PluginOption {
         }
       }
     },
+    transformIndexHtml(html) {
+      const script = `<script type="module">
+  window.__DEV_CADDY_ENABLED__ = ${isEnabled};
+  window.__DEV_CADDY_UI_MODE__ = '${uiMode}';
+</script>`;
+      return html.replace('</body>', `${script}</body>`);
+    },
     configureServer(server) {
       const buildOptions = {
         ...options,

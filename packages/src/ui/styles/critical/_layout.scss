@@ -1,0 +1,17 @@
+.dev-caddy {
+  .caddy-window,
+  .caddy-mode-toggle {
+    position: fixed;
+    z-index: 9000;
+  }
+
+  .top-left .caddy-window,
+  .top-right .caddy-window {
+    order: 2;
+  }
+
+  .bottom-left .caddy-window,
+  .bottom-right .caddy-window {
+    order: 1;
+  }
+}
