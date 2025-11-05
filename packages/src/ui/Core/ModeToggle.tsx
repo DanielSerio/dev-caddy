@@ -30,7 +30,12 @@ function ModeToggleComponent(
   }: ModeToggleProps,
   ref?: ForwardedRef<HTMLButtonElement>
 ) {
-  const classNames = clsx("caddy-mode-toggle", corner, className);
+  const classNames = clsx(
+    "caddy-mode-toggle",
+    isActive ? "active" : null,
+    corner,
+    className
+  );
 
   return (
     <button
@@ -44,7 +49,7 @@ function ModeToggleComponent(
         onClick?.(ev);
       }}
     >
-      𖦏
+      {isActive ? "✖" : "𖦏"}
     </button>
   );
 }

@@ -1,4 +1,11 @@
 .dev-caddy {
+  font-size: calc(14 / 16) * 1rem;
+
+  em {
+    font-style: normal;
+    font-size: 1.125em;
+  }
+
   .caddy-window,
   .caddy-mode-toggle {
     position: fixed;

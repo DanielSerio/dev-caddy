@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import type { DevCaddyProps } from "../../types";
-import { CaddyWindow } from "./CaddyWindow";
+import type { DevCaddyMode, DevCaddyProps } from "../../types";
+import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
 import { getCornerStyles } from "../utility";
 import "../styles/output/dev-caddy.scss";
 
-type DevCaddyWindow = Window & { __DEV_CADDY_UI_MODE__: boolean };
+type DevCaddyWindow = Window & { __DEV_CADDY_UI_MODE__: DevCaddyMode };
 
 export function DevCaddy({
   corner = "bottom-left",
@@ -32,8 +32,10 @@ export function DevCaddy({
         corner={corner}
         style={toggleStyles}
       />
-      {devCaddyIsActive && (
-        <CaddyWindow style={windowStyles}>{UI_MODE}</CaddyWindow>
+      {devCaddyIsActive && UI_MODE && (
+        <CaddyWindow uiMode={UI_MODE} style={windowStyles}>
+          {UI_MODE}
+        </CaddyWindow>
       )}
     </div>
   );

@@ -1,0 +1,31 @@
+// Hide when no window
+:root .dcaddy-badge {
+  display: none;
+}
+
+// Show when window
+:root:has(.dev-caddy):has(.caddy-window) .dcaddy-badge {
+  display: inline-flex;
+}
+
+.dcaddy-badge {
+  border: 1px solid;
+  border-radius: 200px;
+  padding: 0.25ch 1ch;
+
+  &.red {
+    color: var(--dc-danger);
+  }
+
+  &.orange {
+    color: var(--dc-accent);
+  }
+
+  &.green {
+    color: var(--dc-success);
+  }
+
+  &.blue {
+    color: var(--dc-primary);
+  }
+}

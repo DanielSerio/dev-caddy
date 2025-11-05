@@ -6,6 +6,11 @@
   height: 38px;
   width: 38px;
   border-radius: 39px;
-  background: var(--dc-primary);
+  background: var(--dc-background);
   color: white;
+  border: 1px solid var(--dc-border);
+
+  &.active {
+    background: var(--dc-primary);
+  }
 }

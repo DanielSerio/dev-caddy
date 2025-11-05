@@ -1,0 +1,17 @@
+.dev-caddy > .caddy-window {
+  border: 1px solid var(--dc-border);
+
+  header,
+  section {
+    position: relative;
+    padding: 4px 8px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--dc-border);
+  }
+
+  section {
+    min-height: 96px;
+  }
+}
