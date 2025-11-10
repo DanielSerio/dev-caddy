@@ -7,16 +7,22 @@
     "dev": "vite",
     "build:scss": "sass ./src/ui/styles/output/dev-caddy.scss:./dist/dev-caddy.css",
     "build": "tsc -b && npm run build:scss && vite build",
+    "prepublishOnly": "npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "files": [
+    "dist",
+    "migrations",
+    "README.md"
+  ],
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs.js"
     },
     "./dev-caddy.css": "./dist/dev-caddy.css"
   },

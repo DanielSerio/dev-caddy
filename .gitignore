@@ -7,9 +7,20 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 
+# Build outputs
+dist
+dist-ssr
 *.local
+
+# Environment variables
+.env
+.env.development
+.env.local
+.env.production
+.env.staging
 
 # Editor directories and files
 .vscode/*
@@ -22,9 +33,13 @@ node_modules
 *.sln
 *.sw?
 
+# OS files
+Thumbs.db
 
-.env
-.env.development
-.env.local
-.env.production
-.env.staging
+# Test coverage
+coverage
+.nyc_output
+
+# Temporary files
+*.tmp
+*.temp

@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# DevCaddy Simple Example
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This example demonstrates how to integrate DevCaddy into a basic React + Vite application.
 
-Currently, two official plugins are available:
+## What This Example Shows
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Basic DevCaddy plugin integration with Vite
+- Environment variable configuration for Supabase
+- Developer mode setup for local development
+- Simple React application with DevCaddy annotation capabilities
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Before running this example, you must:
 
-## Expanding the ESLint configuration
+1. Set up a Supabase project (see [Supabase Setup Guide](../../docs/SUPABASE_SETUP.md))
+2. Run the database migrations from `packages/migrations/`
+3. Configure your environment variables
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Install Dependencies
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configure Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in this directory:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
+
+Get these values from your Supabase project settings.
+
+### 3. Run the Example
+
+```bash
+npm run dev
+```
+
+The application will start on `http://localhost:5173` (or next available port).
+
+## Using DevCaddy in the Example
+
+### Developer Mode (Default)
+
+When running locally, DevCaddy operates in developer mode:
+
+1. Open the application in your browser
+2. The DevCaddy UI will be available
+3. Click any element to create an annotation
+4. View all annotations regardless of creator
+5. Update and delete any annotation
+
+### Testing Client Mode
+
+To test client/reviewer mode:
+
+1. Generate a magic link JWT token (manual process during MVP)
+2. Add the token to your URL or configure your auth system
+3. The UI will switch to client mode with limited permissions
+
+## Project Structure
+
+```
+simple/
+├── src/
+│   ├── App.tsx              # Main application component
+│   ├── main.tsx             # Entry point
+│   └── vite-env.d.ts        # Vite type definitions
+├── vite.config.ts           # Vite configuration with DevCaddy
+├── package.json             # Dependencies
+└── .env                     # Environment variables (create this)
+```
+
+## Key Configuration
+
+The Vite configuration in `vite.config.ts` shows how to integrate DevCaddy:
+
+The plugin is configured with environment-aware settings that enable DevCaddy in development mode.
+
+## Learn More
+
+- [DevCaddy Documentation](../../README.md)
+- [Architecture Overview](../../docs/ARCHITECTURE.md)
+- [Development Guide](../../docs/DEVELOPMENT.md)
+- [Supabase Setup](../../docs/SUPABASE_SETUP.md)
+
+## Troubleshooting
+
+**DevCaddy UI not appearing:**
+- Check that environment variables are set correctly
+- Verify the plugin is enabled in `vite.config.ts`
+- Check browser console for errors
+
+**Cannot create annotations:**
+- Verify Supabase connection is working
+- Check that database migrations have been run
+- Ensure RLS policies are configured correctly
+
+**Type errors:**
+- Run `npm install` to ensure all dependencies are installed
+- Check that `dev-caddy` types are available

@@ -1,0 +1,23 @@
+Table annotation_status {
+  id int [primary key] //auto id
+  status_name varchar [unique] //new, in-progress, in-review, hold, resolved
+}
+
+Table annotation {
+  id int [primary key] //auto id
+  page varchar [NOT NULL] //page path url
+  element_tag varchar [NOT NULL] // HTML tag of the element
+  compressed_element_tree text [NOT NULL] // a compressed version of the element tree down to this element
+  element_id varchar // The "id" property of the element
+  element_test_id varchar // The "data-test-id" property of the element
+  element_role varchar // The "role" attribute of the element
+  element_unique_classes varchar // The unique class names on the element
+  element_parent_selector varchar // the selector for the parent element
+  element_nth_child int // the nth-child in reference to the parent selector
+  content text [NOT NULL] // the content of the annotation
+  status_id int [ref: > annotation_status.id] // the status of the annotation
+  created_by varchar [NOT NULL] // user identifier from JWT (auth.uid())
+  created_at timestamptz [NOT NULL, default: `now()`] // when annotation was created
+  updated_at timestamptz [NOT NULL, default: `now()`] // when annotation was last updated
+  resolved_at timestamptz // the timestamp captured when status_id is set to "resolved". Should be set back to null if status changes away from "resolved"
+}

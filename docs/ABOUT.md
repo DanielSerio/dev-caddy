@@ -59,13 +59,63 @@ Developers then triage and resolve this feedback **inside their local dev enviro
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing Strategy
 
-- Storybook for UI component testing
-- Playwright for full annotation-flow E2E tests
-- Local DB migration test harness (Supabase CLI)
+DevCaddy uses a **hybrid spec-driven + test-driven development approach**:
 
-_Unit tests optional — we prioritize real behavior testing._
+### Spec-Driven Development (SDD)
+- Write **Gherkin specs** (Given/When/Then) for user-facing features
+- Provides clear acceptance criteria in plain language
+- Enables non-technical stakeholders to validate requirements
+- Stored in `specs/` directory as `.feature` files
+
+**Example:**
+```gherkin
+Feature: Reviewer Annotation Flow
+  Scenario: Add annotation to UI element
+    Given a reviewer has opened a magic-link staging site
+    When they click on a button and add "Fix this"
+    Then the annotation appears on the element
+    And the developer sees it in real-time
+```
+
+### Test-Driven Development (TDD)
+- Convert specs into **Playwright E2E tests**
+- Use **RED/GREEN/REFACTOR** cycle for implementation
+- No unit tests — focus on integration and E2E tests
+- No mocking — use real Supabase test instances
+
+**Tools:**
+- **Playwright** — Full annotation-flow E2E tests
+- **Storybook** — UI component visual regression testing
+- **Supabase CLI** — Local database testing & migrations
+
+**Workflow:**
+1. Write spec → 2. Review with stakeholders → 3. Write E2E test → 4. Implement (TDD) → 5. Refactor
+
+_We prioritize real behavior testing over isolated unit tests._
+
+---
+
+## 🎯 Mode-Specific Features
+
+| Feature                | Client Mode | Developer Mode |
+| ---------------------- | ----------- | -------------- |
+| Create annotations     | ✅          | ✅             |
+| View own annotations   | ✅          | ✅             |
+| View all annotations   | ❌          | ✅             |
+| Mark as resolved       | ❌          | ✅             |
+| Mark own as resolved   | ✅          | ✅             |
+| Delete annotations     | ❌          | ✅             |
+| Delete own annotations | ✅          | ✅             |
+| Reply to annotations   | ❌          | ✅             |
+| Filter by status       | ✅          | ✅             |
+| Export annotations     | ❌          | ✅             |
+
+**Access Control:**
+- Client mode (reviewers) have limited permissions via magic links
+- Developer mode (local dev) has full CRUD capabilities
+- Enforced via Supabase Row Level Security (RLS) policies
 
 ---
 

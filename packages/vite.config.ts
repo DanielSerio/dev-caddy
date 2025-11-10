@@ -18,7 +18,7 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.${format}.js`,
     },
     rollupOptions: {
-      external: ['react', 'reactDOM'],
+      external: ['react', 'react-dom', '@supabase/supabase-js'],
       output: {
         globals: {
           'react': 'React',

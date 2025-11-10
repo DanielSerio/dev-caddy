@@ -10,19 +10,33 @@ function getRawQueryString<Elm extends HTMLElement>(elm: Elm) {
   return `${tag}${classes ? `.${classes.split(/\s/g).join('.')}` : ''}`;
 }
 
+
+
 function findIndex<Elm extends HTMLElement>(parent: HTMLElement, elm: Elm) {
   const array = Array.from(parent.children);
 
   return array.findIndex((child) => Object.is(elm, child));
 }
 
+function getCompressedQueryString<Elm extends HTMLElement>(elm: Elm) {
+  const tag = elm.tagName;
+
+  let nth = 0;
+
+  if (elm.parentElement) {
+    nth = findIndex(elm.parentElement, elm);
+  }
+
+  return `${tag}[${nth}]`;
+}
+
 function getCompressedElementTree<RootElm extends HTMLElement, Elm extends HTMLElement>(root: RootElm, elm: Elm) {
-  const pathSegments: string[] = ['body'];
+  const pathSegments: string[] = [];
 
   let currentNode: HTMLElement | null = elm;
 
   while (currentNode && !Object.is(root, currentNode)) {
-    const queryString = getRawQueryString(currentNode);
+    const queryString = getCompressedQueryString(currentNode);
 
     pathSegments.push(queryString);
 

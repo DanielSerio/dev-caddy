@@ -1,0 +1,431 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## Project Overview
+
+**DevCaddy** is a Vite plugin that enables in-context design feedback directly on live applications. It provides environment-aware UI modes for reviewers and developers to collaborate on design iterations during prototyping and staging phases.
+
+### Key Concepts
+
+- **Two UI Modes**: Automatically switches between `developer` mode (local dev) and `client` mode (staging/preview) based on Vite environment
+- **Environment-aware**: Plugin detects context and injects appropriate UI automatically
+- **Magic-link access**: Reviewers access via time-limited links without authentication
+- **Supabase backend**: Stores annotations with Row Level Security (RLS)
+- **Production-safe**: UI only appears in development or when explicitly enabled
+
+---
+
+## Development Commands
+
+### Building the Package
+
+```bash
+# From packages/ directory
+npm run build       # Full build: TypeScript + SCSS + Vite
+npm run build:scss  # Only compile SCSS to CSS
+```
+
+### Development
+
+```bash
+# From packages/ directory
+npm run dev         # Start Vite dev server
+
+# From examples/simple/ directory
+npm run dev         # Test the plugin with example app
+```
+
+### Linting
+
+```bash
+# From packages/ directory
+npm run lint        # Run ESLint on TypeScript files
+```
+
+### Preview
+
+```bash
+# From packages/ directory
+npm run preview     # Preview production build
+```
+
+---
+
+## Architecture
+
+### Plugin Entry Point
+
+The main plugin is exported from `packages/src/plugin/index.ts` as `DevCaddyPlugin`. It:
+
+1. Detects environment via `getUIMode()` (packages/src/plugin/utility/get-ui-mode.ts:19)
+2. Injects global variables into HTML via `transformIndexHtml`
+3. Configures server behavior based on command (`serve` vs `build`)
+
+**Plugin Options** (packages/src/types/plugin.ts):
+- `enabled: boolean` - Whether DevCaddy is active
+- `context: ConfigEnv` - Vite configuration context
+- `debug?: boolean` - Enable verbose logging (optional)
+
+### UI Mode Detection
+
+Logic in `packages/src/plugin/utility/get-ui-mode.ts`:
+
+- `mode: 'development'` + `command: 'serve'` → **developer** UI
+- `mode: 'production'` + `command: 'serve'` → **client** UI
+- Otherwise → `null` (disabled)
+
+### UI Components
+
+Main React UI components live in `packages/src/ui/Core/`:
+
+- **DevCaddy.tsx** - Root component that reads `window.__DEV_CADDY_UI_MODE__` and conditionally renders UI
+- **CaddyWindow/** - Main window UI component with header
+- **ModeToggle.tsx** - Toggle button to show/hide DevCaddy UI
+
+### Build Configuration
+
+The package builds as both ESM and CommonJS via Vite library mode (packages/vite.config.ts):
+
+- Entry: `src/index.ts`
+- Formats: `es` and `cjs`
+- External: `react`, `react-dom`, `@supabase/supabase-js` (peer and runtime dependencies)
+- Includes TypeScript declarations via `vite-plugin-dts`
+
+**Build Output Structure** (packages/dist/):
+- `index.es.js` - ES module format
+- `index.cjs.js` - CommonJS format
+- `index.d.ts` - TypeScript declarations
+- `dev-caddy.css` - Compiled styles
+- `client/` - Client API type definitions
+- `plugin/` - Plugin type definitions
+- `types/` - Core type definitions
+- `ui/` - UI component type definitions
+
+**Published Files** (defined in packages/package.json):
+- `dist/` - All build outputs
+- `migrations/` - SQL migration files for users
+- `README.md` - Package documentation
+
+### Styling
+
+SCSS files in `packages/src/ui/styles/` are compiled to `dist/dev-caddy.css`:
+
+- Exported as `dev-caddy/dev-caddy.css` for consumers
+- Compiled during build via `sass` CLI
+
+### Example Integration
+
+See `examples/simple/vite.config.ts` for plugin usage:
+
+```ts
+import { DevCaddyPlugin } from 'dev-caddy';
+
+export default defineConfig((context) => ({
+  plugins: [
+    react(),
+    DevCaddyPlugin({
+      context,
+      enabled: process.env.VITE_DEV_CADDY_ENABLED === 'true',
+    })
+  ],
+}));
+```
+
+---
+
+## Code Organization
+
+### Package Structure
+
+```
+packages/
+├── src/
+│   ├── client/          # Client-side API (currently minimal)
+│   ├── plugin/          # Vite plugin implementation
+│   │   ├── configure/   # Server/build configuration
+│   │   └── utility/     # Plugin utilities (logging, mode detection)
+│   ├── types/           # TypeScript type definitions
+│   └── ui/              # React UI components
+│       ├── Core/        # Main UI components
+│       ├── lib/         # Utilities (selector extraction)
+│       ├── styles/      # SCSS stylesheets
+│       └── utility/     # UI utilities (positioning)
+└── dist/                # Build output (gitignored)
+```
+
+### Type System
+
+Key types in `packages/src/types/`:
+
+- **plugin.ts** - `DevCaddyPluginOptions`, `BuildOptions`, `DevCaddyMode`
+- **ui.ts** - `DevCaddyProps`, positioning types
+- **logging.ts** - Logging configuration types
+- **annotations.ts** - `Annotation`, `AnnotationStatus`, `CreateAnnotationInput`, `UpdateAnnotationInput`
+- **global.d.ts** - Window type augmentation for `__DEV_CADDY_ENABLED__` and `__DEV_CADDY_UI_MODE__`
+
+---
+
+## Development Principles (from docs/DEVELOPMENT.md)
+
+1. **Prefer simplicity over cleverness**
+2. **Follow SOLID principles**
+3. **Keep `.ts` and `.tsx` files under 250 lines**
+4. **Use hybrid spec-driven + test-driven development**
+5. **Do NOT write unit tests** - focus on integration/E2E tests
+6. **Avoid mocking in integration and E2E tests**
+
+---
+
+## Testing Strategy: Hybrid Spec-Driven + Test-Driven Development
+
+DevCaddy uses a **hybrid approach** combining Spec-Driven Development (SDD) and Test-Driven Development (TDD):
+
+### High-Level Workflow
+
+1. **Write Gherkin specs** for user-facing features (Given/When/Then)
+2. **Review specs** with stakeholders for alignment
+3. **Write Playwright E2E tests** that validate the specs
+4. **Implement using TDD** (RED/GREEN/REFACTOR)
+5. **Refactor** while keeping tests green
+
+### Test Layers
+
+| Layer                | Tool           | Purpose                                    | Mocking? |
+| -------------------- | -------------- | ------------------------------------------ | -------- |
+| **Specs**            | Gherkin        | Business requirements & acceptance criteria | N/A      |
+| **E2E Tests**        | Playwright     | Full user flows (annotation sync, etc.)     | ❌ No     |
+| **Integration Tests** | Playwright/Vitest | Multi-component behavior               | ❌ No     |
+| **Component Tests**  | Storybook      | Visual regression for isolated components   | Limited  |
+| **Unit Tests**       | ❌ None        | **DO NOT WRITE** — Prefer integration/E2E   | N/A      |
+
+### Example: Spec + E2E Test Pairing
+
+**Spec:** `specs/reviewer-annotation.feature`
+```gherkin
+Feature: Reviewer Annotation Flow
+  Scenario: Add annotation to UI element
+    Given a reviewer has opened a magic-link staging site
+    When they click on a button and add "Fix this button"
+    Then the annotation appears on the element
+    And the developer sees it in real-time
+```
+
+**E2E Test:** `tests/e2e/reviewer-annotation.spec.ts`
+```typescript
+test('annotation syncs from reviewer to developer', async ({ browser }) => {
+  const reviewerPage = await browser.newPage();
+  const devPage = await browser.newPage();
+
+  // Given: reviewer on staging, developer on localhost
+  await reviewerPage.goto('/staging?token=abc123');
+  await devPage.goto('http://localhost:5173');
+
+  // When: reviewer adds annotation
+  await reviewerPage.click('button#submit');
+  await reviewerPage.fill('[data-annotation-input]', 'Fix this button');
+  await reviewerPage.click('[data-submit-annotation]');
+
+  // Then: developer sees it in real-time
+  await expect(devPage.locator('[data-annotation="Fix this button"]'))
+    .toBeVisible({ timeout: 3000 });
+});
+```
+
+### Testing Commands (Planned)
+
+```bash
+# E2E tests
+npm run test:e2e              # Run all E2E tests
+npm run test:e2e:ui           # Run with Playwright UI
+
+# Component tests
+npm run storybook             # Start Storybook
+npm run test:storybook        # Visual regression tests
+
+# Database testing
+npx supabase start            # Start local Supabase
+npx supabase db reset         # Reset & run migrations
+npm run db:seed               # Seed test data
+```
+
+### Key Principles
+
+- **Specs provide the "what" and "why"** in business language
+- **E2E tests validate real behavior** without mocks
+- **TDD for utilities** using RED/GREEN/REFACTOR
+- **No unit tests** — test components in context
+- **No mocking Supabase** — use test database instances
+
+---
+
+## Security Notes
+
+- Admin/service role keys NEVER shipped to browser
+- Reviewer access only via signed, time-limited magic links
+- Row Level Security (RLS) on Supabase tables
+- Dev UI never appears in production unless explicitly enabled
+
+---
+
+## Key Features in Development
+
+Current implementation includes:
+
+- ✅ Environment detection
+- ✅ UI mode switching (developer/client)
+- ✅ Basic UI toggle and window
+- ✅ Vite plugin with HTML injection
+- ✅ SCSS compilation pipeline
+- ✅ TypeScript types for annotations (based on schema.dbml)
+- ✅ Window type definitions for global variables
+- ⏳ Element selector extraction (packages/src/ui/lib/selector/get-element-selectors.ts)
+- ⏳ Supabase integration
+- ⏳ Magic link generation
+- ⏳ Annotation storage and realtime sync
+
+---
+
+## Implementation Decisions
+
+### Empty Implementations
+
+**`configureBuild()`** - Remains minimal/empty since DevCaddy is disabled in production builds.
+
+**`configureServe()`** - Should handle development server setup:
+- Add middleware for magic link validation endpoint (`/api/devcaddy/validate-token`)
+- Optional logging when DevCaddy is active
+
+**Client API (`src/client/index.ts`)** - May not need exports initially. Export functions as implemented.
+
+### Architecture
+
+**Supabase Client Initialization:**
+- Client-side initialization in `src/client/api/init.ts`
+- Singleton pattern prevents multiple instances
+- Anon key safe to use client-side with RLS
+
+**Real-time Annotation Sync:**
+- Use Supabase Realtime with page-scoped channels
+- Channel format: `annotations:${normalizedUrl}`
+- Normalize URLs by stripping protocol, query params, hash
+
+**Magic Links:**
+- **Generation:** Server-side only via CLI tool (not bundled with client)
+- **Token format:** JWT with short expiration
+- **Validation:** Client-side with Supabase Edge Function
+- Never bundle service keys in client code
+
+**Element Selection:**
+- Click-to-select mode with visual feedback
+- Hover shows `outline: 2px dashed blue`
+- Click selects element
+- Popover appears next to element for annotation input
+
+**Developer vs Client Mode Features:**
+
+| Feature                | Client Mode | Developer Mode |
+| ---------------------- | ----------- | -------------- |
+| Create annotations     | ✅          | ✅             |
+| View own annotations   | ✅          | ✅             |
+| View all annotations   | ❌          | ✅             |
+| Mark as resolved       | ❌          | ✅             |
+| Mark own as resolved   | ✅          | ✅             |
+| Delete annotations     | ❌          | ✅             |
+| Delete own annotations | ✅          | ✅             |
+| Reply to annotations   | ❌          | ✅             |
+| Filter by status       | ✅          | ✅             |
+| Export annotations     | ❌          | ✅             |
+
+### Configuration
+
+**Environment Variables:**
+```bash
+# .env (consumer's app)
+VITE_DEVCADDY_ENABLED=true
+VITE_DEVCADDY_SUPABASE_URL=https://xxx.supabase.co
+VITE_DEVCADDY_SUPABASE_ANON_KEY=eyJhbGc...
+
+# .env.local (developer tools, NOT bundled)
+DEVCADDY_JWT_SECRET=your-secret-key
+DEVCADDY_SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
+```
+
+**Plugin Configuration:**
+- Keep minimal: `enabled`, `context`, `debug` only
+- Consumer provides Supabase credentials via `initDevCaddy()` in app code, not plugin config
+
+### State Management
+
+Use **React Context** for annotation state:
+- No external dependencies (Zustand, Redux)
+- Context sufficient for 1-2 levels of nesting
+- Subscribe to Supabase Realtime for updates
+
+### UI/UX Decisions
+
+**Toggle Button:**
+- Use SVG icons (not unicode characters)
+- Add ARIA labels for accessibility
+- No localStorage persistence initially
+
+**Annotation Input:**
+- Popover positioned near selected element using `createPortal`
+- Fixed position based on element's bounding rect
+
+**Window Positioning:**
+- Start with fixed corner positioning
+- No draggable/resizable features initially
+- Ship simple first, add features based on feedback
+
+### Security
+
+**Rate Limiting:**
+- Implement in Supabase Edge Function
+- In-memory map or Upstash Redis
+- 10 attempts per IP per hour
+
+**Content Sanitization:**
+- Use DOMPurify before rendering annotation content
+- Plain text only, no HTML allowed
+- Prevents XSS attacks
+
+**RLS Policies:**
+- Clients (magic link users) can only insert
+- Developers (local env) have full access
+- Implement via `auth.jwt()->>'type'` checks
+
+---
+
+## Database Schema Setup
+
+### Approach: Manual Setup (Phase 1)
+
+DevCaddy uses **manual database setup** for the MVP:
+
+**How it works:**
+- SQL migration files provided in `packages/migrations/`
+- User runs migrations manually via Supabase Dashboard or CLI
+- No automatic schema creation (security and explicitness)
+
+**Setup process:**
+1. User creates Supabase project
+2. User runs provided SQL migrations
+3. User enables Realtime on annotation table
+4. User configures environment variables in their app
+
+**Why manual?**
+- Security: No service role keys in client code
+- Simplicity: Package focuses on UI, not infrastructure
+- Explicit: Users understand what's created in their database
+- Control: Users maintain full visibility and control
+
+**Future enhancement (Phase 2):**
+- CLI tool: `npx @devcaddy/cli setup`
+- Reads service role key from local `.env.local` only
+- Automates migration execution
+- Still server-side only, never bundled with client
+
+See `docs/SUPABASE_SETUP.md` for complete setup guide.
