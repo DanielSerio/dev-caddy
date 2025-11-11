@@ -4,6 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Documentation Structure
+
+DevCaddy uses a streamlined documentation hierarchy. **Always start with `docs/README.md`** and then navigate to specific documents as needed:
+
+```
+docs/
+├── README.md           → START HERE - Project overview, architecture, current state
+├── TASKS.md            → Active development tasks organized by phase
+├── IMPLEMENTATION.md   → Development principles, decisions, testing strategy
+├── SETUP.md            → Complete setup guide (Supabase + role assignment)
+└── archive/            → Historical docs (not needed for active development)
+```
+
+**When to use each document:**
+- **Starting work?** Read `docs/README.md` for context
+- **Need to understand a decision?** Check `docs/IMPLEMENTATION.md`
+- **Setting up Supabase or roles?** See `docs/SETUP.md`
+- **Looking for specific tasks?** Check `docs/TASKS.md`
+
+---
+
 ## Project Overview
 
 **DevCaddy** is a Vite plugin that enables in-context design feedback directly on live applications. It provides environment-aware UI modes for reviewers and developers to collaborate on design iterations during prototyping and staging phases.
