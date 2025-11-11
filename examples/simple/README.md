@@ -9,32 +9,27 @@ This example demonstrates how to integrate DevCaddy into a basic React + Vite ap
 - Developer mode setup for local development
 - Simple React application with DevCaddy annotation capabilities
 
-## Prerequisites
+## Quick Setup
 
-Before running this example, you must:
+**⚠️ IMPORTANT:** You must set up the Supabase database before running this example!
 
-1. Set up a Supabase project (see [Supabase Setup Guide](../../docs/SUPABASE_SETUP.md))
-2. Run the database migrations from `packages/migrations/`
-3. Configure your environment variables
+See **[SETUP.md](./SETUP.md)** for complete step-by-step setup instructions.
 
-## Setup
+### Quick Start (If Database is Already Set Up)
 
-### 1. Install Dependencies
+1. Copy `.env.example` to `.env` and add your Supabase credentials
+2. From root directory: `npm install`
+3. From root directory: `npm run dev:developer`
 
-```bash
-npm install
-```
+### First Time Setup
 
-### 2. Configure Environment Variables
+If you haven't set up the database yet:
 
-Create a `.env` file in this directory:
-
-```env
-VITE_SUPABASE_URL=your-project-url
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-Get these values from your Supabase project settings.
+1. Read **[SETUP.md](./SETUP.md)** - it has detailed instructions
+2. Create Supabase project
+3. Run migrations from `packages/migrations/`
+4. Configure `.env` file
+5. Run the example
 
 ### 3. Run the Example
 

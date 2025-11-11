@@ -26,12 +26,13 @@ export {
   type AnnotationChangeCallback,
 } from './api/subscriptions';
 
-// Re-export types from annotations
+// Re-export types and constants from annotations
 export type {
   Annotation,
   CreateAnnotationInput,
   UpdateAnnotationInput,
-  AnnotationStatus,
   AnnotationStatusName,
-  AnnotationWithStatus,
+  AnnotationStatusId,
 } from '../types/annotations';
+
+export { ANNOTATION_STATUS } from '../types/annotations';

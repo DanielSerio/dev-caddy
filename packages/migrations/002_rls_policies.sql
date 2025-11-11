@@ -1,17 +1,8 @@
 -- DevCaddy Row Level Security Policies
--- Implements security policies for annotation_status and annotation tables
-
--- Enable Row Level Security on annotation_status table
-ALTER TABLE annotation_status ENABLE ROW LEVEL SECURITY;
+-- Implements security policies for annotation table
 
 -- Enable Row Level Security on annotation table
 ALTER TABLE annotation ENABLE ROW LEVEL SECURITY;
-
--- Policy: Anyone can read annotation statuses
-CREATE POLICY "annotation_status_select_policy"
-  ON annotation_status
-  FOR SELECT
-  USING (true);
 
 -- Policy: Reviewers (client mode) can insert annotations
 CREATE POLICY "reviewers_can_insert_annotations"

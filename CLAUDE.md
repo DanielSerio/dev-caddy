@@ -18,12 +18,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Monorepo Structure
+
+This is a **npm workspaces** monorepo with:
+- `packages/` - The main DevCaddy package
+- `examples/` - Example applications using DevCaddy
+
+### Initial Setup
+
+```bash
+# From root directory (required once)
+npm install         # Installs all workspace dependencies
+```
+
 ## Development Commands
 
 ### Building the Package
 
 ```bash
-# From packages/ directory
+# From root directory (recommended)
+npm run build       # Build the packages workspace
+
+# Or from packages/ directory
+cd packages
 npm run build       # Full build: TypeScript + SCSS + Vite
 npm run build:scss  # Only compile SCSS to CSS
 ```
@@ -31,25 +48,51 @@ npm run build:scss  # Only compile SCSS to CSS
 ### Development
 
 ```bash
-# From packages/ directory
-npm run dev         # Start Vite dev server
+# From root directory (recommended)
+npm run dev              # Start example app (developer mode by default)
+npm run dev:developer    # Start in developer mode + auto-open browser
+npm run dev:client       # Start in client mode + auto-open browser
 
-# From examples/simple/ directory
-npm run dev         # Test the plugin with example app
+# Or from specific directories
+cd packages
+npm run dev              # Start Vite dev server for package
+
+cd examples/simple
+npm run dev              # Test the plugin with example app
 ```
+
+**Testing Different UI Modes:**
+- `npm run dev:developer` - Opens with full developer access (all annotations, filters, editing)
+- `npm run dev:client` - Opens in client/reviewer mode (own annotations only)
+- Both commands automatically open the browser and use environment-based mode detection
+- For manual mode switching, add `?devCaddyMode=client` or `?devCaddyMode=developer` to URL
 
 ### Linting
 
 ```bash
-# From packages/ directory
+# From root directory (recommended)
+npm run lint        # Lint the packages workspace
+
+# Or from packages/ directory
+cd packages
 npm run lint        # Run ESLint on TypeScript files
 ```
 
-### Preview
+### Clean Build Artifacts
 
 ```bash
-# From packages/ directory
-npm run preview     # Preview production build
+# From root directory
+npm run clean       # Remove all dist/ directories
+```
+
+### Database Migrations
+
+```bash
+# From root directory
+npm run migrations:bundle    # Bundle all migrations into single SQL file
+
+# Output: devcaddy-migrations.sql
+# Then copy this file to Supabase SQL Editor and run
 ```
 
 ---

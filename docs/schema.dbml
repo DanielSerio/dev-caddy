@@ -1,23 +1,46 @@
-Table annotation_status {
-  id int [primary key] //auto id
-  status_name varchar [unique] //new, in-progress, in-review, hold, resolved
-}
+// DevCaddy Database Schema
+// Simplified design - no annotation_status table needed
+//
+// Rationale: Status values are fixed and never change (1-5).
+// TypeScript ANNOTATION_STATUS constant is the source of truth.
+// CHECK constraint provides validation without needing a lookup table.
 
 Table annotation {
-  id int [primary key] //auto id
-  page varchar [NOT NULL] //page path url
-  element_tag varchar [NOT NULL] // HTML tag of the element
-  compressed_element_tree text [NOT NULL] // a compressed version of the element tree down to this element
-  element_id varchar // The "id" property of the element
-  element_test_id varchar // The "data-test-id" property of the element
-  element_role varchar // The "role" attribute of the element
-  element_unique_classes varchar // The unique class names on the element
+  id int [primary key] // auto-incrementing ID
+  page varchar [NOT NULL] // page path URL where annotation was created
+  element_tag varchar [NOT NULL] // HTML tag of the element (e.g., "BUTTON", "DIV")
+  compressed_element_tree text [NOT NULL] // compressed version of element tree for reselection
+  element_id varchar // the "id" property of the element (if present)
+  element_test_id varchar // the "data-test-id" property of the element (if present)
+  element_role varchar // the "role" attribute of the element (if present)
+  element_unique_classes varchar // unique class names on the element (space-separated)
   element_parent_selector varchar // the selector for the parent element
-  element_nth_child int // the nth-child in reference to the parent selector
-  content text [NOT NULL] // the content of the annotation
-  status_id int [ref: > annotation_status.id] // the status of the annotation
+  element_nth_child int // the nth-child position relative to parent selector
+  content text [NOT NULL] // the annotation content/comment
+  status_id int [NOT NULL, note: 'Status: 1=new, 2=in-progress, 3=in-review, 4=hold, 5=resolved. CHECK constraint: value between 1-5. Use ANNOTATION_STATUS constants from TypeScript.'] // annotation status
   created_by varchar [NOT NULL] // user identifier from JWT (auth.uid())
   created_at timestamptz [NOT NULL, default: `now()`] // when annotation was created
-  updated_at timestamptz [NOT NULL, default: `now()`] // when annotation was last updated
-  resolved_at timestamptz // the timestamp captured when status_id is set to "resolved". Should be set back to null if status changes away from "resolved"
+  updated_by varchar // user identifier who last updated (from JWT auth.uid())
+  updated_at timestamptz [NOT NULL, default: `now()`] // when annotation was last updated (auto-managed by trigger)
+  resolved_at timestamptz // timestamp when status_id was set to 5 (resolved). Auto-managed by trigger.
+
+  Indexes {
+    page [name: 'idx_annotation_page']
+    status_id [name: 'idx_annotation_status']
+    created_by [name: 'idx_annotation_created_by']
+    updated_by [name: 'idx_annotation_updated_by']
+    (created_at) [name: 'idx_annotation_created_at']
+  }
+
+  Note: '''
+  Database triggers handle:
+  - updated_at: Auto-set to NOW() on every UPDATE
+  - resolved_at: Auto-set to NOW() when status_id changes to 5, cleared when it changes away from 5
+
+  Row Level Security (RLS) policies:
+  - Reviewers (client mode): Can INSERT, SELECT/UPDATE/DELETE their own annotations
+  - Developers (dev mode): Full access to all annotations
+
+  TypeScript types mirror this schema exactly.
+  '''
 }

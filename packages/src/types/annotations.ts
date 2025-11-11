@@ -1,5 +1,8 @@
 /**
- * Annotation status types based on schema.dbml
+ * Annotation status types
+ *
+ * Status values are fixed and never change. TypeScript constants are the source of truth.
+ * Database validates with CHECK constraint (status_id BETWEEN 1 AND 5).
  */
 export type AnnotationStatusName =
   | 'new'
@@ -8,10 +11,34 @@ export type AnnotationStatusName =
   | 'hold'
   | 'resolved';
 
-export interface AnnotationStatus {
-  id: number;
-  status_name: AnnotationStatusName;
-}
+/**
+ * Annotation status ID constants
+ *
+ * These are the only valid status values. Database enforces this with CHECK constraint.
+ * No separate status table is needed since these values are fixed.
+ *
+ * @example
+ * ```typescript
+ * // Instead of using magic numbers:
+ * await updateAnnotation(id, { status_id: 5 }); // ❌ What does 5 mean?
+ *
+ * // Use named constants:
+ * await updateAnnotation(id, { status_id: ANNOTATION_STATUS.RESOLVED }); // ✅ Clear intent
+ * ```
+ */
+export const ANNOTATION_STATUS = {
+  NEW: 1,
+  IN_PROGRESS: 2,
+  IN_REVIEW: 3,
+  HOLD: 4,
+  RESOLVED: 5,
+} as const;
+
+/**
+ * Type for annotation status ID values (1-5)
+ */
+export type AnnotationStatusId =
+  (typeof ANNOTATION_STATUS)[keyof typeof ANNOTATION_STATUS];
 
 /**
  * Main annotation type based on schema.dbml
@@ -40,12 +67,14 @@ export interface Annotation {
   element_nth_child: number | null;
   /** Annotation content/comment text */
   content: string;
-  /** Foreign key to annotation_status table */
+  /** Status ID (1=new, 2=in-progress, 3=in-review, 4=hold, 5=resolved). Use ANNOTATION_STATUS constants. */
   status_id: number;
   /** User identifier who created the annotation (from JWT auth.uid()) */
   created_by: string;
   /** ISO 8601 timestamp when annotation was created */
   created_at: string;
+  /** User identifier who last updated the annotation (from JWT auth.uid()) */
+  updated_by: string | null;
   /** ISO 8601 timestamp when annotation was last updated */
   updated_at: string;
   /** ISO 8601 timestamp when annotation was resolved (null if not resolved) */
@@ -54,11 +83,11 @@ export interface Annotation {
 
 /**
  * Input type for creating a new annotation
- * Omits auto-generated fields: id, created_at, updated_at, resolved_at
+ * Omits auto-generated fields: id, created_at, updated_by, updated_at, resolved_at
  */
 export type CreateAnnotationInput = Omit<
   Annotation,
-  'id' | 'created_at' | 'updated_at' | 'resolved_at'
+  'id' | 'created_at' | 'updated_by' | 'updated_at' | 'resolved_at'
 >;
 
 /**
@@ -69,10 +98,3 @@ export type CreateAnnotationInput = Omit<
 export type UpdateAnnotationInput = Partial<
   Pick<Annotation, 'content' | 'status_id'>
 >;
-
-/**
- * Annotation with populated status information
- */
-export interface AnnotationWithStatus extends Annotation {
-  status: AnnotationStatus;
-}

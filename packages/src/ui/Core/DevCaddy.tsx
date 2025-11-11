@@ -3,9 +3,105 @@ import type { DevCaddyMode, DevCaddyProps } from "../../types";
 import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
 import { getCornerStyles } from "../utility";
+import { AnnotationProvider, useAnnotations } from "../context";
+import { AnnotationList } from "../Client/AnnotationList";
+import { AnnotationManager } from "../Developer/AnnotationManager";
+import { AnnotationPopover } from "../components/AnnotationPopover";
+import { ModeSwitcher } from "../components/ModeSwitcher";
+import { useElementSelector } from "../hooks";
+import { getElementSelectors } from "../lib/selector/get-element-selectors";
+import { ANNOTATION_STATUS } from "../../types/annotations";
+import type { CreateAnnotationInput } from "../../types/annotations";
 import "../styles/output/dev-caddy.scss";
 
 type DevCaddyWindow = Window & { __DEV_CADDY_UI_MODE__: DevCaddyMode };
+
+/**
+ * Inner component that has access to AnnotationProvider context
+ */
+function DevCaddyContent({
+  uiMode,
+  windowStyles,
+}: {
+  uiMode: DevCaddyMode;
+  windowStyles: React.CSSProperties;
+}) {
+  const { addAnnotation } = useAnnotations();
+  const { mode, setMode, selectedElement, clearSelection } =
+    useElementSelector();
+
+  // TODO: Get actual user ID from JWT/auth when implemented
+  const currentUserId = "dev-user";
+
+  /**
+   * Handle annotation submission
+   */
+  const handleSubmitAnnotation = async (content: string) => {
+    if (!selectedElement) return;
+
+    try {
+      const selectors = getElementSelectors(selectedElement);
+
+      const input: CreateAnnotationInput = {
+        page: window.location.pathname,
+        element_tag: selectors.tag,
+        compressed_element_tree: selectors.compressedTree,
+        element_id: selectors.id || null,
+        element_test_id: selectors.testId || null,
+        element_role: selectors.role || null,
+        element_unique_classes: selectors.classes || null,
+        element_parent_selector: selectors.parent,
+        element_nth_child: selectors.nthChild,
+        content,
+        status_id: ANNOTATION_STATUS.NEW,
+        created_by: currentUserId,
+      };
+
+      await addAnnotation(input);
+      clearSelection();
+    } catch (err) {
+      console.error('Failed to create annotation:', err);
+      alert('Failed to create annotation. Please try again.');
+    }
+  };
+
+  return (
+    <>
+      <CaddyWindow uiMode={uiMode} style={windowStyles}>
+        <div className="caddy-content" data-dev-caddy>
+          <ModeSwitcher />
+
+          <div className="caddy-toolbar" data-dev-caddy>
+            <button
+              onClick={() =>
+                setMode(mode === 'selecting' ? 'idle' : 'selecting')
+              }
+              className={`btn-add-annotation ${
+                mode === 'selecting' ? 'active' : ''
+              }`}
+              aria-label="Add annotation to UI element"
+            >
+              {mode === 'selecting' ? 'Cancel Selection' : '+ Add Annotation'}
+            </button>
+          </div>
+
+          {uiMode === 'client' && (
+            <AnnotationList currentUserId={currentUserId} />
+          )}
+          {uiMode === 'developer' && <AnnotationManager />}
+        </div>
+      </CaddyWindow>
+
+      {selectedElement && (
+        <AnnotationPopover
+          selectedElement={selectedElement}
+          onSubmit={handleSubmitAnnotation}
+          onCancel={clearSelection}
+        />
+      )}
+    </>
+  );
+}
 
 export function DevCaddy({
   corner = "bottom-left",
@@ -25,7 +121,7 @@ export function DevCaddy({
   const windowStyles = getCornerStyles("window", corner, offset);
 
   return (
-    <div className="dev-caddy">
+    <div className="dev-caddy" data-dev-caddy>
       <ModeToggle
         isActive={devCaddyIsActive}
         onToggle={setDevCaddyIsActive}
@@ -33,9 +129,9 @@ export function DevCaddy({
         style={toggleStyles}
       />
       {devCaddyIsActive && UI_MODE && (
-        <CaddyWindow uiMode={UI_MODE} style={windowStyles}>
-          {UI_MODE}
-        </CaddyWindow>
+        <AnnotationProvider>
+          <DevCaddyContent uiMode={UI_MODE} windowStyles={windowStyles} />
+        </AnnotationProvider>
       )}
     </div>
   );

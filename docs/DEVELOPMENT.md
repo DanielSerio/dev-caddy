@@ -182,6 +182,68 @@ npm run storybook
 npm run test:storybook
 ```
 
+### Testing UI Modes During Development
+
+DevCaddy supports two UI modes: **client** (reviewer) and **developer**. During development, you can test both modes using convenient npm scripts or query parameter overrides.
+
+#### Quick Start: Mode-Specific Dev Scripts
+
+The fastest way to test different modes (from root directory):
+
+```bash
+npm run dev:developer    # Start in developer mode + open browser
+npm run dev:client       # Start in client mode + open browser
+```
+
+These scripts automatically:
+- Start the example app with the correct Vite mode
+- Open your browser to the running app
+- Set up the appropriate UI mode (developer or client)
+
+#### Query Parameter Override
+
+Add `?devCaddyMode=client` or `?devCaddyMode=developer` to your development URL:
+
+```bash
+# Test client/reviewer mode
+http://localhost:5173?devCaddyMode=client
+
+# Test developer mode
+http://localhost:5173?devCaddyMode=developer
+```
+
+**Features:**
+- ✅ No server restart required
+- ✅ URL is shareable with teammates
+- ✅ Works in any project using DevCaddy
+- ✅ Only works in development mode (security)
+
+#### In-UI Mode Switcher
+
+When running in development mode, DevCaddy displays a mode switcher at the top of the window:
+
+```
+[DEV] Current: developer
+[Client] [Developer]
+```
+
+Click the buttons to switch modes. The page will reload with the new mode applied via query parameter.
+
+**When Mode Override is Active:**
+- Console logs: `[DevCaddy] Mode overridden via query parameter: client`
+- The mode switcher shows the current active mode
+- Override only works in development (`mode: 'development'`)
+
+#### Default Modes (Without Override)
+
+If no query parameter is present, DevCaddy uses environment-based detection:
+
+| Vite Config | UI Mode |
+|-------------|---------|
+| `mode: 'development'` + `command: 'serve'` | developer |
+| `mode: 'production'` + `command: 'serve'` | client |
+| `command: 'build'` | null (disabled) |
+
 ### Supabase Local Testing
 
 ```bash
@@ -233,7 +295,7 @@ This approach ensures DevCaddy delivers value to users while maintaining high co
 ### Configuration Strategy
 
 **Environment Variables:**
-- Consumer's app: `VITE_DEVCADDY_ENABLED`, `VITE_DEVCADDY_SUPABASE_URL`, `VITE_DEVCADDY_SUPABASE_ANON_KEY`
+- Consumer's app: `VITE_DEV_CADDY_ENABLED`, `VITE_DEV_CADDY_SUPABASE_URL`, `VITE_DEV_CADDY_SUPABASE_ANON_KEY`
 - Developer tools (NOT bundled): `DEVCADDY_JWT_SECRET`, `DEVCADDY_SUPABASE_SERVICE_ROLE_KEY`
 - Never include service role keys in client bundles
 

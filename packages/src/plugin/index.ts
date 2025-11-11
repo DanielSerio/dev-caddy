@@ -42,9 +42,30 @@ export function DevCaddyPlugin(options: DevCaddyPluginOptions): PluginOption {
       }
     },
     transformIndexHtml(html) {
+      const isDevelopment = options.context.mode === 'development';
+
       const script = `<script type="module">
+  // Check for query parameter override (development only)
+  function getDevCaddyMode() {
+    const isDev = ${isDevelopment};
+    const baseMode = '${uiMode}';
+
+    // Only allow override in development mode for security
+    if (isDev && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const override = params.get('devCaddyMode');
+
+      if (override === 'client' || override === 'developer') {
+        console.log('[DevCaddy] Mode overridden via query parameter:', override);
+        return override;
+      }
+    }
+
+    return baseMode;
+  }
+
   window.__DEV_CADDY_ENABLED__ = ${isEnabled};
-  window.__DEV_CADDY_UI_MODE__ = '${uiMode}';
+  window.__DEV_CADDY_UI_MODE__ = getDevCaddyMode();
 </script>`;
       return html.replace('</body>', `${script}</body>`);
     },

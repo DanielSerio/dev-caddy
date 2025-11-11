@@ -1,0 +1,34 @@
+{
+  "name": "dev-caddy-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DevCaddy - In-app annotation tool for design feedback",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/dev-caddy.git"
+  },
+  "license": "MIT",
+  "workspaces": [
+    "packages",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages",
+    "build:scss": "npm run build:scss -w packages",
+    "dev": "npm run dev -w examples/simple",
+    "dev:client": "npm run dev -- -- --open --mode production",
+    "dev:developer": "npm run dev -- -- --open",
+    "lint": "npm run lint -w packages",
+    "clean": "rm -rf packages/dist && rm -rf examples/simple/dist",
+    "migrations:bundle": "node scripts/bundle-migrations.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

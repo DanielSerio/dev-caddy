@@ -14,6 +14,9 @@ import type {
  * @throws {Error} If the database operation fails
  *
  * @example
+ * ```typescript
+ * import { ANNOTATION_STATUS } from 'dev-caddy/types/annotations';
+ *
  * const annotation = await createAnnotation({
  *   page: '/products',
  *   element_tag: 'button',
@@ -25,9 +28,10 @@ import type {
  *   element_parent_selector: '#form',
  *   element_nth_child: 1,
  *   content: 'This button should be larger',
- *   status_id: 1,
+ *   status_id: ANNOTATION_STATUS.NEW,
  *   created_by: 'user-123'
  * });
+ * ```
  */
 export async function createAnnotation(
   input: CreateAnnotationInput
@@ -54,7 +58,8 @@ export async function createAnnotation(
 /**
  * Update an existing annotation
  *
- * Only the content and status_id fields can be updated.
+ * Only the content and status_id fields can be updated by users.
+ * The updated_by field is automatically set to the current user's ID.
  * Other fields are managed automatically by the database.
  *
  * @param id - The annotation ID to update
@@ -63,12 +68,17 @@ export async function createAnnotation(
  * @throws {Error} If DevCaddy is not initialized
  * @throws {Error} If the annotation is not found
  * @throws {Error} If the database operation fails
+ * @throws {Error} If unable to get current user
  *
  * @example
+ * ```typescript
+ * import { ANNOTATION_STATUS } from 'dev-caddy/types/annotations';
+ *
  * const updated = await updateAnnotation(123, {
  *   content: 'Updated feedback text',
- *   status_id: 2
+ *   status_id: ANNOTATION_STATUS.IN_PROGRESS
  * });
+ * ```
  */
 export async function updateAnnotation(
   id: number,
@@ -76,9 +86,24 @@ export async function updateAnnotation(
 ): Promise<Annotation> {
   const client = getSupabaseClient();
 
+  // Get current user to set updated_by
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
+  if (!user) {
+    throw new Error('Unable to update annotation: No authenticated user found');
+  }
+
+  // Include updated_by in the update
+  const updateData = {
+    ...input,
+    updated_by: user.id,
+  };
+
   const { data, error } = await client
     .from('annotation')
-    .update(input)
+    .update(updateData)
     .eq('id', id)
     .select()
     .single();
