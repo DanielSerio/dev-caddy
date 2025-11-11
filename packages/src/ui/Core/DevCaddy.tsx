@@ -7,8 +7,9 @@ import { AnnotationProvider, useAnnotations } from "../context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "../components/AnnotationPopover";
+import { AuthPrompt } from "../components/AuthPrompt";
 import { ModeSwitcher } from "../components/ModeSwitcher";
-import { useElementSelector } from "../hooks";
+import { useElementSelector, useAuth } from "../hooks";
 import { getElementSelectors } from "../lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
 import type { CreateAnnotationInput } from "../../types/annotations";
@@ -29,9 +30,10 @@ function DevCaddyContent({
   const { addAnnotation } = useAnnotations();
   const { mode, setMode, selectedElement, clearSelection } =
     useElementSelector();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-  // TODO: Get actual user ID from JWT/auth when implemented
-  const currentUserId = "dev-user";
+  // Get user ID from authenticated session
+  const currentUserId = user?.id || '';
 
   /**
    * Handle annotation submission
@@ -64,6 +66,24 @@ function DevCaddyContent({
       alert('Failed to create annotation. Please try again.');
     }
   };
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <CaddyWindow uiMode={uiMode} style={windowStyles}>
+        <div className="caddy-content" data-dev-caddy>
+          <div className="auth-loading" data-dev-caddy>
+            <p>Checking authentication...</p>
+          </div>
+        </div>
+      </CaddyWindow>
+    );
+  }
+
+  // Show auth prompt if not authenticated
+  if (!isAuthenticated) {
+    return <AuthPrompt />;
+  }
 
   return (
     <>

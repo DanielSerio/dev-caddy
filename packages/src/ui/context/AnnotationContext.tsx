@@ -12,7 +12,6 @@ import {
   deleteAnnotation as apiDeleteAnnotation,
   getAnnotationsByPage,
   subscribeToAnnotations,
-  normalizeUrl,
 } from '../../client';
 import type {
   Annotation,
@@ -54,7 +53,7 @@ const AnnotationContext = createContext<AnnotationContextValue | undefined>(
 interface AnnotationProviderProps {
   /** Child components */
   children: ReactNode;
-  /** Current page URL (defaults to window.location.href) */
+  /** Current page pathname (defaults to window.location.pathname) */
   pageUrl?: string;
 }
 
@@ -73,13 +72,47 @@ interface AnnotationProviderProps {
  */
 export function AnnotationProvider({
   children,
-  pageUrl = typeof window !== 'undefined' ? window.location.href : '',
+  pageUrl = typeof window !== 'undefined' ? window.location.pathname : '',
 }: AnnotationProviderProps) {
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [currentPage, setCurrentPage] = useState(pageUrl);
 
-  const normalizedPageUrl = normalizeUrl(pageUrl);
+  /**
+   * Track URL changes for SPA navigation
+   */
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const newPath = window.location.pathname;
+      if (newPath !== currentPage) {
+        setCurrentPage(newPath);
+      }
+    };
+
+    // Listen for browser back/forward navigation
+    window.addEventListener('popstate', handleUrlChange);
+
+    // Intercept pushState and replaceState for SPA navigation
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+
+    window.history.pushState = function (...args) {
+      originalPushState.apply(this, args);
+      handleUrlChange();
+    };
+
+    window.history.replaceState = function (...args) {
+      originalReplaceState.apply(this, args);
+      handleUrlChange();
+    };
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+    };
+  }, [currentPage]);
 
   /**
    * Load initial annotations for the current page
@@ -92,7 +125,7 @@ export function AnnotationProvider({
         setLoading(true);
         setError(null);
 
-        const data = await getAnnotationsByPage(normalizedPageUrl);
+        const data = await getAnnotationsByPage(currentPage);
 
         if (!cancelled) {
           setAnnotations(data);
@@ -115,14 +148,14 @@ export function AnnotationProvider({
     return () => {
       cancelled = true;
     };
-  }, [normalizedPageUrl]);
+  }, [currentPage]);
 
   /**
    * Subscribe to real-time annotation changes
    */
   useEffect(() => {
     const unsubscribe = subscribeToAnnotations(
-      normalizedPageUrl,
+      currentPage,
       (annotation) => {
         setAnnotations((prev) => {
           // Check if annotation already exists
@@ -142,7 +175,7 @@ export function AnnotationProvider({
     );
 
     return unsubscribe;
-  }, [normalizedPageUrl]);
+  }, [currentPage]);
 
   /**
    * Create a new annotation
