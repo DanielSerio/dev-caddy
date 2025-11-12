@@ -34,7 +34,7 @@ function findElement(annotation: Annotation): Element | null {
       const selector = annotation.compressed_element_tree
         .split('>')
         .map(segment => {
-          const match = segment.match(/^([A-Za-z]+)\[(\d+)\]$/);
+          const match = segment.match(/^([A-Za-z0-9]+)\[(\d+)\]$/);
           if (match) {
             const tag = match[1].toLowerCase();
             const index = parseInt(match[2], 10) + 1; // nth-child is 1-based
