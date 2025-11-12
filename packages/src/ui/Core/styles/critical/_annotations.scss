@@ -43,6 +43,9 @@
   .annotation-items {
     flex-direction: column;
     gap: 4px;
+    max-height: 300px; // Approximately 3 annotation items
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .annotation-item {
@@ -278,5 +281,190 @@
     &:hover {
       opacity: 0.9;
     }
+  }
+}
+
+
+// Annotation detail view
+.dev-caddy-annotation-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--dc-border-muted);
+
+    h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dc-text-em);
+      flex: 1;
+    }
+  }
+
+  .btn-back {
+    padding: 4px 8px;
+    background-color: var(--dc-background-raised);
+    border: 1px solid var(--dc-border);
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--dc-text);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--dc-background-lowered);
+    }
+  }
+
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    max-height: 300px; // Same as annotation list - approximately 3 items worth
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--dc-text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .detail-value {
+    font-size: 12px;
+    color: var(--dc-text);
+
+    code {
+      font-family: monospace;
+      font-size: 11px;
+      background-color: var(--dc-background-raised);
+      padding: 2px 4px;
+      border-radius: 2px;
+      color: var(--dc-text-em);
+    }
+  }
+
+  .element-info code {
+    display: block;
+    padding: 6px 8px;
+  }
+
+  .annotation-content {
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  .detail-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    background-color: var(--dc-background);
+    border: 1px solid var(--dc-border);
+    border-radius: 3px;
+    color: var(--dc-text);
+    font-family: inherit;
+    font-size: 12px;
+    resize: vertical;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: var(--dc-primary);
+    }
+  }
+
+  .detail-date {
+    font-size: 11px;
+    color: var(--dc-text-muted);
+  }
+
+  .selector-code {
+    display: block;
+    padding: 6px 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .detail-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid var(--dc-border-muted);
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &.btn-save,
+      &.btn-edit {
+        background-color: var(--dc-primary);
+        color: white;
+
+        &:hover {
+          background-color: var(--dc-primary-dark);
+        }
+      }
+
+      &.btn-delete {
+        background-color: var(--dc-danger);
+        color: white;
+
+        &:hover {
+          background-color: var(--dc-danger-dark);
+        }
+      }
+
+      &.btn-cancel {
+        background-color: var(--dc-background-raised);
+        color: var(--dc-text);
+        border: 1px solid var(--dc-border);
+
+        &:hover {
+          background-color: var(--dc-background-lowered);
+        }
+      }
+    }
+  }
+}
+
+// Element highlight overlay
+.dev-caddy-element-highlight {
+  border: 3px solid var(--dc-primary);
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  animation: pulse-highlight 2s ease-in-out infinite;
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3);
   }
 }

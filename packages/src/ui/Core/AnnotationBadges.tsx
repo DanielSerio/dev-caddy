@@ -89,21 +89,13 @@ function AnnotationBadge({
   useEffect(() => {
     // Use the first annotation's selector to find the element
     const firstAnnotation = annotations[0];
-    console.log('[AnnotationBadge] Looking for element with selectors:', {
-      test_id: firstAnnotation.element_test_id,
-      id: firstAnnotation.element_id,
-      classes: firstAnnotation.element_unique_classes
-    });
-
     const targetElement = findElement(firstAnnotation);
-    console.log('[AnnotationBadge] Found element:', targetElement);
 
     setElement(targetElement);
 
     if (targetElement) {
       const updatePosition = () => {
         const pos = getBadgePosition(targetElement);
-        console.log('[AnnotationBadge] Badge position:', pos);
         setPosition(pos);
       };
 
@@ -117,17 +109,12 @@ function AnnotationBadge({
         window.removeEventListener('scroll', updatePosition, true);
         window.removeEventListener('resize', updatePosition);
       };
-    } else {
-      console.warn('[AnnotationBadge] Could not find target element for annotation:', firstAnnotation);
     }
   }, [annotations]);
 
   if (!element || !position) {
-    console.log('[AnnotationBadge] Returning null - element:', element, 'position:', position);
     return null;
   }
-
-  console.log('[AnnotationBadge] Rendering badge!', { element, position, statusId });
 
   const handleClick = () => {
     // Scroll element into view and highlight it
@@ -217,22 +204,16 @@ function groupAnnotations(annotations: Annotation[]): Map<string, Map<number, An
 export function AnnotationBadges({ isActive }: AnnotationBadgesProps) {
   const { annotations } = useAnnotations();
 
-  console.log('[AnnotationBadges] isActive:', isActive);
-  console.log('[AnnotationBadges] annotations:', annotations);
-
   if (!isActive) {
     return null;
   }
 
   const groupedAnnotations = groupAnnotations(annotations);
-  console.log('[AnnotationBadges] groupedAnnotations:', groupedAnnotations);
-
   const badges: React.ReactElement[] = [];
 
   // Create badges for each element/status combination
   groupedAnnotations.forEach((statusGroups, elementKey) => {
     statusGroups.forEach((annotationsForStatus, statusId) => {
-      console.log(`[AnnotationBadges] Creating badge for element "${elementKey}" with status ${statusId}, count: ${annotationsForStatus.length}`);
       badges.push(
         <AnnotationBadge
           key={`${elementKey}-${statusId}`}
@@ -242,8 +223,6 @@ export function AnnotationBadges({ isActive }: AnnotationBadgesProps) {
       );
     });
   });
-
-  console.log('[AnnotationBadges] Total badges to render:', badges.length);
 
   return <>{badges}</>;
 }

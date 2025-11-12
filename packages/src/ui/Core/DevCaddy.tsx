@@ -8,12 +8,13 @@ import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "./AnnotationPopover";
 import { AnnotationBadges } from "./AnnotationBadges";
+import { ElementHighlight } from "./ElementHighlight";
 import { AuthPrompt } from "./AuthPrompt";
 import { ModeSwitcher } from "./ModeSwitcher";
 import { useElementSelector, useAuth } from "./hooks";
 import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
-import type { CreateAnnotationInput } from "../../types/annotations";
+import type { CreateAnnotationInput, Annotation } from "../../types/annotations";
 import "./styles/output/dev-caddy.scss";
 import { Skeleton } from "./Skeleton";
 
@@ -33,6 +34,7 @@ function DevCaddyContent({
   const { mode, setMode, selectedElement, clearSelection } =
     useElementSelector();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(null);
 
   // Get user ID from authenticated session
   const currentUserId = user?.id || "";
@@ -97,23 +99,28 @@ function DevCaddyContent({
         <div className="caddy-content" data-testid="devcaddy-panel">
           <ModeSwitcher />
 
-          <div className="caddy-toolbar" data-testid="devcaddy-toolbar">
-            <button
-              onClick={() =>
-                setMode(mode === "selecting" ? "idle" : "selecting")
-              }
-              className={`btn-add-annotation ${
-                mode === "selecting" ? "active" : ""
-              }`}
-              aria-label="Add annotation to UI element"
-              data-testid="add-annotation-btn"
-            >
-              {mode === "selecting" ? "Cancel Selection" : "+ Add Annotation"}
-            </button>
-          </div>
+          {!viewingAnnotation && (
+            <div className="caddy-toolbar" data-testid="devcaddy-toolbar">
+              <button
+                onClick={() =>
+                  setMode(mode === "selecting" ? "idle" : "selecting")
+                }
+                className={`btn-add-annotation ${
+                  mode === "selecting" ? "active" : ""
+                }`}
+                aria-label="Add annotation to UI element"
+                data-testid="add-annotation-btn"
+              >
+                {mode === "selecting" ? "Cancel Selection" : "+ Add Annotation"}
+              </button>
+            </div>
+          )}
 
           {uiMode === "client" && (
-            <AnnotationList currentUserId={currentUserId} />
+            <AnnotationList
+              currentUserId={currentUserId}
+              onAnnotationSelect={setViewingAnnotation}
+            />
           )}
           {uiMode === "developer" && <AnnotationManager />}
         </div>
@@ -125,6 +132,10 @@ function DevCaddyContent({
           onSubmit={handleSubmitAnnotation}
           onCancel={clearSelection}
         />
+      )}
+
+      {viewingAnnotation && (
+        <ElementHighlight annotation={viewingAnnotation} />
       )}
     </>
   );
