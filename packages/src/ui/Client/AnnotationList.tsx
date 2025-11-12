@@ -122,35 +122,37 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
               <p>{annotation.content}</p>
             </div>
 
-            <div className="annotation-meta">
-              <span className="annotation-date">
-                {formatDate(annotation.created_at)}
-              </span>
-              {annotation.resolved_at && (
-                <span className="annotation-resolved">
-                  Resolved: {formatDate(annotation.resolved_at)}
+            <footer>
+              <div className="annotation-meta">
+                <span className="annotation-date">
+                  {formatDate(annotation.created_at)}
                 </span>
-              )}
-            </div>
+                {annotation.resolved_at && (
+                  <span className="annotation-resolved">
+                    Resolved: {formatDate(annotation.resolved_at)}
+                  </span>
+                )}
+              </div>
 
-            <div className="annotation-actions">
-              {annotation.status_id !== ANNOTATION_STATUS.RESOLVED && (
+              <div className="annotation-actions">
+                {annotation.status_id !== ANNOTATION_STATUS.RESOLVED && (
+                  <button
+                    onClick={() => handleResolve(annotation.id)}
+                    className="btn-resolve"
+                    title="Mark as resolved"
+                  >
+                    Resolve
+                  </button>
+                )}
                 <button
-                  onClick={() => handleResolve(annotation.id)}
-                  className="btn-resolve"
-                  title="Mark as resolved"
+                  onClick={() => handleDelete(annotation.id)}
+                  className="btn-delete"
+                  title="Delete annotation"
                 >
-                  Resolve
+                  Delete
                 </button>
-              )}
-              <button
-                onClick={() => handleDelete(annotation.id)}
-                className="btn-delete"
-                title="Delete annotation"
-              >
-                Delete
-              </button>
-            </div>
+              </div>
+            </footer>
           </div>
         ))}
       </div>

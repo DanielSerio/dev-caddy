@@ -60,9 +60,10 @@ function getCompressedElementTree<RootElm extends HTMLElement, Elm extends HTMLE
 export function getElementSelectors<RootElm extends HTMLElement, Elm extends HTMLElement>(elm: Elm, root: RootElm = document.body as RootElm) {
   const tag = elm.tagName;
   const role = elm.role;
-  const id = elm.id;
-  const testId = elm.dataset?.testId;
-  const classes = elm.classList.toString();
+  const id = elm.id || null;
+  // Note: data-testid becomes dataset.testid (lowercase) in the dataset API
+  const testId = elm.dataset?.testid || null;
+  const classes = elm.classList.toString() || null;
   const parent = elm.parentElement;
   let parentSelector = null as null | string;
   let nthChild = null as null | number;

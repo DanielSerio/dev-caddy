@@ -7,6 +7,7 @@ import { AnnotationProvider, useAnnotations } from "./context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "./AnnotationPopover";
+import { AnnotationBadges } from "./AnnotationBadges";
 import { AuthPrompt } from "./AuthPrompt";
 import { ModeSwitcher } from "./ModeSwitcher";
 import { useElementSelector, useAuth } from "./hooks";
@@ -157,6 +158,7 @@ export function DevCaddy({
       {devCaddyIsActive && UI_MODE && (
         <AnnotationProvider>
           <DevCaddyContent uiMode={UI_MODE} windowStyles={windowStyles} />
+          <AnnotationBadges isActive={devCaddyIsActive} />
         </AnnotationProvider>
       )}
     </div>

@@ -184,6 +184,7 @@ export function AnnotationProvider({
     async (input: CreateAnnotationInput): Promise<Annotation> => {
       try {
         const newAnnotation = await apiCreateAnnotation(input);
+// Optimistically add to state immediately for better UX        setAnnotations((prev) => [newAnnotation, ...prev]);
         // Real-time subscription will update state
         return newAnnotation;
       } catch (err) {
@@ -207,6 +208,7 @@ export function AnnotationProvider({
       try {
         const updated = await apiUpdateAnnotation(id, input);
         // Real-time subscription will update state
+// Optimistically update state immediately for better UX        setAnnotations((prev) => {          const index = prev.findIndex((a) => a.id === id);          if (index > -1) {            const newAnnotations = [...prev];            newAnnotations[index] = updated;            return newAnnotations;          }          return prev;        });
         return updated;
       } catch (err) {
         const error =
