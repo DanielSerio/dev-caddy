@@ -184,8 +184,10 @@ export function AnnotationProvider({
     async (input: CreateAnnotationInput): Promise<Annotation> => {
       try {
         const newAnnotation = await apiCreateAnnotation(input);
-// Optimistically add to state immediately for better UX        setAnnotations((prev) => [newAnnotation, ...prev]);
-        // Real-time subscription will update state
+
+        // Update state with response data
+        setAnnotations((prev) => [newAnnotation, ...prev]);
+
         return newAnnotation;
       } catch (err) {
         const error =
@@ -207,8 +209,18 @@ export function AnnotationProvider({
     ): Promise<Annotation> => {
       try {
         const updated = await apiUpdateAnnotation(id, input);
-        // Real-time subscription will update state
-// Optimistically update state immediately for better UX        setAnnotations((prev) => {          const index = prev.findIndex((a) => a.id === id);          if (index > -1) {            const newAnnotations = [...prev];            newAnnotations[index] = updated;            return newAnnotations;          }          return prev;        });
+
+        // Update state with response data
+        setAnnotations((prev) => {
+          const index = prev.findIndex((a) => a.id === id);
+          if (index > -1) {
+            const newAnnotations = [...prev];
+            newAnnotations[index] = updated;
+            return newAnnotations;
+          }
+          return prev;
+        });
+
         return updated;
       } catch (err) {
         const error =
@@ -226,7 +238,8 @@ export function AnnotationProvider({
   const deleteAnnotation = useCallback(async (id: number): Promise<void> => {
     try {
       await apiDeleteAnnotation(id);
-      // Optimistically remove from state
+
+      // Update state after successful deletion
       setAnnotations((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       const error =
