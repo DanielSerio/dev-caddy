@@ -122,7 +122,9 @@ function DevCaddyContent({
               onAnnotationSelect={setViewingAnnotation}
             />
           )}
-          {uiMode === "developer" && <AnnotationManager />}
+          {uiMode === "developer" && (
+            <AnnotationManager onAnnotationSelect={setViewingAnnotation} />
+          )}
         </div>
       </CaddyWindow>
 

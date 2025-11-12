@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useAnnotations } from '../Core/context';
 import { getStatusName } from '../Core/lib/status';
 import { ANNOTATION_STATUS } from '../../types/annotations';
+import { AnnotationDetail } from './AnnotationDetail';
 import type { Annotation } from '../../types/annotations';
 
 /**
@@ -13,28 +14,34 @@ interface FilterOptions {
 }
 
 /**
+ * Props for AnnotationManager component
+ */
+interface AnnotationManagerProps {
+  /** Callback when an annotation is selected for viewing */
+  onAnnotationSelect?: (annotation: Annotation | null) => void;
+}
+
+/**
  * Annotation manager component for developer mode
  *
  * Displays all annotations with advanced features:
  * - View all annotations (not filtered by user)
  * - Filter by status and author
- * - Resolve, edit, and delete any annotation
- * - See full annotation details
+ * - Click annotation to view details and perform actions
+ * - See full annotation details with status control
  *
  * @example
  * <AnnotationManager />
  */
-export function AnnotationManager() {
-  const { annotations, updateAnnotation, deleteAnnotation, loading, error } =
-    useAnnotations();
+export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps) {
+  const { annotations, loading, error } = useAnnotations();
 
   const [filters, setFilters] = useState<FilterOptions>({
     status: 'all',
     author: '',
   });
 
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editContent, setEditContent] = useState('');
+  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null);
 
   /**
    * Filter annotations based on current filters
@@ -58,6 +65,22 @@ export function AnnotationManager() {
   }, [annotations, filters]);
 
   /**
+   * Handle selecting an annotation to view details
+   */
+  const handleSelectAnnotation = (annotation: Annotation) => {
+    setSelectedAnnotation(annotation);
+    onAnnotationSelect?.(annotation);
+  };
+
+  /**
+   * Handle navigating back from detail view
+   */
+  const handleBack = () => {
+    setSelectedAnnotation(null);
+    onAnnotationSelect?.(null);
+  };
+
+  /**
    * Format date for display
    */
   const formatDate = (isoString: string): string => {
@@ -65,60 +88,15 @@ export function AnnotationManager() {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
-  /**
-   * Handle status change
-   */
-  const handleStatusChange = async (id: number, statusId: number) => {
-    try {
-      await updateAnnotation(id, { status_id: statusId });
-    } catch (err) {
-      console.error('Failed to update status:', err);
-    }
-  };
-
-  /**
-   * Handle delete
-   */
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this annotation?')) {
-      return;
-    }
-
-    try {
-      await deleteAnnotation(id);
-    } catch (err) {
-      console.error('Failed to delete annotation:', err);
-    }
-  };
-
-  /**
-   * Start editing annotation content
-   */
-  const startEdit = (annotation: Annotation) => {
-    setEditingId(annotation.id);
-    setEditContent(annotation.content);
-  };
-
-  /**
-   * Save edited content
-   */
-  const saveEdit = async (id: number) => {
-    try {
-      await updateAnnotation(id, { content: editContent });
-      setEditingId(null);
-      setEditContent('');
-    } catch (err) {
-      console.error('Failed to update content:', err);
-    }
-  };
-
-  /**
-   * Cancel editing
-   */
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditContent('');
-  };
+  // Show detail view if annotation is selected
+  if (selectedAnnotation) {
+    return (
+      <AnnotationDetail
+        annotation={selectedAnnotation}
+        onBack={handleBack}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -192,6 +170,8 @@ export function AnnotationManager() {
               className={`annotation-item status-${getStatusName(
                 annotation.status_id
               )}`}
+              onClick={() => handleSelectAnnotation(annotation)}
+              data-testid="annotation-list-item"
             >
               <div className="annotation-header">
                 <span className="annotation-element">
@@ -199,37 +179,21 @@ export function AnnotationManager() {
                   {annotation.element_id && `#${annotation.element_id}`}
                   {annotation.element_role && ` [${annotation.element_role}]`}
                 </span>
-                <select
-                  value={annotation.status_id}
-                  onChange={(e) =>
-                    handleStatusChange(annotation.id, Number(e.target.value))
-                  }
+                <span
                   className={`annotation-status status-${getStatusName(annotation.status_id)}`}
                 >
-                  <option value={ANNOTATION_STATUS.NEW}>New</option>
-                  <option value={ANNOTATION_STATUS.IN_PROGRESS}>In Progress</option>
-                  <option value={ANNOTATION_STATUS.IN_REVIEW}>In Review</option>
-                  <option value={ANNOTATION_STATUS.HOLD}>Hold</option>
-                  <option value={ANNOTATION_STATUS.RESOLVED}>Resolved</option>
-                </select>
+                  {getStatusName(annotation.status_id)}
+                </span>
               </div>
 
               <div className="annotation-content">
-                {editingId === annotation.id ? (
-                  <textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    rows={3}
-                  />
-                ) : (
-                  <p>{annotation.content}</p>
-                )}
+                <p>{annotation.content}</p>
               </div>
 
               <div className="annotation-meta">
                 <span className="annotation-author">By: {annotation.created_by}</span>
                 <span className="annotation-date">
-                  Created: {formatDate(annotation.created_at)}
+                  {formatDate(annotation.created_at)}
                 </span>
                 {annotation.updated_at !== annotation.created_at && (
                   <span className="annotation-updated">
@@ -240,37 +204,6 @@ export function AnnotationManager() {
                   <span className="annotation-resolved">
                     Resolved: {formatDate(annotation.resolved_at)}
                   </span>
-                )}
-              </div>
-
-              <div className="annotation-actions">
-                {editingId === annotation.id ? (
-                  <>
-                    <button
-                      onClick={() => saveEdit(annotation.id)}
-                      className="btn-save"
-                    >
-                      Save
-                    </button>
-                    <button onClick={cancelEdit} className="btn-cancel">
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => startEdit(annotation)}
-                      className="btn-edit"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(annotation.id)}
-                      className="btn-delete"
-                    >
-                      Delete
-                    </button>
-                  </>
                 )}
               </div>
             </div>
