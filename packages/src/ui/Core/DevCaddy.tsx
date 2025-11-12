@@ -34,8 +34,9 @@ function DevCaddyContent({
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(null);
 
-  // Get user ID from authenticated session
+  // Get user ID and email from authenticated session
   const currentUserId = user?.id || "";
+  const currentUserEmail = user?.email || null;
 
   /**
    * Handle annotation submission
@@ -59,6 +60,7 @@ function DevCaddyContent({
         content,
         status_id: ANNOTATION_STATUS.NEW,
         created_by: currentUserId,
+        created_by_email: currentUserEmail,
       };
 
       await addAnnotation(input);

@@ -155,7 +155,9 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
         <div className="detail-section">
           <label className="detail-label">Author</label>
           <div className="detail-value">
-            <span className="detail-author">{annotation.created_by}</span>
+            <span className="detail-author">
+              {annotation.created_by_email || annotation.created_by}
+            </span>
           </div>
         </div>
 

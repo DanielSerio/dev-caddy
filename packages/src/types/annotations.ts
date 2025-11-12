@@ -71,6 +71,8 @@ export interface Annotation {
   status_id: number;
   /** User identifier who created the annotation (from JWT auth.uid()) */
   created_by: string;
+  /** Email address of the user who created the annotation (for display purposes) */
+  created_by_email: string | null;
   /** ISO 8601 timestamp when annotation was created */
   created_at: string;
   /** User identifier who last updated the annotation (from JWT auth.uid()) */

@@ -30,18 +30,19 @@ function findElement(annotation: Annotation): Element | null {
   if (annotation.compressed_element_tree) {
     try {
       // Convert compressed tree to querySelector syntax
+      // e.g., "body>DIV[0]>P[1]" -> "body > div:nth-child(1) > p:nth-child(2)"
       const selector = annotation.compressed_element_tree
         .split('>')
         .map(segment => {
-          const match = segment.match(/^([A-Z]+)\[(\d+)\]$/);
+          const match = segment.match(/^([A-Za-z]+)\[(\d+)\]$/);
           if (match) {
             const tag = match[1].toLowerCase();
-            const index = parseInt(match[2], 10) + 1;
+            const index = parseInt(match[2], 10) + 1; // nth-child is 1-based
             return `${tag}:nth-child(${index})`;
           }
           return segment.toLowerCase();
         })
-        .join('>');
+        .join(' > ');
 
       const el = document.querySelector(selector);
       if (el) return el;

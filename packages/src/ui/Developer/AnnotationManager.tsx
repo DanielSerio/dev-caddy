@@ -239,7 +239,7 @@ export function AnnotationManager({
 
               <div className="annotation-meta">
                 <span className="annotation-author">
-                  By: {annotation.created_by}
+                  By: {annotation.created_by_email || annotation.created_by}
                 </span>
                 <span className="annotation-date">
                   {formatDate(annotation.created_at)}
