@@ -40,6 +40,25 @@ export function useElementSelector() {
     setSelectedElement(null);
   }, []);
 
+  /**
+   * Add highlighted border to selected element while creating/editing annotation
+   */
+  useEffect(() => {
+    if (!selectedElement) {
+      return;
+    }
+
+    // Add highlight to selected element
+    selectedElement.style.outline = '3px solid var(--dc-primary, #6633ff)';
+    selectedElement.style.outlineOffset = '2px';
+
+    // Cleanup: remove highlight when selection changes or clears
+    return () => {
+      selectedElement.style.outline = '';
+      selectedElement.style.outlineOffset = '';
+    };
+  }, [selectedElement]);
+
   useEffect(() => {
     if (mode !== 'selecting') {
       return;
@@ -91,7 +110,7 @@ export function useElementSelector() {
       event.preventDefault();
       event.stopPropagation();
 
-      // Remove outline from selected element
+      // Remove outline from hovered element
       if (hoveredElement) {
         hoveredElement.style.outline = '';
         hoveredElement.style.outlineOffset = '';
