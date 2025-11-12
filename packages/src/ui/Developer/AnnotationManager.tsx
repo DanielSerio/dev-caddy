@@ -1,16 +1,17 @@
-import { useState, useMemo } from 'react';
-import { useAnnotations } from '../Core/context';
-import { getStatusName } from '../Core/lib/status';
-import { ANNOTATION_STATUS } from '../../types/annotations';
-import { AnnotationDetail } from './AnnotationDetail';
-import { sanitizeContent } from '../Core/utility/sanitize';
-import type { Annotation } from '../../types/annotations';
+import { useState, useMemo } from "react";
+import { useAnnotations } from "../Core/context";
+import { getStatusName } from "../Core/lib/status";
+import { ANNOTATION_STATUS } from "../../types/annotations";
+import { AnnotationDetail } from "./AnnotationDetail";
+import { sanitizeContent } from "../Core/utility/sanitize";
+import type { Annotation } from "../../types/annotations";
+import { Skeleton } from "../Core";
 
 /**
  * Filter options for annotations
  */
 interface FilterOptions {
-  status: number | 'all';
+  status: number | "all";
   author: string;
 }
 
@@ -34,15 +35,18 @@ interface AnnotationManagerProps {
  * @example
  * <AnnotationManager />
  */
-export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps) {
+export function AnnotationManager({
+  onAnnotationSelect,
+}: AnnotationManagerProps) {
   const { annotations, loading, error } = useAnnotations();
 
   const [filters, setFilters] = useState<FilterOptions>({
-    status: 'all',
-    author: '',
+    status: "all",
+    author: "",
   });
 
-  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null);
+  const [selectedAnnotation, setSelectedAnnotation] =
+    useState<Annotation | null>(null);
 
   /**
    * Filter annotations based on current filters
@@ -51,7 +55,7 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
     let filtered = [...annotations];
 
     // Filter by status
-    if (filters.status !== 'all') {
+    if (filters.status !== "all") {
       filtered = filtered.filter((a) => a.status_id === filters.status);
     }
 
@@ -86,23 +90,26 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
    */
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
   // Show detail view if annotation is selected
   if (selectedAnnotation) {
     return (
-      <AnnotationDetail
-        annotation={selectedAnnotation}
-        onBack={handleBack}
-      />
+      <AnnotationDetail annotation={selectedAnnotation} onBack={handleBack} />
     );
   }
 
   if (loading) {
     return (
       <div className="dev-caddy-annotation-manager" data-dev-caddy>
-        <p>Loading annotations...</p>
+        <Skeleton variant="text" />
+
+        <div className="annotation-items">
+          <Skeleton variant="rectangular" height="100px" />
+          <Skeleton variant="rectangular" height="100px" />
+          <Skeleton variant="rectangular" height="100px" />
+        </div>
       </div>
     );
   }
@@ -118,7 +125,9 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
   return (
     <div className="dev-caddy-annotation-manager" data-dev-caddy>
       <div className="manager-header">
-        <h3>All Annotations ({filteredAnnotations.length}/{annotations.length})</h3>
+        <h3>
+          All Annotations ({filteredAnnotations.length}/{annotations.length})
+        </h3>
 
         <div className="manager-filters">
           <div className="filter-group">
@@ -129,7 +138,8 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
               onChange={(e) =>
                 setFilters({
                   ...filters,
-                  status: e.target.value === 'all' ? 'all' : Number(e.target.value),
+                  status:
+                    e.target.value === "all" ? "all" : Number(e.target.value),
                 })
               }
             >
@@ -160,8 +170,8 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
       {filteredAnnotations.length === 0 ? (
         <p className="empty-state">
           {annotations.length === 0
-            ? 'No annotations yet.'
-            : 'No annotations match the current filters.'}
+            ? "No annotations yet."
+            : "No annotations match the current filters."}
         </p>
       ) : (
         <div className="annotation-items">
@@ -181,7 +191,9 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
                   {annotation.element_role && ` [${annotation.element_role}]`}
                 </span>
                 <span
-                  className={`annotation-status status-${getStatusName(annotation.status_id)}`}
+                  className={`annotation-status status-${getStatusName(
+                    annotation.status_id
+                  )}`}
                 >
                   {getStatusName(annotation.status_id)}
                 </span>
@@ -192,7 +204,9 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
               </div>
 
               <div className="annotation-meta">
-                <span className="annotation-author">By: {annotation.created_by}</span>
+                <span className="annotation-author">
+                  By: {annotation.created_by}
+                </span>
                 <span className="annotation-date">
                   {formatDate(annotation.created_at)}
                 </span>

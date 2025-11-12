@@ -74,7 +74,7 @@
 
     &.status-in_review,
     &.status-in-review {
-      border-left: 3px solid var(--dc-accent-light);
+      border-left: 3px solid var(--dc-success);
     }
 
     &.status-hold {
@@ -82,7 +82,7 @@
     }
 
     &.status-resolved {
-      border-left: 3px solid var(--dc-success);
+      border-left: 3px solid var(--dc-secondary);
       opacity: 0.7;
     }
   }
@@ -123,8 +123,8 @@
 
     &.status-in_review,
     &.status-in-review {
-      background-color: var(--dc-accent-light);
-      color: white;
+      background-color: var(--dc-success);
+      color: black;
     }
 
     &.status-hold {
@@ -133,8 +133,8 @@
     }
 
     &.status-resolved {
-      background-color: var(--dc-success);
-      color: white;
+      background-color: var(--dc-secondary);
+      color: black;
     }
   }
 
@@ -283,7 +283,6 @@
     }
   }
 }
-
 
 // Annotation detail view
 .dev-caddy-annotation-detail {
@@ -461,7 +460,8 @@
 }
 
 @keyframes pulse-highlight {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
   }
   50% {

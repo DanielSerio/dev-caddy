@@ -82,8 +82,10 @@ export function AnnotationList({
     return (
       <div className="dev-caddy-annotation-list">
         <Skeleton variant="text" />
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
+
+        <Skeleton variant="rectangular" height="100px" />
+        <Skeleton variant="rectangular" height="100px" />
+        <Skeleton variant="rectangular" height="100px" />
       </div>
     );
   }

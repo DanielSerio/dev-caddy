@@ -8,28 +8,6 @@
   display: inline-flex;
 }
 
-.dcaddy-badge {
-  border: 1px solid;
-  border-radius: 200px;
-  padding: 0.25ch 1ch;
-
-  &.red {
-    color: var(--dc-danger);
-  }
-
-  &.orange {
-    color: var(--dc-accent);
-  }
-
-  &.green {
-    color: var(--dc-success);
-  }
-
-  &.blue {
-    color: var(--dc-primary);
-  }
-}
-
 .dev-caddy-annotation-badge {
   width: 24px;
   height: 24px;
@@ -67,7 +45,7 @@
 
   &.status-in_review,
   &.status-in-review {
-    background-color: var(--dc-accent-light);
+    background-color: var(--dc-success);
   }
 
   &.status-hold {
@@ -75,7 +53,15 @@
   }
 
   &.status-resolved {
-    background-color: var(--dc-success);
+    background-color: var(--dc-secondary);
     opacity: 0.7;
+  }
+
+  &.status-in_review,
+  &.status-in-review,
+  &.status-resolved {
+    .badge-count {
+      color: black;
+    }
   }
 }
