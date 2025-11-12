@@ -81,11 +81,32 @@ export function AnnotationList({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-list">
-        <Skeleton variant="text" />
+        {/* Title skeleton matching "My Annotations (X)" */}
+        <Skeleton variant="text" width="60%" height="24px" />
 
-        <Skeleton variant="rectangular" height="100px" />
-        <Skeleton variant="rectangular" height="100px" />
-        <Skeleton variant="rectangular" height="100px" />
+        <div className="annotation-items">
+          {/* Skeleton for 3 annotation items */}
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="annotation-item">
+              {/* Header with element tag and status badge */}
+              <div className="annotation-header">
+                <Skeleton variant="text" width="40%" height="16px" />
+                <Skeleton variant="text" width="20%" height="20px" />
+              </div>
+
+              {/* Content text */}
+              <div className="annotation-content">
+                <Skeleton variant="text" width="90%" height="14px" />
+                <Skeleton variant="text" width="75%" height="14px" />
+              </div>
+
+              {/* Meta information (date) */}
+              <div className="annotation-meta">
+                <Skeleton variant="text" width="35%" height="12px" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

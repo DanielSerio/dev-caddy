@@ -103,12 +103,46 @@ export function AnnotationManager({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-manager" data-dev-caddy>
-        <Skeleton variant="text" />
+        <div className="manager-header">
+          {/* Title skeleton matching "All Annotations (X/Y)" */}
+          <Skeleton variant="text" width="60%" height="24px" />
+
+          {/* Filter controls skeleton */}
+          <div className="manager-filters">
+            <div className="filter-group">
+              <Skeleton variant="text" width="50px" height="16px" />
+              <Skeleton variant="rectangular" width="120px" height="32px" />
+            </div>
+            <div className="filter-group">
+              <Skeleton variant="text" width="50px" height="16px" />
+              <Skeleton variant="rectangular" width="150px" height="32px" />
+            </div>
+          </div>
+        </div>
 
         <div className="annotation-items">
-          <Skeleton variant="rectangular" height="100px" />
-          <Skeleton variant="rectangular" height="100px" />
-          <Skeleton variant="rectangular" height="100px" />
+          {/* Skeleton for 3 annotation items */}
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="annotation-item">
+              {/* Header with element tag and status badge */}
+              <div className="annotation-header">
+                <Skeleton variant="text" width="45%" height="16px" />
+                <Skeleton variant="text" width="22%" height="20px" />
+              </div>
+
+              {/* Content text */}
+              <div className="annotation-content">
+                <Skeleton variant="text" width="90%" height="14px" />
+                <Skeleton variant="text" width="75%" height="14px" />
+              </div>
+
+              {/* Meta information (author, dates) */}
+              <div className="annotation-meta">
+                <Skeleton variant="text" width="30%" height="12px" />
+                <Skeleton variant="text" width="40%" height="12px" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
