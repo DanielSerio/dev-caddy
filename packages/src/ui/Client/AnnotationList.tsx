@@ -1,5 +1,5 @@
-import { useAnnotations } from '../context';
-import { getStatusName } from '../lib/status';
+import { useAnnotations } from '../Core/context';
+import { getStatusName } from '../Core/lib/status';
 import { ANNOTATION_STATUS } from '../../types/annotations';
 
 /**

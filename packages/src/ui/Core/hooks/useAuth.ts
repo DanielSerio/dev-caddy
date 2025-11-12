@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSupabaseClient } from '../../client/api/init';
+import { getSupabaseClient } from '../../../client/api/init';
 import type { Session, User } from '@supabase/supabase-js';
 
 /**

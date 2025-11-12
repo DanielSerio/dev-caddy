@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { WindowCorner } from "../../types";
+import type { WindowCorner } from "../../../types";
 
 export function getCornerStyles(
   element: "window" | "toggle",

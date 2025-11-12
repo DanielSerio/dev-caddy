@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:scss": "sass ./src/ui/styles/output/dev-caddy.scss:./dist/dev-caddy.css",
+    "build:scss": "sass ./src/ui/Core/styles/output/dev-caddy.scss:./dist/dev-caddy.css",
     "build": "tsc -b && npm run build:scss && vite build",
     "prepublishOnly": "npm run build",
     "lint": "eslint .",

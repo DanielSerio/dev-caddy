@@ -7,6 +7,8 @@ import {
   type SetStateAction,
 } from "react";
 import type { WindowCorner } from "../../types";
+import { AnnotationIcon } from "./icons/AnnotationIcon";
+import { CloseIcon } from "./icons/CloseIcon";
 
 interface ModeToggleProps
   extends Omit<
@@ -52,8 +54,13 @@ function ModeToggleComponent(
       data-testid="devcaddy-toggle"
       aria-label={isActive ? "Close DevCaddy" : "Open DevCaddy"}
       aria-expanded={isActive}
+      title="DevCaddy Annotations"
     >
-      {isActive ? "✖" : "𖦏"}
+      {isActive ? (
+        <CloseIcon className="toggle-icon" />
+      ) : (
+        <AnnotationIcon className="toggle-icon" />
+      )}
     </button>
   );
 }

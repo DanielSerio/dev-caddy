@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { sendMagicLink } from '../hooks/useAuth';
+import { sendMagicLink } from './hooks/useAuth';
 
 /**
  * Props for AuthPrompt component

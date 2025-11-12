@@ -12,12 +12,12 @@ import {
   deleteAnnotation as apiDeleteAnnotation,
   getAnnotationsByPage,
   subscribeToAnnotations,
-} from '../../client';
+} from '../../../client';
 import type {
   Annotation,
   CreateAnnotationInput,
   UpdateAnnotationInput,
-} from '../../types/annotations';
+} from '../../../types/annotations';
 
 /**
  * Annotation context interface

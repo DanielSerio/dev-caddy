@@ -2,18 +2,18 @@ import { useMemo, useState } from "react";
 import type { DevCaddyMode, DevCaddyProps } from "../../types";
 import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
-import { getCornerStyles } from "../utility";
-import { AnnotationProvider, useAnnotations } from "../context";
+import { getCornerStyles } from "./utility";
+import { AnnotationProvider, useAnnotations } from "./context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
-import { AnnotationPopover } from "../components/AnnotationPopover";
-import { AuthPrompt } from "../components/AuthPrompt";
-import { ModeSwitcher } from "../components/ModeSwitcher";
-import { useElementSelector, useAuth } from "../hooks";
-import { getElementSelectors } from "../lib/selector/get-element-selectors";
+import { AnnotationPopover } from "./AnnotationPopover";
+import { AuthPrompt } from "./AuthPrompt";
+import { ModeSwitcher } from "./ModeSwitcher";
+import { useElementSelector, useAuth } from "./hooks";
+import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
 import type { CreateAnnotationInput } from "../../types/annotations";
-import "../styles/output/dev-caddy.scss";
+import "./styles/output/dev-caddy.scss";
 
 type DevCaddyWindow = Window & { __DEV_CADDY_UI_MODE__: DevCaddyMode };
 
