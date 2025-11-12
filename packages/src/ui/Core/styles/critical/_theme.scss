@@ -37,6 +37,12 @@
   accent-color: var(--dc-primary-highlight);
   color: var(--dc-text);
 
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   .caddy-window {
     background-color: var(--dc-background);
   }

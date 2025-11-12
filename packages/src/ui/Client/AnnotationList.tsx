@@ -67,7 +67,7 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
 
   if (loading) {
     return (
-      <div className="dev-caddy-annotation-list" data-dev-caddy>
+      <div className="dev-caddy-annotation-list">
         <Skeleton variant="text" />
         <Skeleton variant="text" />
         <Skeleton variant="text" />
@@ -77,7 +77,7 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
 
   if (error) {
     return (
-      <div className="dev-caddy-annotation-list" data-dev-caddy>
+      <div className="dev-caddy-annotation-list">
         <p className="error">Error: {error.message}</p>
       </div>
     );
@@ -85,7 +85,7 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
 
   if (userAnnotations.length === 0) {
     return (
-      <div className="dev-caddy-annotation-list" data-dev-caddy>
+      <div className="dev-caddy-annotation-list">
         <p className="empty-state">
           No annotations yet. Click "Add Annotation" to create your first one.
         </p>
@@ -94,7 +94,7 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
   }
 
   return (
-    <div className="dev-caddy-annotation-list" data-dev-caddy>
+    <div className="dev-caddy-annotation-list">
       <h3>My Annotations ({userAnnotations.length})</h3>
       <div className="annotation-items">
         {userAnnotations.map((annotation) => (

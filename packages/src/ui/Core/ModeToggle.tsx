@@ -50,7 +50,6 @@ function ModeToggleComponent(
         onToggle((v) => !v);
         onClick?.(ev);
       }}
-      data-dev-caddy
       data-testid="devcaddy-toggle"
       aria-label={isActive ? "Close DevCaddy" : "Open DevCaddy"}
       aria-expanded={isActive}

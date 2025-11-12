@@ -74,7 +74,6 @@ function DevCaddyContent({
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
         <div
           className="caddy-content"
-          data-dev-caddy
           data-testid="devcaddy-panel"
         >
           <div className="auth-loading" data-testid="auth-loading">

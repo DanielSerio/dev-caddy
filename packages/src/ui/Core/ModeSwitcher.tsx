@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type { DevCaddyMode } from '../../types';
+import { useState, useEffect } from "react";
+import type { DevCaddyMode } from "../../types";
 
 /**
  * Mode switcher component for development
@@ -27,12 +27,12 @@ export function ModeSwitcher() {
   /**
    * Switch to a different mode
    */
-  const switchMode = (newMode: 'client' | 'developer') => {
+  const switchMode = (newMode: "client" | "developer") => {
     if (newMode === currentMode) return;
 
     // Update URL with query parameter
     const url = new URL(window.location.href);
-    url.searchParams.set('devCaddyMode', newMode);
+    url.searchParams.set("devCaddyMode", newMode);
 
     // Reload page with new mode
     window.location.href = url.toString();
@@ -44,24 +44,24 @@ export function ModeSwitcher() {
   }
 
   return (
-    <div className="dev-caddy-mode-switcher" data-dev-caddy>
+    <div className="dev-caddy-mode-switcher">
       <div className="mode-switcher-label">
         <span className="dev-badge">DEV</span>
         Current: <strong>{currentMode}</strong>
       </div>
       <div className="mode-switcher-buttons">
         <button
-          onClick={() => switchMode('client')}
-          disabled={currentMode === 'client'}
-          className={`btn-mode ${currentMode === 'client' ? 'active' : ''}`}
+          onClick={() => switchMode("client")}
+          disabled={currentMode === "client"}
+          className={`btn-mode ${currentMode === "client" ? "active" : ""}`}
           title="Switch to client/reviewer mode"
         >
           Client
         </button>
         <button
-          onClick={() => switchMode('developer')}
-          disabled={currentMode === 'developer'}
-          className={`btn-mode ${currentMode === 'developer' ? 'active' : ''}`}
+          onClick={() => switchMode("developer")}
+          disabled={currentMode === "developer"}
+          className={`btn-mode ${currentMode === "developer" ? "active" : ""}`}
           title="Switch to developer mode"
         >
           Developer

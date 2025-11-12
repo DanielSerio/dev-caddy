@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { sendMagicLink } from './hooks/useAuth';
+import { useState } from "react";
+import { sendMagicLink } from "./hooks/useAuth";
 
 /**
  * Props for AuthPrompt component
@@ -26,7 +26,7 @@ interface AuthPromptProps {
  * ```
  */
 export function AuthPrompt({ onDismiss }: AuthPromptProps) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -38,8 +38,8 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
     e.preventDefault();
 
     // Validate email
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address');
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -50,11 +50,11 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
       await sendMagicLink(email);
       setEmailSent(true);
     } catch (err) {
-      console.error('[DevCaddy] Failed to send magic link:', err);
+      console.error("[DevCaddy] Failed to send magic link:", err);
       setError(
         err instanceof Error
           ? err.message
-          : 'Failed to send magic link. Please try again.'
+          : "Failed to send magic link. Please try again."
       );
       setLoading(false);
     }
@@ -70,17 +70,21 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
   };
 
   return (
-    <div className="dev-caddy-auth-prompt-overlay" data-dev-caddy data-testid="auth-prompt-overlay">
-      <div className="dev-caddy-auth-prompt" data-dev-caddy data-testid="auth-prompt">
+    <div
+      className="dev-caddy-auth-prompt-overlay"
+      data-dev-caddy
+      data-testid="auth-prompt-overlay"
+    >
+      <div className="dev-caddy-auth-prompt" data-testid="auth-prompt">
         {!emailSent ? (
           <>
-            <div className="auth-prompt-header" data-dev-caddy>
+            <div className="auth-prompt-header">
               <h2>Sign in to DevCaddy</h2>
               <p>Enter your email to receive a magic link</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="auth-prompt-form" data-dev-caddy>
-              <div className="form-group" data-dev-caddy>
+            <form onSubmit={handleSubmit} className="auth-prompt-form">
+              <div className="form-group">
                 <label htmlFor="auth-email">Email Address</label>
                 <input
                   id="auth-email"
@@ -95,20 +99,16 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
                 />
               </div>
 
-              {error && (
-                <div className="auth-prompt-error" data-dev-caddy>
-                  {error}
-                </div>
-              )}
+              {error && <div className="auth-prompt-error">{error}</div>}
 
-              <div className="auth-prompt-actions" data-dev-caddy>
+              <div className="auth-prompt-actions">
                 <button
                   type="submit"
                   disabled={loading}
                   className="btn-primary"
                   data-testid="send-magic-link"
                 >
-                  {loading ? 'Sending...' : 'Send Magic Link'}
+                  {loading ? "Sending..." : "Send Magic Link"}
                 </button>
                 {onDismiss && (
                   <button
@@ -124,7 +124,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
               </div>
             </form>
 
-            <div className="auth-prompt-info" data-dev-caddy>
+            <div className="auth-prompt-info">
               <p>
                 <strong>Note:</strong> Your team lead must have added your email
                 to the DevCaddy users in Supabase.
@@ -133,8 +133,8 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
           </>
         ) : (
           <>
-            <div className="auth-prompt-success" data-dev-caddy data-testid="auth-success">
-              <div className="success-icon" data-dev-caddy>✓</div>
+            <div className="auth-prompt-success" data-testid="auth-success">
+              <div className="success-icon">✓</div>
               <h2>Check Your Email</h2>
               <p>
                 We've sent a magic link to <strong>{email}</strong>
@@ -145,7 +145,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
               </p>
             </div>
 
-            <div className="auth-prompt-actions" data-dev-caddy>
+            <div className="auth-prompt-actions">
               {onDismiss && (
                 <button
                   type="button"
@@ -158,15 +158,15 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
               )}
             </div>
 
-            <div className="auth-prompt-info" data-dev-caddy>
+            <div className="auth-prompt-info">
               <p>
-                <strong>Didn't receive the email?</strong> Check your spam folder
-                or{' '}
+                <strong>Didn't receive the email?</strong> Check your spam
+                folder or{" "}
                 <button
                   type="button"
                   onClick={() => {
                     setEmailSent(false);
-                    setEmail('');
+                    setEmail("");
                   }}
                   className="link-button"
                 >
