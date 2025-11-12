@@ -1,6 +1,7 @@
-import { useAnnotations } from '../Core/context';
-import { getStatusName } from '../Core/lib/status';
-import { ANNOTATION_STATUS } from '../../types/annotations';
+import { useAnnotations } from "../Core/context";
+import { getStatusName } from "../Core/lib/status";
+import { ANNOTATION_STATUS } from "../../types/annotations";
+import { Skeleton } from "../Core";
 
 /**
  * Props for AnnotationList component
@@ -37,7 +38,7 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
     try {
       await updateAnnotation(id, { status_id: ANNOTATION_STATUS.RESOLVED });
     } catch (err) {
-      console.error('Failed to resolve annotation:', err);
+      console.error("Failed to resolve annotation:", err);
     }
   };
 
@@ -45,14 +46,14 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
    * Handle deleting annotation
    */
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this annotation?')) {
+    if (!confirm("Are you sure you want to delete this annotation?")) {
       return;
     }
 
     try {
       await deleteAnnotation(id);
     } catch (err) {
-      console.error('Failed to delete annotation:', err);
+      console.error("Failed to delete annotation:", err);
     }
   };
 
@@ -61,13 +62,15 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
    */
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
   if (loading) {
     return (
       <div className="dev-caddy-annotation-list" data-dev-caddy>
-        <p>Loading annotations...</p>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
       </div>
     );
   }
@@ -106,7 +109,11 @@ export function AnnotationList({ currentUserId }: AnnotationListProps) {
                 {annotation.element_tag}
                 {annotation.element_id && `#${annotation.element_id}`}
               </span>
-              <span className={`annotation-status status-${getStatusName(annotation.status_id)}`}>
+              <span
+                className={`annotation-status status-${getStatusName(
+                  annotation.status_id
+                )}`}
+              >
                 {getStatusName(annotation.status_id)}
               </span>
             </div>

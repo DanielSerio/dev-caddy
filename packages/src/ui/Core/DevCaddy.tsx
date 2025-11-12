@@ -14,6 +14,7 @@ import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
 import type { CreateAnnotationInput } from "../../types/annotations";
 import "./styles/output/dev-caddy.scss";
+import { Skeleton } from "./Skeleton";
 
 type DevCaddyWindow = Window & { __DEV_CADDY_UI_MODE__: DevCaddyMode };
 
@@ -33,7 +34,7 @@ function DevCaddyContent({
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   // Get user ID from authenticated session
-  const currentUserId = user?.id || '';
+  const currentUserId = user?.id || "";
 
   /**
    * Handle annotation submission
@@ -62,8 +63,8 @@ function DevCaddyContent({
       await addAnnotation(input);
       clearSelection();
     } catch (err) {
-      console.error('Failed to create annotation:', err);
-      alert('Failed to create annotation. Please try again.');
+      console.error("Failed to create annotation:", err);
+      alert("Failed to create annotation. Please try again.");
     }
   };
 
@@ -71,9 +72,14 @@ function DevCaddyContent({
   if (authLoading) {
     return (
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
-        <div className="caddy-content" data-dev-caddy data-testid="devcaddy-panel">
-          <div className="auth-loading" data-dev-caddy data-testid="auth-loading">
-            <p>Checking authentication...</p>
+        <div
+          className="caddy-content"
+          data-dev-caddy
+          data-testid="devcaddy-panel"
+        >
+          <div className="auth-loading" data-testid="auth-loading">
+            {/* <p>Checking authentication...</p> */}
+            <Skeleton />
           </div>
         </div>
       </CaddyWindow>
@@ -88,28 +94,28 @@ function DevCaddyContent({
   return (
     <>
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
-        <div className="caddy-content" data-dev-caddy data-testid="devcaddy-panel">
+        <div className="caddy-content" data-testid="devcaddy-panel">
           <ModeSwitcher />
 
-          <div className="caddy-toolbar" data-dev-caddy data-testid="devcaddy-toolbar">
+          <div className="caddy-toolbar" data-testid="devcaddy-toolbar">
             <button
               onClick={() =>
-                setMode(mode === 'selecting' ? 'idle' : 'selecting')
+                setMode(mode === "selecting" ? "idle" : "selecting")
               }
               className={`btn-add-annotation ${
-                mode === 'selecting' ? 'active' : ''
+                mode === "selecting" ? "active" : ""
               }`}
               aria-label="Add annotation to UI element"
               data-testid="add-annotation-btn"
             >
-              {mode === 'selecting' ? 'Cancel Selection' : '+ Add Annotation'}
+              {mode === "selecting" ? "Cancel Selection" : "+ Add Annotation"}
             </button>
           </div>
 
-          {uiMode === 'client' && (
+          {uiMode === "client" && (
             <AnnotationList currentUserId={currentUserId} />
           )}
-          {uiMode === 'developer' && <AnnotationManager />}
+          {uiMode === "developer" && <AnnotationManager />}
         </div>
       </CaddyWindow>
 
