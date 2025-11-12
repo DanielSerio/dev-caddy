@@ -1,6 +1,9 @@
 .dev-caddy > .caddy-window {
   border: 1px solid var(--dc-border);
   width: 320px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
 
   header,
   section {
@@ -10,9 +13,12 @@
 
   header {
     border-bottom: 1px solid var(--dc-border);
+    flex-shrink: 0;
   }
 
   section {
-    min-height: 96px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
