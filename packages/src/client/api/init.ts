@@ -4,9 +4,9 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
  * Configuration options for initializing DevCaddy
  */
 export interface DevCaddyConfig {
-  /** Supabase project URL */
+  /** Supabase project URL (e.g., https://xxx.supabase.co) */
   supabaseUrl: string;
-  /** Supabase anonymous key */
+  /** Supabase anonymous key (safe to expose client-side with RLS enabled) */
   supabaseAnonKey: string;
 }
 
@@ -22,14 +22,18 @@ let supabaseClient: SupabaseClient | null = null;
  * It creates a singleton Supabase client that will be used for all
  * database operations and realtime subscriptions.
  *
- * @param config - Configuration with Supabase URL and anonymous key
- * @throws {Error} If supabaseUrl or supabaseAnonKey is missing
+ * **Important:** You must pass configuration explicitly. Environment variables
+ * should be read in your application code, not in the library.
+ *
+ * @param config - Supabase configuration (required)
+ * @throws {Error} If supabaseUrl or supabaseAnonKey is missing or invalid
  * @throws {Error} If DevCaddy is already initialized
  *
  * @example
+ * // Read from your app's environment variables
  * initDevCaddy({
- *   supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
- *   supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY
+ *   supabaseUrl: import.meta.env.VITE_DEVCADDY_SUPABASE_URL,
+ *   supabaseAnonKey: import.meta.env.VITE_DEVCADDY_SUPABASE_ANON_KEY,
  * });
  */
 export function initDevCaddy(config: DevCaddyConfig): void {
@@ -39,28 +43,42 @@ export function initDevCaddy(config: DevCaddyConfig): void {
     );
   }
 
-  if (!config.supabaseUrl) {
+  const { supabaseUrl, supabaseAnonKey } = config;
+
+  // Validate required fields
+  if (!supabaseUrl) {
     throw new Error(
-      'DevCaddy: supabaseUrl is required. Please provide your Supabase project URL.'
+      'DevCaddy: supabaseUrl is required.\n\n' +
+        'Pass it in config: initDevCaddy({ \n' +
+        '  supabaseUrl: import.meta.env.VITE_DEVCADDY_SUPABASE_URL,\n' +
+        '  supabaseAnonKey: import.meta.env.VITE_DEVCADDY_SUPABASE_ANON_KEY \n' +
+        '})\n\n' +
+        'Get your Supabase URL from: https://supabase.com/dashboard/project/_/settings/api'
     );
   }
 
-  if (!config.supabaseAnonKey) {
+  if (!supabaseAnonKey) {
     throw new Error(
-      'DevCaddy: supabaseAnonKey is required. Please provide your Supabase anonymous key.'
+      'DevCaddy: supabaseAnonKey is required.\n\n' +
+        'Pass it in config: initDevCaddy({ \n' +
+        '  supabaseUrl: import.meta.env.VITE_DEVCADDY_SUPABASE_URL,\n' +
+        '  supabaseAnonKey: import.meta.env.VITE_DEVCADDY_SUPABASE_ANON_KEY \n' +
+        '})\n\n' +
+        'Get your anonymous key from: https://supabase.com/dashboard/project/_/settings/api'
     );
   }
 
   // Validate URL format
   try {
-    new URL(config.supabaseUrl);
+    new URL(supabaseUrl);
   } catch {
     throw new Error(
-      `DevCaddy: Invalid supabaseUrl format: "${config.supabaseUrl}". Must be a valid URL.`
+      `DevCaddy: Invalid supabaseUrl format: "${supabaseUrl}".\n` +
+        'Must be a valid URL (e.g., https://xxx.supabase.co)'
     );
   }
 
-  supabaseClient = createClient(config.supabaseUrl, config.supabaseAnonKey);
+  supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 }
 
 /**

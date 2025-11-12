@@ -2,32 +2,47 @@ import type { ConfigEnv } from "vite";
 import type { DevCaddyMode } from "../../types";
 
 /**
- * The function `getUIMode` determines the UI mode based on the configuration environment and
- * development mode.
- * @param {ConfigEnv} config - The `config` parameter is an object of type `ConfigEnv`, which likely
- * contains information about the environment configuration such as the mode (production or
- * development) and the command being executed (serve or build).
- * @param {DevCaddyMode | null} [developmentMode=null] - The `developmentMode` parameter is an optional
- * parameter of type `DevCaddyMode`. It is used to specify a specific UI mode for development purposes.
- * If a `developmentMode` is provided, the function will return this mode. Otherwise, it will determine
- * the UI mode based on the `config
- * @returns The function `getUIMode` returns either the `developmentMode` if it is provided, or
- * 'client' if the `config.mode` is 'production' and `config.command` is 'serve', or 'developer' if the
- * `config.mode` is 'development' and `config.command` is 'serve'. If none of these conditions are met,
- * it returns `null`.
+ * Determines the DevCaddy UI mode based on Vite configuration environment
+ *
+ * **Mode Detection Logic:**
+ * - `mode: 'development'` + `command: 'serve'` → **'developer'** (local development)
+ * - `mode: 'production'` + `command: 'serve'` → **'client'** (staging/preview)
+ * - All other cases → **null** (DevCaddy disabled)
+ *
+ * **Note:** DevCaddy only activates during `serve` command (dev server or preview).
+ * It never activates during `build` command to prevent accidental production inclusion.
+ *
+ * @param config - Vite configuration environment containing `mode` and `command`
+ * @returns The UI mode ('developer' | 'client') or null if DevCaddy should be disabled
+ *
+ * @example
+ * ```typescript
+ * // Local development: vite serve (mode: 'development')
+ * getUIMode({ mode: 'development', command: 'serve' }) // 'developer'
+ *
+ * // Staging preview: vite preview (mode: 'production')
+ * getUIMode({ mode: 'production', command: 'serve' }) // 'client'
+ *
+ * // Production build: vite build (mode: 'production')
+ * getUIMode({ mode: 'production', command: 'build' }) // null
+ * ```
  */
-export function getUIMode(config: ConfigEnv, developmentMode: DevCaddyMode | null = null) {
-  if (developmentMode) {
-    return developmentMode;
+export function getUIMode(config: ConfigEnv): DevCaddyMode | null {
+  // Only activate during serve command (dev or preview)
+  if (config.command !== 'serve') {
+    return null;
   }
 
-  if (config.mode === 'production' && config.command === 'serve') {
-    return 'client';
-  }
-
-  if (config.mode === 'development' && config.command === 'serve') {
+  // Developer mode: local development environment
+  if (config.mode === 'development') {
     return 'developer';
   }
 
+  // Client mode: staging/preview environment
+  if (config.mode === 'production') {
+    return 'client';
+  }
+
+  // Default: disable DevCaddy for unknown configurations
   return null;
 }

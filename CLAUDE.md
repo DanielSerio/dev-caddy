@@ -192,7 +192,7 @@ export default defineConfig((context) => ({
     react(),
     DevCaddyPlugin({
       context,
-      enabled: process.env.VITE_DEV_CADDY_ENABLED === 'true',
+      enabled: process.env.VITE_DEVCADDY_ENABLED !== 'false', // enabled by default
     })
   ],
 }));

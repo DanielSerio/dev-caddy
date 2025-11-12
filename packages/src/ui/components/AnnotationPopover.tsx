@@ -115,6 +115,7 @@ export function AnnotationPopover({
     <div
       className="dev-caddy-popover"
       data-dev-caddy
+      data-testid="annotation-popover"
       role="dialog"
       aria-label="Create annotation"
       style={{
@@ -132,6 +133,7 @@ export function AnnotationPopover({
             onClick={handleCancel}
             className="btn-close"
             aria-label="Close"
+            data-testid="close-popover"
           >
             ×
           </button>
@@ -151,6 +153,7 @@ export function AnnotationPopover({
             rows={4}
             className="annotation-textarea"
             aria-required="true"
+            data-testid="annotation-content"
           />
           <p className="hint">
             Press Enter to submit, Shift+Enter for new line, Esc to cancel
@@ -162,6 +165,7 @@ export function AnnotationPopover({
             type="button"
             onClick={handleCancel}
             className="btn-cancel"
+            data-testid="cancel-annotation"
           >
             Cancel
           </button>
@@ -169,6 +173,7 @@ export function AnnotationPopover({
             type="submit"
             className="btn-submit"
             disabled={!content.trim()}
+            data-testid="submit-annotation"
           >
             Submit
           </button>

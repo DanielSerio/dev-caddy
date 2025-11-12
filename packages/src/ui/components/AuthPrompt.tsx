@@ -70,8 +70,8 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
   };
 
   return (
-    <div className="dev-caddy-auth-prompt-overlay" data-dev-caddy>
-      <div className="dev-caddy-auth-prompt" data-dev-caddy>
+    <div className="dev-caddy-auth-prompt-overlay" data-dev-caddy data-testid="auth-prompt-overlay">
+      <div className="dev-caddy-auth-prompt" data-dev-caddy data-testid="auth-prompt">
         {!emailSent ? (
           <>
             <div className="auth-prompt-header" data-dev-caddy>
@@ -91,6 +91,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
                   disabled={loading}
                   autoFocus
                   required
+                  data-testid="email-input"
                 />
               </div>
 
@@ -105,6 +106,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
                   type="submit"
                   disabled={loading}
                   className="btn-primary"
+                  data-testid="send-magic-link"
                 >
                   {loading ? 'Sending...' : 'Send Magic Link'}
                 </button>
@@ -114,6 +116,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
                     onClick={handleClose}
                     disabled={loading}
                     className="btn-secondary"
+                    data-testid="cancel-auth"
                   >
                     Cancel
                   </button>
@@ -130,7 +133,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
           </>
         ) : (
           <>
-            <div className="auth-prompt-success" data-dev-caddy>
+            <div className="auth-prompt-success" data-dev-caddy data-testid="auth-success">
               <div className="success-icon" data-dev-caddy>✓</div>
               <h2>Check Your Email</h2>
               <p>
@@ -148,6 +151,7 @@ export function AuthPrompt({ onDismiss }: AuthPromptProps) {
                   type="button"
                   onClick={handleClose}
                   className="btn-secondary"
+                  data-testid="close-auth"
                 >
                   Close
                 </button>

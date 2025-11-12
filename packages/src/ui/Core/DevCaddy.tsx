@@ -71,8 +71,8 @@ function DevCaddyContent({
   if (authLoading) {
     return (
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
-        <div className="caddy-content" data-dev-caddy>
-          <div className="auth-loading" data-dev-caddy>
+        <div className="caddy-content" data-dev-caddy data-testid="devcaddy-panel">
+          <div className="auth-loading" data-dev-caddy data-testid="auth-loading">
             <p>Checking authentication...</p>
           </div>
         </div>
@@ -88,10 +88,10 @@ function DevCaddyContent({
   return (
     <>
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
-        <div className="caddy-content" data-dev-caddy>
+        <div className="caddy-content" data-dev-caddy data-testid="devcaddy-panel">
           <ModeSwitcher />
 
-          <div className="caddy-toolbar" data-dev-caddy>
+          <div className="caddy-toolbar" data-dev-caddy data-testid="devcaddy-toolbar">
             <button
               onClick={() =>
                 setMode(mode === 'selecting' ? 'idle' : 'selecting')
@@ -100,6 +100,7 @@ function DevCaddyContent({
                 mode === 'selecting' ? 'active' : ''
               }`}
               aria-label="Add annotation to UI element"
+              data-testid="add-annotation-btn"
             >
               {mode === 'selecting' ? 'Cancel Selection' : '+ Add Annotation'}
             </button>
@@ -141,7 +142,7 @@ export function DevCaddy({
   const windowStyles = getCornerStyles("window", corner, offset);
 
   return (
-    <div className="dev-caddy" data-dev-caddy>
+    <div className="dev-caddy" data-dev-caddy data-testid="devcaddy-root">
       <ModeToggle
         isActive={devCaddyIsActive}
         onToggle={setDevCaddyIsActive}

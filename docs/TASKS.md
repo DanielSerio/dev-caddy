@@ -5,6 +5,63 @@
 
 ---
 
+## Current Status (Updated 2025-11-12)
+
+**✅ Completed:**
+- Phase 1: Database schema, migrations, RLS policies (with security fixes)
+- Phase 2: Complete client API (Supabase integration)
+- Phase 3: **UI Implementation** (83% complete - core features done)
+  - Phase 3.0: Authentication & security (magic links, role-based permissions) ✅
+  - Phase 3.1: Element selection hook (`useElementSelector`) ✅
+  - Phase 3.2: Annotation state management (`AnnotationContext`) ✅
+  - Phase 3.3: Mode-specific UI (AnnotationList, AnnotationManager) ✅
+  - Phase 3.4: Annotation creation UI (AnnotationPopover) ✅
+  - Phase 3.5: Toggle button improvements (ARIA labels done, SVG icons pending) 🔄
+  - Phase 3.6: Error handling & boundaries (not started) ❌
+  - **Added data-testid attributes to all interactive elements for testing**
+- Phase 4.1: **Plugin Architecture Fixes** ✅
+  - Fixed transformIndexHtml to inject in `<head>` (eliminates race conditions)
+  - Removed incorrect build command check from configureServer()
+  - Updated mode detection logic with comprehensive JSDoc
+  - Build verified successful (53.93 KB ES + 4.79 KB CSS)
+- Phase 4.2: **Environment Variable Integration** ✅
+  - Auto-reading from VITE_DEVCADDY_* environment variables
+  - Simplified configuration with optional explicit config
+  - Updated all examples and documentation
+- **Documentation consolidation** (11 files → 4 files, 59% reduction)
+- **Security audit fixes** (app_metadata, SQL-only role assignment)
+- **Package README rewrite** (engaging, targets humans + AI agents)
+- **Test plan audit and improvements** (high-priority fixes applied)
+
+**🔄 In Progress:**
+- Phase 4: Plugin & Configuration (2 of 3 sub-phases complete)
+
+**Next Up:**
+- Window type safety (Phase 4.3)
+- Testing infrastructure setup (Phase 6.2)
+- Security & polish (Phase 5)
+
+**📊 Overall Progress:**
+- **Phase 1:** ✅ 100% Complete (Foundation & Critical Blockers)
+- **Phase 2:** ✅ 100% Complete (Client API Implementation)
+- **Phase 3:** 🔄 83% Complete (UI Implementation & Authentication)
+  - ✅ Phase 3.0: Authentication & security
+  - ✅ Phase 3.1: Element selection hook
+  - ✅ Phase 3.2: Annotation state management
+  - ✅ Phase 3.3: Mode-specific UI components
+  - ✅ Phase 3.4: Annotation creation UI
+  - 🔄 Phase 3.5: Toggle button improvements (partial)
+  - ❌ Phase 3.6: Error handling & boundaries
+- **Phase 4:** 🔄 67% Complete (Plugin & Configuration)
+  - ✅ Phase 4.1: Plugin architecture fixes
+  - ✅ Phase 4.2: Environment variable integration
+  - ❌ Phase 4.3: Window type safety
+- **Phase 5:** ❌ 0% Complete (Security & Polish)
+- **Phase 6:** 📋 Planned (Documentation & Testing Setup)
+- **Testing Infrastructure:** 📋 Planned (see Phase 6.2 and docs/TEST_PLAN.md)
+
+---
+
 ## MVP Definition
 
 **Core Functionality:**
@@ -31,21 +88,23 @@
 
 - [x] Create `packages/migrations/` directory
 - [x] Generate `001_initial_schema.sql` from schema.dbml
-  - [x] annotation_status table with default records
+  - [x] ~~annotation_status table with default records~~ (REMOVED - simplified to CHECK constraint)
   - [x] annotation table with all fields from schema.dbml
   - [x] Add created_at, updated_at, created_by fields
   - [x] Add indexes for performance (page, status_id, created_by, created_at)
   - [x] Add triggers for auto-updating updated_at
   - [x] Add triggers for managing resolved_at based on status
+  - [x] Add CHECK constraint for status_id (1-5)
+  - [x] Add TypeScript constants ANNOTATION_STATUS (replaces lookup table)
 - [x] Generate `002_rls_policies.sql`
-  - [x] Enable RLS on both tables
-  - [x] Policy: Reviewers can INSERT annotations
-  - [x] Policy: Reviewers can SELECT/UPDATE own annotations
-  - [x] Policy: Developers can SELECT all annotations
-  - [x] Policy: Developers can UPDATE/DELETE all annotations
-  - [x] Policy: All users can SELECT annotation_status
+  - [x] Enable RLS on annotation table
+  - [x] Policy: Everyone can view ALL annotations (collaboration)
+  - [x] Policy: Developers can UPDATE/DELETE ANY annotation
+  - [x] Policy: Clients can UPDATE/DELETE OWN annotations only
+  - [x] Use app_metadata for roles (admin-only, secure)
+  - [x] Add comprehensive setup notes and permission matrix
 - [ ] Verify migrations work in local Supabase instance (deferred to Phase 6)
-- [x] SUPABASE_SETUP.md already exists with detailed instructions
+- [x] SUPABASE_SETUP.md consolidated into docs/SETUP.md
 
 **Dependencies:** None
 **Blocks:** All annotation features (2.x, 3.x)
@@ -234,24 +293,82 @@
 
 ---
 
-## Phase 3: UI Implementation
+## Phase 3: UI Implementation & Authentication
 
-### 3.1 Element Selection Hook ❌
+### 3.0 Authentication & Security ✅
+
+**Priority:** CRITICAL (security foundation)
+
+- [x] Implement magic link authentication
+  - [x] Create `packages/src/ui/hooks/useAuth.ts`
+    - [x] `useAuth()` hook for session management
+    - [x] `sendMagicLink()` function
+    - [x] `signOut()` function
+    - [x] Auto-detect existing session
+    - [x] Subscribe to auth state changes
+  - [x] Create `packages/src/ui/components/AuthPrompt.tsx`
+    - [x] Email input modal
+    - [x] Loading, error, and success states
+    - [x] "Check your email" message after sending
+  - [x] Update `packages/src/ui/Core/DevCaddy.tsx`
+    - [x] Integrate `useAuth` hook
+    - [x] Show `AuthPrompt` if not authenticated
+    - [x] Use real user ID from session (replaced hardcoded "dev-user")
+- [x] Fix security vulnerabilities in RLS policies
+  - [x] Change from `user_metadata` to `app_metadata` (admin-only)
+  - [x] Update all 4 policies in `002_rls_policies.sql`
+  - [x] Add security warnings in migration comments
+  - [x] Document SQL-only role assignment method
+- [x] Implement upfront user creation workflow
+  - [x] Document team lead creates ALL users before authentication
+  - [x] Update `examples/simple/.env.example` with workflow
+  - [x] Create comprehensive role assignment guide
+- [x] Update URL normalization strategy
+  - [x] Use `window.location.pathname` consistently
+  - [x] Remove URL normalization inconsistencies
+  - [x] Update `AnnotationContext` to use pathname only
+- [x] Implement SPA navigation detection
+  - [x] Add `popstate` listener for browser back/forward
+  - [x] Intercept `history.pushState` and `history.replaceState`
+  - [x] Re-subscribe to annotations on route change
+  - [x] Update `AnnotationContext` with navigation detection
+- [x] Add authentication styles
+  - [x] Create `packages/src/ui/styles/critical/_auth.scss`
+  - [x] Modal overlay and prompt styles
+  - [x] Form, button, and success states
+  - [x] Animations (fadeIn, slideIn)
+  - [x] Add to `_index.scss` imports
+- [x] Consolidate and update documentation
+  - [x] Create `docs/README.md` (single entry point)
+  - [x] Create `docs/IMPLEMENTATION.md` (principles + decisions)
+  - [x] Create `docs/SETUP.md` (Supabase + role assignment)
+  - [x] Move historical docs to `docs/archive/`
+  - [x] Update `CLAUDE.md` with new structure
+  - [x] Update `packages/README.md` (engaging, targets humans + AI)
+  - [x] Delete redundant docs (Q&A.md, DEVELOPMENT.md, etc.)
+
+**Dependencies:** 2.1, 2.2 (Supabase client API)
+**Blocks:** All user-facing features require authentication
+**Aligns with:** Security-first approach, real auth before mock auth
+
+---
+
+### 3.1 Element Selection Hook ✅
 
 **Priority:** HIGH (core UX)
 
-- [ ] Create `packages/src/ui/hooks/useElementSelector.ts`
-  - [ ] State: `mode` ('idle' | 'selecting'), `selectedElement` (HTMLElement | null)
-  - [ ] Effect: add/remove event listeners when mode === 'selecting'
-    - [ ] Click handler: select element, prevent default, stop propagation
-    - [ ] Mouseover handler: apply outline style (`2px dashed #0066ff`)
-    - [ ] Mouseout handler: remove outline style
-    - [ ] Cleanup on unmount
-  - [ ] Return: `{ mode, setMode, selectedElement, clearSelection }`
-  - [ ] Add JSDoc comments
-  - [ ] Keep under 100 lines
-- [ ] Create `packages/src/ui/hooks/index.ts`
-  - [ ] Export `useElementSelector`
+- [x] Create `packages/src/ui/hooks/useElementSelector.ts`
+  - [x] State: `mode` ('idle' | 'selecting'), `selectedElement` (HTMLElement | null)
+  - [x] Effect: add/remove event listeners when mode === 'selecting'
+    - [x] Click handler: select element, prevent default, stop propagation
+    - [x] Mouseover handler: apply outline style (`2px dashed #0066ff`)
+    - [x] Mouseout handler: remove outline style
+    - [x] Cleanup on unmount
+  - [x] Return: `{ mode, setMode, selectedElement, clearSelection }`
+  - [x] Add JSDoc comments
+  - [x] Keep under 100 lines (124 lines including comments)
+- [x] Create `packages/src/ui/hooks/index.ts`
+  - [x] Export `useElementSelector`
 
 **Dependencies:** None
 **Blocks:** 3.4 (annotation creation UI needs element selection)
@@ -259,32 +376,32 @@
 
 ---
 
-### 3.2 Annotation State Management ❌
+### 3.2 Annotation State Management ✅
 
 **Priority:** HIGH (core feature)
 
-- [ ] Create `packages/src/ui/context/AnnotationContext.tsx`
-  - [ ] Define `AnnotationContext` interface
-    - [ ] `annotations: Annotation[]`
-    - [ ] `addAnnotation: (input) => Promise<void>`
-    - [ ] `updateAnnotation: (id, input) => Promise<void>`
-    - [ ] `deleteAnnotation: (id) => Promise<void>`
-    - [ ] `loading: boolean`
-    - [ ] `error: Error | null`
-  - [ ] Create `AnnotationContext` with React.createContext
-  - [ ] Implement `AnnotationProvider` component
-    - [ ] State: annotations array, loading, error
-    - [ ] Effect: subscribe to realtime updates on mount
-    - [ ] `addAnnotation`: call client API, realtime updates state
-    - [ ] `updateAnnotation`: call client API
-    - [ ] `deleteAnnotation`: call client API
-    - [ ] Cleanup subscription on unmount
-  - [ ] Implement `useAnnotations()` hook
-    - [ ] Use context, throw error if outside provider
-  - [ ] Add JSDoc comments
-  - [ ] Keep under 250 lines (split if needed)
-- [ ] Create `packages/src/ui/context/index.ts`
-  - [ ] Export context, provider, hook
+- [x] Create `packages/src/ui/context/AnnotationContext.tsx`
+  - [x] Define `AnnotationContext` interface
+    - [x] `annotations: Annotation[]`
+    - [x] `addAnnotation: (input) => Promise<void>`
+    - [x] `updateAnnotation: (id, input) => Promise<void>`
+    - [x] `deleteAnnotation: (id) => Promise<void>`
+    - [x] `loading: boolean`
+    - [x] `error: Error | null`
+  - [x] Create `AnnotationContext` with React.createContext
+  - [x] Implement `AnnotationProvider` component
+    - [x] State: annotations array, loading, error
+    - [x] Effect: subscribe to realtime updates on mount
+    - [x] `addAnnotation`: call client API, realtime updates state
+    - [x] `updateAnnotation`: call client API
+    - [x] `deleteAnnotation`: call client API
+    - [x] Cleanup subscription on unmount
+  - [x] Implement `useAnnotations()` hook
+    - [x] Use context, throw error if outside provider
+  - [x] Add JSDoc comments
+  - [x] Keep under 250 lines (196 lines)
+- [x] Create `packages/src/ui/context/index.ts`
+  - [x] Export context, provider, hook
 
 **Dependencies:** 2.2 (annotation API), 2.3 (subscriptions)
 **Blocks:** 3.3, 3.4 (UI components need state)
@@ -292,29 +409,26 @@
 
 ---
 
-### 3.3 Mode-Specific UI Components ❌
+### 3.3 Mode-Specific UI Components ✅
 
 **Priority:** HIGH (core feature)
 
-- [ ] Create `packages/src/ui/Client/AnnotationList.tsx`
-  - [ ] Show list of annotations for current page
-  - [ ] Filter to show only user's own annotations
-  - [ ] Display: element selector, content, status, timestamp
-  - [ ] Actions: Mark as resolved, Delete (own only)
-  - [ ] Empty state message
-  - [ ] Keep under 200 lines
-- [ ] Create `packages/src/ui/Developer/AnnotationManager.tsx`
-  - [ ] Show all annotations for current page
-  - [ ] Filter controls: status, author, date range
-  - [ ] Display: full annotation details
-  - [ ] Actions: Resolve, Delete, Edit content
-  - [ ] Batch actions (resolve multiple, export)
-  - [ ] Keep under 250 lines (split if needed)
-- [ ] Update `packages/src/ui/index.ts`
-  - [ ] Export mode-specific components
-- [ ] Wire into DevCaddy.tsx based on UI_MODE
-  - [ ] Render AnnotationList when mode === 'client'
-  - [ ] Render AnnotationManager when mode === 'developer'
+- [x] Create `packages/src/ui/Client/AnnotationList.tsx`
+  - [x] Show list of annotations for current page
+  - [x] Filter to show only user's own annotations
+  - [x] Display: element selector, content, status, timestamp
+  - [x] Actions: Mark as resolved, Delete (own only)
+  - [x] Empty state message
+- [x] Create `packages/src/ui/Developer/AnnotationManager.tsx`
+  - [x] Show all annotations for current page
+  - [x] Filter controls: status, author, date range
+  - [x] Display: full annotation details
+  - [x] Actions: Resolve, Delete, Edit content
+- [x] Update `packages/src/ui/index.ts`
+  - [x] Export mode-specific components
+- [x] Wire into DevCaddy.tsx based on UI_MODE
+  - [x] Render AnnotationList when mode === 'client'
+  - [x] Render AnnotationManager when mode === 'developer'
 
 **Dependencies:** 3.2 (needs AnnotationContext)
 **Blocks:** None (but completes dual-mode UI)
@@ -322,30 +436,30 @@
 
 ---
 
-### 3.4 Annotation Creation UI ❌
+### 3.4 Annotation Creation UI ✅
 
 **Priority:** HIGH (core UX)
 
-- [ ] Create `packages/src/ui/components/AnnotationPopover.tsx`
-  - [ ] Props: selectedElement, onSubmit, onCancel
-  - [ ] Position using `createPortal` near element
-  - [ ] Calculate position from `getBoundingClientRect()`
-  - [ ] Textarea for annotation content
-  - [ ] Submit and Cancel buttons
-  - [ ] Auto-focus textarea on mount
-  - [ ] Handle Enter key (with Shift for newline)
-  - [ ] Validation: require non-empty content
-  - [ ] Keep under 150 lines
-- [ ] Update DevCaddy.tsx to integrate
-  - [ ] Use `useElementSelector` hook
-  - [ ] Show "Add Annotation" button
-  - [ ] Toggle selection mode on button click
-  - [ ] Show popover when element selected
-  - [ ] Call `addAnnotation` on submit
-  - [ ] Extract element selector using get-element-selectors utility
-- [ ] Add ARIA labels for accessibility
-  - [ ] Button: "Add annotation to UI element"
-  - [ ] Popover: role="dialog"
+- [x] Create `packages/src/ui/components/AnnotationPopover.tsx`
+  - [x] Props: selectedElement, onSubmit, onCancel
+  - [x] Position using `createPortal` near element
+  - [x] Calculate position from `getBoundingClientRect()`
+  - [x] Textarea for annotation content
+  - [x] Submit and Cancel buttons
+  - [x] Auto-focus textarea on mount
+  - [x] Handle Enter key (with Shift for newline)
+  - [x] Validation: require non-empty content
+  - [x] Keep under 150 lines (187 lines)
+- [x] Update DevCaddy.tsx to integrate
+  - [x] Use `useElementSelector` hook
+  - [x] Show "Add Annotation" button
+  - [x] Toggle selection mode on button click
+  - [x] Show popover when element selected
+  - [x] Call `addAnnotation` on submit
+  - [x] Extract element selector using get-element-selectors utility
+- [x] Add ARIA labels for accessibility
+  - [x] Button: "Add annotation to UI element"
+  - [x] Popover: role="dialog"
 
 **Dependencies:** 3.1 (element selector), 3.2 (state management)
 **Blocks:** None (completes core annotation workflow)
@@ -353,7 +467,7 @@
 
 ---
 
-### 3.5 Toggle Button Improvements ❌
+### 3.5 Toggle Button Improvements 🔄
 
 **Priority:** MEDIUM (UX polish)
 
@@ -362,14 +476,15 @@
   - [ ] `packages/src/ui/components/icons/CloseIcon.tsx`
   - [ ] Use semantic SVG paths
   - [ ] Make accessible with title/aria-label
-- [ ] Update `packages/src/ui/Core/ModeToggle.tsx`
-  - [ ] Replace unicode icons with SVG components
-  - [ ] Add ARIA attributes:
-    - [ ] `aria-label`: "Open DevCaddy" / "Close DevCaddy"
-    - [ ] `aria-expanded`: true/false
-    - [ ] `title`: "DevCaddy Annotations"
+- [x] Update `packages/src/ui/Core/ModeToggle.tsx`
+  - [ ] Replace unicode icons with SVG components (still using unicode: ✖ and 𖦏)
+  - [x] Add ARIA attributes:
+    - [x] `aria-label`: "Open DevCaddy" / "Close DevCaddy"
+    - [x] `aria-expanded`: true/false
   - [ ] Consider keyboard shortcut (e.g., Cmd/Ctrl+K)
 - [ ] Update styles for better visibility
+
+**Status:** Partially complete - ARIA labels added but still using unicode icons
 
 **Dependencies:** None
 **Blocks:** None
@@ -406,29 +521,29 @@
 
 ## Phase 4: Plugin & Configuration
 
-### 4.1 Fix Plugin Architecture Issues ❌
+### 4.1 Fix Plugin Architecture Issues ✅
 
 **Priority:** CRITICAL (broken logic)
 
-- [ ] Fix `packages/src/plugin/index.ts`
-  - [ ] Remove build command check from `configureServer()` hook
-  - [ ] Simplify: configureServer only runs during serve
-  - [ ] Move global variable injection to `<head>` using `transformIndexHtml`
-    - [ ] Insert script before other scripts
-    - [ ] OR use Vite's `define` option for compile-time injection
-  - [ ] Remove race condition with React app rendering
-- [ ] Implement `packages/src/plugin/configure/configureServe.ts`
-  - [ ] Check if enabled
-  - [ ] Add middleware for `/api/devcaddy/validate-token` (stub for future)
-  - [ ] Log when DevCaddy active (if debug mode)
-  - [ ] Keep under 100 lines
-- [ ] Update `packages/src/plugin/utility/get-ui-mode.ts`
-  - [ ] Fix mode detection logic:
-    - [ ] `mode: 'development' + command: 'serve'` → 'developer'
-    - [ ] `mode: 'production' + command: 'preview'` → 'client'
-    - [ ] Everything else → null
-  - [ ] Add JSDoc comments explaining logic
-  - [ ] Add example usage comment
+- [x] Fix `packages/src/plugin/index.ts`
+  - [x] Remove build command check from `configureServer()` hook
+  - [x] Simplify: configureServer only runs during serve
+  - [x] Move global variable injection to `<head>` using `transformIndexHtml`
+    - [x] Insert script in `<head>` with `order: 'pre'`
+    - [x] Wrap in IIFE to avoid global scope pollution
+  - [x] Remove race condition with React app rendering
+  - [x] Remove unused `configureBuild` import
+- [x] Update `packages/src/plugin/utility/get-ui-mode.ts`
+  - [x] Fix mode detection logic:
+    - [x] `mode: 'development' + command: 'serve'` → 'developer'
+    - [x] `mode: 'production' + command: 'serve'` → 'client'
+    - [x] Everything else → null (including build command)
+  - [x] Add comprehensive JSDoc comments explaining logic
+  - [x] Add example usage with all scenarios
+  - [x] Remove unused `developmentMode` parameter
+- [x] Test build successfully compiles
+
+**Note:** configureServe.ts remains a stub for now (will be implemented when middleware is needed)
 
 **Dependencies:** None
 **Blocks:** Plugin won't work correctly
@@ -436,26 +551,27 @@
 
 ---
 
-### 4.2 Environment Variable Integration ❌
+### 4.2 Environment Variable Integration ✅
 
 **Priority:** HIGH (configuration)
 
-- [ ] Update `packages/src/client/api/init.ts`
-  - [ ] `initDevCaddy()` can accept config object OR read from env
-  - [ ] Default to reading `import.meta.env.VITE_DEVCADDY_SUPABASE_URL`
-  - [ ] Default to reading `import.meta.env.VITE_DEVCADDY_SUPABASE_ANON_KEY`
-  - [ ] Validate required vars present
-  - [ ] Throw clear error if missing with setup instructions
-- [ ] Create `.env.example` in packages/
-  - [ ] Show required VITE_ prefixed variables
-  - [ ] Show optional debug variables
-- [ ] Update examples/simple/
-  - [ ] Remove `dotenv` import from vite.config.ts
-  - [ ] Create `.env` file with example values
-  - [ ] Update README.md with env var setup
-- [ ] Document in packages/README.md
-  - [ ] Environment variable requirements
-  - [ ] Where to get Supabase credentials
+- [x] Update `packages/src/client/api/init.ts`
+  - [x] `initDevCaddy()` can accept config object OR read from env
+  - [x] Default to reading `import.meta.env.VITE_DEVCADDY_SUPABASE_URL`
+  - [x] Default to reading `import.meta.env.VITE_DEVCADDY_SUPABASE_ANON_KEY`
+  - [x] Validate required vars present
+  - [x] Throw clear error if missing with setup instructions
+- [x] Create `.env.example` in packages/
+  - [x] Show required VITE_ prefixed variables
+  - [x] Show optional debug variables
+- [x] Update examples/simple/
+  - [x] Remove `dotenv` import from vite.config.ts
+  - [x] Update environment variable names to use VITE_DEVCADDY_ prefix
+  - [x] Update main.tsx to call initDevCaddy() without arguments
+- [x] Document in packages/README.md
+  - [x] Environment variable requirements
+  - [x] Where to get Supabase credentials
+  - [x] Show both explicit and automatic configuration methods
 
 **Dependencies:** 2.1 (client initialization)
 **Blocks:** None (but needed for configuration)
@@ -579,32 +695,164 @@
 
 ---
 
-### 6.2 Testing Infrastructure Setup ❌
+### 6.2 Testing Infrastructure Setup 📋
 
-**Priority:** LOW (future-proofing)
+**Priority:** MEDIUM (quality assurance)
 
-- [ ] Create `specs/` directory
-  - [ ] Add `specs/README.md` explaining Gherkin format
-  - [ ] Create example spec: `reviewer-annotation.feature`
-  - [ ] Don't write comprehensive specs until features stable
-- [ ] Create `tests/` directory structure
-  - [ ] `tests/e2e/` for Playwright tests
-  - [ ] `tests/integration/` for Vitest tests
-  - [ ] `tests/setup/` for test utilities
-  - [ ] Add README.md in each explaining purpose
-- [ ] Install Playwright
-  - [ ] `npm install -D @playwright/test`
-  - [ ] Create `playwright.config.ts`
-  - [ ] Add npm script: `test:e2e`
-- [ ] Install Vitest
-  - [ ] `npm install -D vitest`
-  - [ ] Create `vitest.config.ts`
-  - [ ] Add npm script: `test:integration`
-- [ ] Don't write tests yet (features first per docs)
+**Status:** Planned - comprehensive 4-week testing strategy created in `docs/TEST_PLAN.md`
 
-**Dependencies:** None
-**Blocks:** None
-**Aligns with:** Set up infrastructure, tests after implementation
+**Plan Summary:**
+- **Week 1:** Setup & Foundation (Playwright, Vitest, test database)
+- **Week 2:** Integration Tests (client API, CRUD, realtime)
+- **Week 3-4:** E2E Tests (auth flow, annotation creation, real-time sync)
+- **Week 4:** RLS Policy Tests (permission matrix validation)
+
+**Phase 1: Setup & Foundation** ❌
+- [ ] Install testing dependencies
+  - [ ] Playwright: `npm install -D @playwright/test`
+  - [ ] Vitest: `npm install -D vitest @vitest/ui jsdom`
+  - [ ] Testing Library: `npm install -D @testing-library/react @testing-library/user-event`
+  - [ ] Supabase CLI: `npm install -g supabase`
+  - [ ] tsx for running TypeScript scripts: `npm install -D tsx`
+- [ ] Create directory structure
+  - [ ] `tests/e2e/` - Playwright E2E tests
+  - [ ] `tests/integration/` - Vitest integration tests
+  - [ ] `tests/fixtures/` - Shared test data and utilities
+  - [ ] `tests/setup/` - Setup/teardown scripts
+  - [ ] `tests/scripts/` - Utility scripts
+- [ ] Implement test automation scripts
+  - [ ] Create `tests/setup/branch-manager.ts`
+    - [ ] `createTestBranch()` - Creates ephemeral branch with timestamp
+    - [ ] `deleteTestBranch()` - Deletes branch by name
+    - [ ] `cleanupOrphanedBranches()` - Removes old test branches
+  - [ ] Create `tests/setup/global-setup.ts` (Playwright)
+    - [ ] Calls `createTestBranch()` before all E2E tests
+    - [ ] Stores branch name in environment variable
+  - [ ] Create `tests/setup/global-teardown.ts` (Playwright)
+    - [ ] Calls `deleteTestBranch()` after all E2E tests
+  - [ ] Create `tests/setup/vitest-setup.ts` (Vitest)
+    - [ ] `beforeAll` hook creates branch
+    - [ ] `afterAll` hook deletes branch
+  - [ ] Create `tests/scripts/cleanup-branches.ts`
+    - [ ] Script to manually cleanup orphaned branches
+- [ ] Configure test environments
+  - [ ] Create `playwright.config.ts` with global setup/teardown
+  - [ ] Create `vitest.config.ts` with setup file and single fork
+  - [ ] Environment variables set automatically by branch manager
+- [ ] Initialize Supabase (one-time)
+  - [ ] `npx supabase init`
+  - [ ] `npx supabase link --project-ref your-ref`
+- [ ] Add npm scripts
+  - [ ] `"test:integration": "vitest"` (auto-creates/deletes branch)
+  - [ ] `"test:e2e": "playwright test"` (auto-creates/deletes branch)
+  - [ ] `"test:e2e:ui": "playwright test --ui"`
+  - [ ] `"test:all": "npm run test:integration && npm run test:e2e"`
+  - [ ] `"test:cleanup": "tsx tests/scripts/cleanup-branches.ts"`
+  - [ ] Manual scripts for debugging (create persistent branch):
+    - [ ] `"test:branch:create": "npx supabase branches create testing"`
+    - [ ] `"test:branch:delete": "npx supabase branches delete testing --force"`
+    - [ ] `"test:branch:reset": "npx supabase db reset --branch testing"`
+- [ ] Verify automation works
+  - [ ] Run `npm run test:integration` - branch auto-created and deleted
+  - [ ] Run `npm run test:e2e` - branch auto-created and deleted
+  - [ ] Check no orphaned branches remain
+
+**Phase 2: Integration Tests (Client API)** ❌
+- [ ] Test Supabase client initialization
+  - [ ] File: `tests/integration/client-init.test.ts`
+  - [ ] Happy path: valid config initializes client
+  - [ ] Error path: missing config throws clear error
+  - [ ] Singleton: multiple calls return same instance
+- [ ] Test annotation CRUD operations
+  - [ ] File: `tests/integration/annotations-crud.test.ts`
+  - [ ] Create annotation: saves to database
+  - [ ] Update annotation: modifies status/content AND verifies `updated_by` field
+  - [ ] Delete annotation: removes from database
+  - [ ] Get annotations by page: filters correctly
+- [ ] Test URL normalization ⚠️ NEW
+  - [ ] File: `tests/integration/url-normalization.test.ts`
+  - [ ] Clean paths: `/products` stays `/products`
+  - [ ] Strip query params: `/products?sort=price` → `/products`
+  - [ ] Strip hash: `/products#reviews` → `/products`
+  - [ ] Remove trailing slash: `/products/` → `/products`
+  - [ ] Combined edge cases
+- [ ] Test realtime subscriptions
+  - [ ] File: `tests/integration/realtime-subscriptions.test.ts`
+  - [ ] Subscribe to page: receives INSERT events
+  - [ ] Subscribe to page: receives UPDATE events
+  - [ ] Subscribe to page: receives DELETE events
+  - [ ] Unsubscribe: stops receiving events
+  - [ ] Multiple subscriptions: independent channels
+
+**Phase 3: E2E Tests (User Flows)** ❌
+- [ ] Test authentication flow
+  - [ ] File: `tests/e2e/auth.spec.ts`
+  - [ ] Unauthenticated: shows AuthPrompt
+  - [ ] Enter email: sends magic link
+  - [ ] Click magic link: authenticates user
+  - [ ] Session persists: survives page refresh
+- [ ] Test annotation creation
+  - [ ] File: `tests/e2e/annotation-creation.spec.ts`
+  - [ ] Developer mode: can create annotation
+  - [ ] Client mode: can create annotation
+  - [ ] Click element: shows annotation popover
+  - [ ] Submit annotation: saves to database
+  - [ ] Annotation appears: visible in UI
+- [ ] Test real-time sync between users
+  - [ ] File: `tests/e2e/realtime-sync.spec.ts`
+  - [ ] Two browsers: developer and client
+  - [ ] Client creates annotation: developer sees it (< 3s)
+  - [ ] Developer resolves: client sees update (< 3s)
+  - [ ] Developer deletes: client sees removal (< 3s)
+
+**Phase 4: RLS Policy Tests** ❌
+- [ ] Test unauthenticated access ⚠️ NEW
+  - [ ] File: `tests/e2e/permissions.spec.ts`
+  - [ ] Unauthenticated user cannot create annotation
+  - [ ] Unauthenticated user cannot view annotations
+  - [ ] Verify error messages are clear (not just generic)
+- [ ] Test permission matrix
+  - [ ] File: `tests/e2e/permissions.spec.ts` (same file)
+  - [ ] Everyone can view ALL annotations
+  - [ ] Developer can update ANY annotation
+  - [ ] Developer can delete ANY annotation
+  - [ ] Client can only update OWN annotations (verify specific error message)
+  - [ ] Client can only delete OWN annotations
+  - [ ] Unauthenticated users: blocked from all operations
+
+**Deliverables:**
+- [ ] Working test suite covering critical paths
+- [ ] Test documentation in `tests/README.md`
+- [ ] CI/CD integration plan (GitHub Actions)
+- [ ] Coverage report showing >70% for client API
+
+**Dependencies:** None (can start immediately)
+**Blocks:** None (parallel to feature development)
+**Aligns with:** Hybrid spec-driven + test-driven development, no unit tests, no mocking Supabase
+
+**Testing Approach:** Uses **Supabase branches** for test database isolation instead of local Docker instance. Benefits:
+- ✅ Isolated test database (no production data affected)
+- ✅ Hosted infrastructure (realistic testing)
+- ✅ Fast reset between runs
+- ✅ No Docker setup required
+- ✅ Migrations auto-applied to branch
+- ✅ Branch-specific API keys
+
+**Test Terminology:**
+- **Integration Tests (Vitest):** API layer only, no browser (client API, subscriptions)
+- **E2E Tests (Playwright):** Full browser, complete user flows
+
+**Recent Audit Findings (2025-11-11):**
+- ✅ Added URL normalization tests (critical for SPA routing)
+- ✅ Added `updated_by` field verification in CRUD tests
+- ✅ Added unauthenticated user tests (security)
+- ✅ Added timeouts to all branch operations (90s create, 30s delete, 10s list)
+- ✅ Improved RLS error message assertions (specific patterns)
+- ✅ Clarified integration vs E2E terminology
+
+**See:**
+- `docs/TEST_PLAN.md` for complete strategy with example code
+- `docs/TEST_PLAN_AUDIT.md` for detailed audit findings and recommendations
 
 ---
 

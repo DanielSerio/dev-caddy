@@ -22,6 +22,7 @@ devcaddy-migrations.sql
 .env
 .env.development
 .env.local
+.env.test
 .env.production
 .env.staging
 

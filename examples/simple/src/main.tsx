@@ -5,10 +5,11 @@ import App from './App.tsx'
 import { initDevCaddy } from 'dev-caddy'
 import 'dev-caddy/dev-caddy.css'
 
-// Initialize DevCaddy with Supabase configuration
+// Initialize DevCaddy with environment variables
+// Environment variables are read in YOUR app, then passed to the library
 initDevCaddy({
-  supabaseUrl: import.meta.env.VITE_DEV_CADDY_SUPABASE_URL,
-  supabaseAnonKey: import.meta.env.VITE_DEV_CADDY_SUPABASE_ANON_KEY,
+  supabaseUrl: import.meta.env.VITE_DEVCADDY_SUPABASE_URL,
+  supabaseAnonKey: import.meta.env.VITE_DEVCADDY_SUPABASE_ANON_KEY,
 })
 
 createRoot(document.getElementById('root')!).render(
