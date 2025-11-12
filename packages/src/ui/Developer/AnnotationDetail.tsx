@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
 import { ANNOTATION_STATUS } from "../../types/annotations";
+import { sanitizeContent } from "../Core/utility/sanitize";
 import type { Annotation } from "../../types/annotations";
 
 /**
@@ -146,7 +147,7 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
                 className="detail-textarea"
               />
             ) : (
-              <p className="annotation-content">{annotation.content}</p>
+              <p className="annotation-content">{sanitizeContent(annotation.content)}</p>
             )}
           </div>
         </div>

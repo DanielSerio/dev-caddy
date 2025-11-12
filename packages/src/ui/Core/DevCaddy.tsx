@@ -18,8 +18,6 @@ import type { CreateAnnotationInput, Annotation } from "../../types/annotations"
 import "./styles/output/dev-caddy.scss";
 import { Skeleton } from "./Skeleton";
 
-type DevCaddyWindow = Window & { __DEV_CADDY_UI_MODE__: DevCaddyMode };
-
 /**
  * Inner component that has access to AnnotationProvider context
  */
@@ -150,11 +148,7 @@ export function DevCaddy({
   const [devCaddyIsActive, setDevCaddyIsActive] = useState(false);
 
   const UI_MODE = useMemo(() => {
-    if (window) {
-      return (window as unknown as DevCaddyWindow)["__DEV_CADDY_UI_MODE__"];
-    }
-
-    return null;
+    return window.__DEV_CADDY_UI_MODE__ ?? null;
   }, []);
 
   const toggleStyles = getCornerStyles("toggle", corner, offset);

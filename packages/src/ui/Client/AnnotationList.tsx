@@ -3,6 +3,7 @@ import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
 import { Skeleton } from "../Core";
 import { AnnotationDetail } from "./AnnotationDetail";
+import { sanitizeContent } from "../Core/utility/sanitize";
 import type { Annotation } from "../../types/annotations";
 
 /**
@@ -136,7 +137,7 @@ export function AnnotationList({
             </div>
 
             <div className="annotation-content">
-              <p>{annotation.content}</p>
+              <p>{sanitizeContent(annotation.content)}</p>
             </div>
 
             <div className="annotation-meta">

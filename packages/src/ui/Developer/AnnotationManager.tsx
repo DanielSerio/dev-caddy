@@ -3,6 +3,7 @@ import { useAnnotations } from '../Core/context';
 import { getStatusName } from '../Core/lib/status';
 import { ANNOTATION_STATUS } from '../../types/annotations';
 import { AnnotationDetail } from './AnnotationDetail';
+import { sanitizeContent } from '../Core/utility/sanitize';
 import type { Annotation } from '../../types/annotations';
 
 /**
@@ -187,7 +188,7 @@ export function AnnotationManager({ onAnnotationSelect }: AnnotationManagerProps
               </div>
 
               <div className="annotation-content">
-                <p>{annotation.content}</p>
+                <p>{sanitizeContent(annotation.content)}</p>
               </div>
 
               <div className="annotation-meta">
