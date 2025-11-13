@@ -44,6 +44,19 @@
   - ✅ Both components now support cross-page navigation
   - ✅ Pending annotation detection on page load
   - ✅ Build verified successful (105.94 KB ES, 74.64 KB CJS)
+- **Phase 4: UI Component Updates** ✅ 100% Complete (Project-Wide Annotations)
+  - Updated `AnnotationList` (client mode) to show ALL annotations (removed user filtering)
+  - Changed title from "My Annotations" to "All Annotations"
+  - Added page badges to `AnnotationItem` component ("Current Page" or page path)
+  - Page badges use `isCurrentPage()` helper for detection
+  - Added page filter to `AnnotationFilters` (developer mode only)
+  - Filter options: "All Pages", "Current Page", or specific page paths
+  - Updated `AnnotationManager` to support page filtering
+  - Extracts unique pages from annotations dynamically
+  - ✅ Both client and developer modes show all annotations
+  - ✅ Page badges visible on all annotation items
+  - ✅ Developer mode can filter by page/status/author
+  - ✅ Build verified successful (107.79 KB ES, 75.68 KB CJS)
 - Phase 1: Database schema, migrations, RLS policies (with security fixes)
 - Phase 2: Complete client API (Supabase integration)
 - Phase 3: **UI Implementation** ✅ 100% Complete

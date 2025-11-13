@@ -8,6 +8,7 @@ import type { Annotation } from "../../types/annotations";
 import {
   navigateToAnnotation,
   checkPendingAnnotation,
+  isCurrentPage,
 } from "../Core/utility/navigation";
 
 /**
@@ -23,12 +24,14 @@ interface AnnotationListProps {
 /**
  * Annotation list component for client (reviewer) mode
  *
- * Displays only the current user's annotations with basic actions:
- * - View annotation details (click to open detail view)
- * - Edit annotation content
+ * Displays ALL annotations across the entire project with basic actions:
+ * - View all annotation details (click to open detail view)
+ * - Navigate to annotations on different pages
+ * - Edit own annotation content
  * - Delete own annotations
  *
- * Note: Clients cannot change annotation status - only developers can do that.
+ * Note: Clients can view ALL annotations but can only edit/delete their own.
+ * Clients cannot change annotation status - only developers can do that.
  *
  * @example
  * <AnnotationList currentUserId="user-123" />
@@ -40,11 +43,6 @@ export function AnnotationList({
   const { annotations, loading, error } = useAnnotations();
   const [selectedAnnotation, setSelectedAnnotation] =
     useState<Annotation | null>(null);
-
-  // Filter to show only user's own annotations
-  const userAnnotations = annotations.filter(
-    (a) => a.created_by === currentUserId
-  );
 
   /**
    * Handle selecting an annotation to view details
@@ -150,11 +148,11 @@ export function AnnotationList({
   }
 
   // Show empty state
-  if (userAnnotations.length === 0) {
+  if (annotations.length === 0) {
     return (
       <div className="dev-caddy-annotation-list">
         <p className="empty-state">
-          No annotations yet. Click "Add Annotation" to create your first one.
+          No annotations in this project yet. Click "Add Annotation" to create the first one.
         </p>
       </div>
     );
@@ -163,9 +161,9 @@ export function AnnotationList({
   // Show list view
   return (
     <div className="dev-caddy-annotation-list">
-      <h3>My Annotations ({userAnnotations.length})</h3>
+      <h3>All Annotations ({annotations.length})</h3>
       <div className="annotation-items">
-        {userAnnotations.map((annotation) => (
+        {annotations.map((annotation) => (
           <div
             key={annotation.id}
             className={`annotation-item status-${getStatusName(
@@ -179,13 +177,22 @@ export function AnnotationList({
                 {annotation.element_tag}
                 {annotation.element_id && `#${annotation.element_id}`}
               </span>
-              <span
-                className={`annotation-status status-${getStatusName(
-                  annotation.status_id
-                )}`}
-              >
-                {getStatusName(annotation.status_id)}
-              </span>
+              <div className="annotation-badges">
+                <span
+                  className={`annotation-page-badge ${
+                    isCurrentPage(annotation) ? "current-page" : "other-page"
+                  }`}
+                >
+                  {isCurrentPage(annotation) ? "Current Page" : annotation.page}
+                </span>
+                <span
+                  className={`annotation-status status-${getStatusName(
+                    annotation.status_id
+                  )}`}
+                >
+                  {getStatusName(annotation.status_id)}
+                </span>
+              </div>
             </div>
 
             <div className="annotation-content">

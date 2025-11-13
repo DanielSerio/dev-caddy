@@ -38,16 +38,35 @@ export function AnnotationManager({
   const [filters, setFilters] = useState<FilterOptions>({
     status: "all",
     author: "",
+    page: "all",
   });
 
   const [selectedAnnotation, setSelectedAnnotation] =
     useState<Annotation | null>(null);
 
   /**
+   * Get all unique pages from annotations
+   */
+  const availablePages = useMemo(() => {
+    const pages = new Set(annotations.map((a) => a.page));
+    return Array.from(pages);
+  }, [annotations]);
+
+  /**
    * Filter annotations based on current filters
    */
   const filteredAnnotations = useMemo(() => {
     let filtered = [...annotations];
+
+    // Filter by page
+    if (filters.page !== "all") {
+      if (filters.page === "current") {
+        const currentPath = window.location.pathname;
+        filtered = filtered.filter((a) => a.page === currentPath);
+      } else {
+        filtered = filtered.filter((a) => a.page === filters.page);
+      }
+    }
 
     // Filter by status
     if (filters.status !== "all") {
@@ -177,7 +196,11 @@ export function AnnotationManager({
           All Annotations ({filteredAnnotations.length}/{annotations.length})
         </h3>
 
-        <AnnotationFilters filters={filters} onFiltersChange={setFilters} />
+        <AnnotationFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          availablePages={availablePages}
+        />
       </div>
 
       {filteredAnnotations.length === 0 ? (

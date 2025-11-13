@@ -1,5 +1,6 @@
 import { getStatusName } from "../Core/lib/status";
 import { sanitizeContent } from "../Core/utility/sanitize";
+import { isCurrentPage } from "../Core/utility/navigation";
 import type { Annotation } from "../../types/annotations";
 
 /**
@@ -50,13 +51,22 @@ export function AnnotationItem({ annotation, onClick }: AnnotationItemProps) {
           {annotation.element_id && `#${annotation.element_id}`}
           {annotation.element_role && ` [${annotation.element_role}]`}
         </span>
-        <span
-          className={`annotation-status status-${getStatusName(
-            annotation.status_id
-          )}`}
-        >
-          {getStatusName(annotation.status_id)}
-        </span>
+        <div className="annotation-badges">
+          <span
+            className={`annotation-page-badge ${
+              isCurrentPage(annotation) ? "current-page" : "other-page"
+            }`}
+          >
+            {isCurrentPage(annotation) ? "Current Page" : annotation.page}
+          </span>
+          <span
+            className={`annotation-status status-${getStatusName(
+              annotation.status_id
+            )}`}
+          >
+            {getStatusName(annotation.status_id)}
+          </span>
+        </div>
       </div>
 
       <div className="annotation-content">

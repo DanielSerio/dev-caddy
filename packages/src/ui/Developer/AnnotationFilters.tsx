@@ -6,6 +6,7 @@ import { ANNOTATION_STATUS } from "../../types/annotations";
 export interface FilterOptions {
   status: number | "all";
   author: string;
+  page: string; // "all", "current", or specific page path
 }
 
 /**
@@ -16,6 +17,8 @@ interface AnnotationFiltersProps {
   filters: FilterOptions;
   /** Callback when filters change */
   onFiltersChange: (filters: FilterOptions) => void;
+  /** All unique page paths from annotations */
+  availablePages: string[];
 }
 
 /**
@@ -33,9 +36,29 @@ interface AnnotationFiltersProps {
 export function AnnotationFilters({
   filters,
   onFiltersChange,
+  availablePages,
 }: AnnotationFiltersProps) {
   return (
     <div className="manager-filters">
+      <div className="filter-group">
+        <label htmlFor="page-filter">Page:</label>
+        <select
+          id="page-filter"
+          value={filters.page}
+          onChange={(e) =>
+            onFiltersChange({ ...filters, page: e.target.value })
+          }
+        >
+          <option value="all">All Pages</option>
+          <option value="current">Current Page</option>
+          {availablePages.sort().map((page) => (
+            <option key={page} value={page}>
+              {page}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="filter-group">
         <label htmlFor="status-filter">Status:</label>
         <select
