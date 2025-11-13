@@ -31,8 +31,9 @@
     - Updated all examples and documentation
     - Build verified successful (58.64 KB ES + 5.02 KB CSS)
   - Phase 4.3: Window type safety ✅
-- Phase 5: **Security & Polish** ✅ 75% Complete (3 of 4 sub-phases complete)
+- Phase 5: **Security & Polish** 🔄 75% Complete (3 of 4 sub-phases complete)
   - Phase 5.1: Content sanitization ✅
+  - Phase 5.2: Input validation ✅
   - Phase 5.4: Modal/popup annotation support ✅
     - Z-index defensive strategy (999995)
     - DOM mutation observer for element removal
@@ -50,9 +51,9 @@
 
 **Next Up:**
 
-- Input validation (Phase 5.2) ⚡ NEXT PRIORITY
-- Production safety guard (Phase 5.3)
+- Production safety guard (Phase 5.3) ⚡ NEXT PRIORITY (completes Phase 5)
 - Testing infrastructure setup (Phase 6.2)
+- Documentation cleanup (Phase 6.1)
 
 **📊 Overall Progress:**
 
@@ -72,7 +73,7 @@
   - ✅ Phase 4.3: Window type safety
 - **Phase 5:** 🔄 75% Complete (Security & Polish)
   - ✅ Phase 5.1: Content sanitization
-  - ❌ Phase 5.2: Input validation
+  - ✅ Phase 5.2: Input validation
   - ❌ Phase 5.3: Production safety guard
   - ✅ Phase 5.4: Modal/popup annotation support (complete with MutationObserver)
 - **Phase 6:** 📋 Planned (Documentation & Testing Setup)
@@ -651,27 +652,68 @@
 
 ---
 
-### 5.2 Input Validation ❌
+### 5.2 Input Validation ✅
 
 **Priority:** MEDIUM (stability)
 
-- [ ] Add validation utility
-  - [ ] Create `packages/src/plugin/utility/validate.ts`
-  - [ ] Function: `validatePluginOptions(options)`
-    - [ ] Check context exists and is ConfigEnv
-    - [ ] Check enabled is boolean
-    - [ ] Check debug is boolean if present
-    - [ ] Throw clear errors for invalid config
-- [ ] Use in plugin initialization
-  - [ ] Call validation before using options
-- [ ] Add form validation
-  - [ ] Annotation content: non-empty, max length
-  - [ ] Element selector: valid CSS selector format
-- [ ] Document validation rules
+**Status:** COMPLETE (2025-11-13)
+
+**Completed Implementation:**
+
+- [x] Add validation utility
+  - [x] Created `packages/src/plugin/utility/validate.ts`
+  - [x] Function: `validatePluginOptions(options)`
+    - [x] Check context exists and is ConfigEnv
+    - [x] Check enabled is boolean
+    - [x] Check debug is boolean if present
+    - [x] Throw clear errors for invalid config
+  - [x] Function: `validateAnnotationContent(content)`
+    - [x] Check non-empty after trimming whitespace
+    - [x] Check maximum length (10,000 characters)
+    - [x] Return trimmed and validated content
+  - [x] Function: `isValidSelector(selector)`
+    - [x] Validate CSS selector syntax using `document.querySelector()`
+- [x] Use in plugin initialization
+  - [x] Call validation in `DevCaddyPlugin()` before processing options
+- [x] Add form validation
+  - [x] Annotation content validation in AnnotationPopover
+  - [x] Display validation errors in UI
+  - [x] Clear errors when user starts typing
+  - [x] Red border on textarea when error present
+  - [x] ARIA attributes for accessibility (aria-invalid, aria-describedby)
+- [x] Add error styling to popover SCSS
+
+**Files Modified:**
+
+- `packages/src/plugin/utility/validate.ts` (new - 163 lines)
+- `packages/src/plugin/utility/index.ts` (export validation functions)
+- `packages/src/plugin/index.ts` (call validatePluginOptions)
+- `packages/src/ui/Core/AnnotationPopover.tsx` (form validation + error display)
+- `packages/src/ui/Core/styles/critical/_popover.scss` (error styling)
+
+**Build Output:** 104.70 KB ES module (increased from 102.25 KB due to validation code)
+
+**Validation Features:**
+
+1. **Plugin Options Validation:**
+   - Validates context object exists with mode and command properties
+   - Validates enabled is boolean
+   - Validates debug is boolean (optional)
+   - Clear error messages guide developers to fix configuration
+
+2. **Annotation Content Validation:**
+   - Non-empty check after trimming
+   - Maximum length of 10,000 characters
+   - Returns trimmed content for consistency
+   - Used in AnnotationPopover before submission
+
+3. **CSS Selector Validation:**
+   - Uses `document.querySelector()` to check validity
+   - Utility function for future use (element selector validation)
 
 **Dependencies:** None
 **Blocks:** None
-**Aligns with:** Fail fast with clear errors
+**Aligns with:** Fail fast with clear errors, better developer experience
 
 ---
 

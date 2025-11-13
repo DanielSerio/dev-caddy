@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
+import { validateAnnotationContent } from '../../plugin/utility/validate';
 
 /**
  * Props for AnnotationPopover component
@@ -35,6 +36,7 @@ export function AnnotationPopover({
 }: AnnotationPopoverProps) {
   const [content, setContent] = useState('');
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   /**
@@ -138,13 +140,20 @@ export function AnnotationPopover({
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
 
-    const trimmedContent = content.trim();
-    if (!trimmedContent) {
-      return;
-    }
+    try {
+      // Validate and trim content
+      const validatedContent = validateAnnotationContent(content);
 
-    onSubmit(trimmedContent);
-    setContent('');
+      // Clear any previous errors
+      setError(null);
+
+      // Submit and reset form
+      onSubmit(validatedContent);
+      setContent('');
+    } catch (err) {
+      // Show validation error
+      setError(err instanceof Error ? err.message : 'Invalid annotation content');
+    }
   };
 
   /**
@@ -208,14 +217,25 @@ export function AnnotationPopover({
             id="annotation-content"
             ref={textareaRef}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              setContent(e.target.value);
+              // Clear error when user starts typing
+              if (error) setError(null);
+            }}
             onKeyDown={handleKeyDown}
             placeholder="Describe the issue or feedback..."
             rows={4}
-            className="annotation-textarea"
+            className={`annotation-textarea ${error ? 'has-error' : ''}`}
             aria-required="true"
+            aria-invalid={!!error}
+            aria-describedby={error ? "annotation-error" : undefined}
             data-testid="annotation-content"
           />
+          {error && (
+            <p className="error-message" id="annotation-error" role="alert" data-testid="annotation-error">
+              {error}
+            </p>
+          )}
           <p className="hint">
             Press Enter to submit, Shift+Enter for new line, Esc to cancel
           </p>

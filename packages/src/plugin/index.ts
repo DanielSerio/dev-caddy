@@ -1,10 +1,13 @@
 import type { PluginOption } from 'vite';
 import type { DevCaddyPluginOptions } from "../types";
-import { constructedLog, getUIMode } from './utility';
+import { constructedLog, getUIMode, validatePluginOptions } from './utility';
 import { configureServe } from './configure';
 
 /** Main `DevCaddy` plugin */
 export function DevCaddyPlugin(options: DevCaddyPluginOptions): PluginOption {
+  // Validate options before proceeding
+  validatePluginOptions(options);
+
   const isEnabled = options.enabled;
   const uiMode = getUIMode(options.context);
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
 import { sanitizeContent } from "../Core/utility/sanitize";
@@ -32,6 +32,13 @@ export function AnnotationDetail({
   const { updateAnnotation, deleteAnnotation } = useAnnotations();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(annotation.content);
+
+  /**
+   * Sync local state when annotation prop changes (real-time updates)
+   */
+  useEffect(() => {
+    setEditContent(annotation.content);
+  }, [annotation.content]);
 
   /**
    * Handle saving edited content

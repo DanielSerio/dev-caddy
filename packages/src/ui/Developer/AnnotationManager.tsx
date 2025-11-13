@@ -95,8 +95,18 @@ export function AnnotationManager({
 
   // Show detail view if annotation is selected
   if (selectedAnnotation) {
+    // Find the latest version of the selected annotation from context
+    // This ensures we always show the most up-to-date data after real-time updates
+    const latestAnnotation = annotations.find(a => a.id === selectedAnnotation.id);
+
+    // If annotation was deleted, go back to list
+    if (!latestAnnotation) {
+      handleBack();
+      return null;
+    }
+
     return (
-      <AnnotationDetail annotation={selectedAnnotation} onBack={handleBack} />
+      <AnnotationDetail annotation={latestAnnotation} onBack={handleBack} />
     );
   }
 
