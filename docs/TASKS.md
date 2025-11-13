@@ -10,13 +10,30 @@
 **✅ Completed:**
 
 - **Phase 0: Pre-Implementation Refactoring** ✅ 100% Complete (Project-Wide Annotations)
-  - Created `AnnotationFilters.tsx` (60 lines) - Filter controls component
+  - Created `AnnotationFilters.tsx` (68 lines) - Filter controls component
   - Created `AnnotationItem.tsx` (86 lines) - Single annotation item component
   - Refactored `AnnotationManager.tsx` (184 lines, down from 275) - Now uses extracted components
   - ✅ All files now under 250-line limit
   - ✅ Build verified successful with no regressions
   - ✅ Updated IMPLEMENTATION.md with Decision 8 (Annotation Scoping)
   - ✅ Updated all documentation to reflect project-wide annotations
+- **Phase 1: Backend & API Changes** ✅ 100% Complete (Project-Wide Annotations)
+  - Created `getAllAnnotations()` function - Fetches all annotations project-wide
+  - Created `subscribeToAllAnnotations()` function - Project-wide realtime subscription
+  - Added `AnnotationRealtimeCallback` type - Includes eventType (INSERT/UPDATE/DELETE)
+  - Added `RealtimeEventType` type - Type-safe event discrimination
+  - ✅ All new functions exported from client API
+  - ✅ Build verified successful (105.83 KB ES, 74.61 KB CJS)
+- **Phase 2: Context & State Management** ✅ 100% Complete (Project-Wide Annotations)
+  - Updated `AnnotationContext` to use `getAllAnnotations()` instead of `getAnnotationsByPage()`
+  - Updated to use `subscribeToAllAnnotations()` for project-wide realtime updates
+  - Removed `currentPage` state tracking (no longer needed)
+  - Removed `pageUrl` prop from AnnotationProvider (loads all annotations)
+  - Removed URL change detection (popstate, pushState/replaceState interception)
+  - Updated subscription callback to handle DELETE events properly
+  - ✅ Context now loads once on mount with empty dependency array
+  - ✅ Single subscription for entire project lifetime
+  - ✅ Build verified successful (105.29 KB ES, 74.16 KB CJS) - reduced bundle size!
 - Phase 1: Database schema, migrations, RLS policies (with security fixes)
 - Phase 2: Complete client API (Supabase integration)
 - Phase 3: **UI Implementation** ✅ 100% Complete

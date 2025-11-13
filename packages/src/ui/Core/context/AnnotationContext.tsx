@@ -10,20 +10,21 @@ import {
   createAnnotation as apiCreateAnnotation,
   updateAnnotation as apiUpdateAnnotation,
   deleteAnnotation as apiDeleteAnnotation,
-  getAnnotationsByPage,
-  subscribeToAnnotations,
+  getAllAnnotations,
+  subscribeToAllAnnotations,
 } from '../../../client';
 import type {
   Annotation,
   CreateAnnotationInput,
   UpdateAnnotationInput,
 } from '../../../types/annotations';
+import type { RealtimeEventType } from '../../../client';
 
 /**
  * Annotation context interface
  */
 interface AnnotationContextValue {
-  /** All annotations for the current page */
+  /** All annotations across the entire project */
   annotations: Annotation[];
   /** Create a new annotation */
   addAnnotation: (input: CreateAnnotationInput) => Promise<Annotation>;
@@ -53,17 +54,18 @@ const AnnotationContext = createContext<AnnotationContextValue | undefined>(
 interface AnnotationProviderProps {
   /** Child components */
   children: ReactNode;
-  /** Current page pathname (defaults to window.location.pathname) */
-  pageUrl?: string;
 }
 
 /**
  * Annotation provider component
  *
- * Manages annotation state for the current page, including:
- * - Loading annotations from the database
- * - Real-time subscription to annotation changes
+ * Manages annotation state for the entire project, including:
+ * - Loading all annotations from the database
+ * - Real-time subscription to annotation changes (project-wide)
  * - CRUD operations for annotations
+ *
+ * Note: This provider loads ALL annotations across all pages.
+ * Users can filter annotations by page in the UI layer.
  *
  * @example
  * <AnnotationProvider>
@@ -72,50 +74,13 @@ interface AnnotationProviderProps {
  */
 export function AnnotationProvider({
   children,
-  pageUrl = typeof window !== 'undefined' ? window.location.pathname : '',
 }: AnnotationProviderProps) {
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [currentPage, setCurrentPage] = useState(pageUrl);
 
   /**
-   * Track URL changes for SPA navigation
-   */
-  useEffect(() => {
-    const handleUrlChange = () => {
-      const newPath = window.location.pathname;
-      if (newPath !== currentPage) {
-        setCurrentPage(newPath);
-      }
-    };
-
-    // Listen for browser back/forward navigation
-    window.addEventListener('popstate', handleUrlChange);
-
-    // Intercept pushState and replaceState for SPA navigation
-    const originalPushState = window.history.pushState;
-    const originalReplaceState = window.history.replaceState;
-
-    window.history.pushState = function (...args) {
-      originalPushState.apply(this, args);
-      handleUrlChange();
-    };
-
-    window.history.replaceState = function (...args) {
-      originalReplaceState.apply(this, args);
-      handleUrlChange();
-    };
-
-    return () => {
-      window.removeEventListener('popstate', handleUrlChange);
-      window.history.pushState = originalPushState;
-      window.history.replaceState = originalReplaceState;
-    };
-  }, [currentPage]);
-
-  /**
-   * Load initial annotations for the current page
+   * Load all annotations (project-wide) on mount
    */
   useEffect(() => {
     let cancelled = false;
@@ -125,7 +90,7 @@ export function AnnotationProvider({
         setLoading(true);
         setError(null);
 
-        const data = await getAnnotationsByPage(currentPage);
+        const data = await getAllAnnotations();
 
         if (!cancelled) {
           setAnnotations(data);
@@ -148,16 +113,20 @@ export function AnnotationProvider({
     return () => {
       cancelled = true;
     };
-  }, [currentPage]);
+  }, []); // No dependencies - load once on mount
 
   /**
-   * Subscribe to real-time annotation changes
+   * Subscribe to real-time annotation changes (project-wide)
    */
   useEffect(() => {
-    const unsubscribe = subscribeToAnnotations(
-      currentPage,
-      (annotation) => {
+    const unsubscribe = subscribeToAllAnnotations(
+      (annotation, eventType: RealtimeEventType) => {
         setAnnotations((prev) => {
+          if (eventType === 'DELETE') {
+            // Remove deleted annotation
+            return prev.filter((a) => a.id !== annotation.id);
+          }
+
           // Check if annotation already exists
           const existingIndex = prev.findIndex((a) => a.id === annotation.id);
 
@@ -175,7 +144,7 @@ export function AnnotationProvider({
     );
 
     return unsubscribe;
-  }, [currentPage]);
+  }, []); // No dependencies - subscribe once on mount
 
   /**
    * Create a new annotation

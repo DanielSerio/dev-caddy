@@ -148,6 +148,34 @@ export async function deleteAnnotation(id: number): Promise<void> {
 }
 
 /**
+ * Get all annotations across the entire project
+ *
+ * Fetches all annotations regardless of which page they belong to.
+ * Useful for project-wide annotation views and cross-page navigation.
+ *
+ * @returns Promise resolving to array of all annotations
+ * @throws {Error} If DevCaddy is not initialized
+ * @throws {Error} If the database operation fails
+ *
+ * @example
+ * const allAnnotations = await getAllAnnotations();
+ */
+export async function getAllAnnotations(): Promise<Annotation[]> {
+  const client = getSupabaseClient();
+
+  const { data, error } = await client
+    .from('annotation')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to fetch annotations: ${error.message}`);
+  }
+
+  return (data as Annotation[]) || [];
+}
+
+/**
  * Get all annotations for a specific page
  *
  * @param pageUrl - The normalized page URL to fetch annotations for

@@ -16,14 +16,18 @@ export {
   createAnnotation,
   updateAnnotation,
   deleteAnnotation,
+  getAllAnnotations,
   getAnnotationsByPage,
 } from './api/annotations';
 
 // Realtime subscriptions
 export {
   subscribeToAnnotations,
+  subscribeToAllAnnotations,
   normalizeUrl,
   type AnnotationChangeCallback,
+  type AnnotationRealtimeCallback,
+  type RealtimeEventType,
 } from './api/subscriptions';
 
 // Re-export types and constants from annotations

@@ -54,6 +54,92 @@ export function normalizeUrl(url: string): string {
 export type AnnotationChangeCallback = (annotation: Annotation) => void;
 
 /**
+ * Realtime event types for annotations
+ */
+export type RealtimeEventType = 'INSERT' | 'UPDATE' | 'DELETE';
+
+/**
+ * Callback function for annotation realtime updates with event type
+ *
+ * Used for project-wide subscriptions where you need to know
+ * whether an annotation was inserted, updated, or deleted.
+ */
+export type AnnotationRealtimeCallback = (
+  annotation: Annotation,
+  eventType: RealtimeEventType
+) => void;
+
+/**
+ * Subscribe to real-time changes for ALL annotations across the entire project
+ *
+ * Creates a Supabase Realtime subscription that listens for INSERT, UPDATE,
+ * and DELETE events on all annotations, regardless of page.
+ *
+ * This is used for project-wide annotation views where users need to see
+ * all feedback across all pages in a single list.
+ *
+ * @param callback - Function called when any annotation changes (receives annotation and event type)
+ * @returns Unsubscribe function to stop listening
+ * @throws {Error} If DevCaddy is not initialized
+ *
+ * @example
+ * const unsubscribe = subscribeToAllAnnotations(
+ *   (annotation, eventType) => {
+ *     if (eventType === 'INSERT') {
+ *       console.log('New annotation:', annotation);
+ *     } else if (eventType === 'UPDATE') {
+ *       console.log('Updated annotation:', annotation);
+ *     } else if (eventType === 'DELETE') {
+ *       console.log('Deleted annotation:', annotation);
+ *     }
+ *   }
+ * );
+ *
+ * // Later, stop listening
+ * unsubscribe();
+ */
+export function subscribeToAllAnnotations(
+  callback: AnnotationRealtimeCallback
+): () => void {
+  const client = getSupabaseClient();
+
+  // Create a project-wide channel
+  const channelName = 'annotations:all';
+
+  const channel: RealtimeChannel = client
+    .channel(channelName)
+    .on(
+      'postgres_changes',
+      {
+        event: '*', // Listen to INSERT, UPDATE, DELETE
+        schema: 'public',
+        table: 'annotation',
+        // No filter - subscribe to ALL annotations
+      },
+      (payload) => {
+        // The payload.new contains the annotation data for INSERT and UPDATE
+        // For DELETE, payload.old contains the deleted annotation
+        const annotation =
+          payload.eventType === 'DELETE'
+            ? (payload.old as Annotation)
+            : (payload.new as Annotation);
+
+        const eventType = payload.eventType as RealtimeEventType;
+
+        if (annotation) {
+          callback(annotation, eventType);
+        }
+      }
+    )
+    .subscribe();
+
+  // Return unsubscribe function
+  return () => {
+    client.removeChannel(channel);
+  };
+}
+
+/**
  * Subscribe to real-time annotation changes for a specific page
  *
  * Creates a Supabase Realtime subscription that listens for INSERT, UPDATE,
