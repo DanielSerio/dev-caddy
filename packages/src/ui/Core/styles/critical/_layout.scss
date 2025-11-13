@@ -9,7 +9,13 @@
   .caddy-window,
   .caddy-mode-toggle {
     position: fixed;
-    z-index: 9000;
+    z-index: 999995;
+
+    // Z-index hierarchy (bottom to top):
+    // 999995: Toggle button & Caddy window (always accessible, above modals)
+    // 999997: Element highlight overlay (shows selection outline)
+    // 999998: Annotation badges (count indicators on elements)
+    // 999999: Popover, ErrorBoundary, AuthPrompt (top-level overlays)
   }
 
   .top-left .caddy-window,

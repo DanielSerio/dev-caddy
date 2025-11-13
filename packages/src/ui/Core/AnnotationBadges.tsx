@@ -73,6 +73,23 @@ function getBadgePosition(element: Element | null): { top: number; left: number 
 }
 
 /**
+ * Check if an element is actually visible (not behind a modal/overlay)
+ */
+function isElementVisible(element: Element): boolean {
+  const rect = element.getBoundingClientRect();
+
+  // Check center point of element
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  // Get the topmost element at this position
+  const topElement = document.elementFromPoint(centerX, centerY);
+
+  // Element is visible if it (or one of its descendants) is at the top
+  return topElement !== null && element.contains(topElement);
+}
+
+/**
  * Single annotation badge component for one status on one element
  */
 function AnnotationBadge({
@@ -84,6 +101,7 @@ function AnnotationBadge({
 }) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const [element, setElement] = useState<Element | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     // Use the first annotation's selector to find the element
@@ -96,6 +114,9 @@ function AnnotationBadge({
       const updatePosition = () => {
         const pos = getBadgePosition(targetElement);
         setPosition(pos);
+
+        // Check if element is visible (not behind modal)
+        setIsVisible(isElementVisible(targetElement));
       };
 
       updatePosition();
@@ -104,14 +125,28 @@ function AnnotationBadge({
       window.addEventListener('scroll', updatePosition, true);
       window.addEventListener('resize', updatePosition);
 
+      // Watch for DOM changes (e.g., modals opening/closing)
+      const mutationObserver = new MutationObserver(() => {
+        updatePosition();
+      });
+
+      mutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class'], // Watch for style/class changes
+      });
+
       return () => {
         window.removeEventListener('scroll', updatePosition, true);
         window.removeEventListener('resize', updatePosition);
+        mutationObserver.disconnect();
       };
     }
   }, [annotations]);
 
-  if (!element || !position) {
+  // Don't render badge if element is not visible (behind modal/overlay)
+  if (!element || !position || !isVisible) {
     return null;
   }
 
@@ -150,6 +185,12 @@ function AnnotationBadge({
 interface AnnotationBadgesProps {
   /** Whether DevCaddy is open/active */
   isActive: boolean;
+  /** Current selection mode ('idle' | 'selecting') */
+  selectionMode: 'idle' | 'selecting';
+  /** Currently selected element (if any) */
+  selectedElement: HTMLElement | null;
+  /** Currently viewing annotation (if any) */
+  viewingAnnotation: Annotation | null;
 }
 
 /**
@@ -197,31 +238,66 @@ function groupAnnotations(annotations: Annotation[]): Map<string, Map<number, An
  * status on each element. Badges are positioned in the top-right corner
  * of their target elements.
  *
+ * Badges are ONLY visible when:
+ * - An element is currently selected (creating new annotation), OR
+ * - Viewing an existing annotation's element
+ *
+ * This prevents badges from appearing through modals and keeps the UI clean.
+ *
  * @example
- * <AnnotationBadges isActive={devCaddyIsActive} />
+ * <AnnotationBadges
+ *   isActive={devCaddyIsActive}
+ *   selectionMode={mode}
+ *   selectedElement={selectedElement}
+ *   viewingAnnotation={viewingAnnotation}
+ * />
  */
-export function AnnotationBadges({ isActive }: AnnotationBadgesProps) {
+export function AnnotationBadges({
+  selectedElement,
+  viewingAnnotation,
+}: AnnotationBadgesProps) {
   const { annotations } = useAnnotations();
-
-  if (!isActive) {
-    return null;
-  }
 
   const groupedAnnotations = groupAnnotations(annotations);
   const badges: React.ReactElement[] = [];
 
-  // Create badges for each element/status combination
-  groupedAnnotations.forEach((statusGroups, elementKey) => {
+  // Determine which element's badges should be visible
+  let targetElementKey: string | null = null;
+
+  // Priority 1: Show badges for selected element (creating new annotation)
+  if (selectedElement) {
+    for (const annotation of annotations) {
+      const element = findElement(annotation);
+      if (element === selectedElement) {
+        targetElementKey = getElementKey(annotation);
+        break;
+      }
+    }
+  }
+  // Priority 2: Show badges for viewing annotation's element
+  else if (viewingAnnotation) {
+    targetElementKey = getElementKey(viewingAnnotation);
+  }
+
+  // No element to show badges for
+  if (!targetElementKey) {
+    return null;
+  }
+
+  // Only create badges for the target element
+  const statusGroups = groupedAnnotations.get(targetElementKey);
+
+  if (statusGroups) {
     statusGroups.forEach((annotationsForStatus, statusId) => {
       badges.push(
         <AnnotationBadge
-          key={`${elementKey}-${statusId}`}
+          key={`${targetElementKey}-${statusId}`}
           annotations={annotationsForStatus}
           statusId={statusId}
         />
       );
     });
-  });
+  }
 
   return <>{badges}</>;
 }

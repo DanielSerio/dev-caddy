@@ -1,6 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { Annotation } from '../../types/annotations';
+
+/**
+ * Check if an element is actually visible (not behind a modal/overlay)
+ */
+function isElementVisible(element: Element): boolean {
+  const rect = element.getBoundingClientRect();
+
+  // Check center point of element
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  // Get the topmost element at this position
+  const topElement = document.elementFromPoint(centerX, centerY);
+
+  // Element is visible if it (or one of its descendants) is at the top
+  return topElement !== null && element.contains(topElement);
+}
 
 /**
  * Find a DOM element using annotation selectors
@@ -74,11 +91,19 @@ interface ElementHighlightProps {
 export function ElementHighlight({ annotation }: ElementHighlightProps) {
   const [element, setElement] = useState<Element | null>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
+
+  const updateRect = useCallback(() => {
+    if (!element) return;
+    setRect(element.getBoundingClientRect());
+    setIsVisible(isElementVisible(element));
+  }, [element]);
 
   useEffect(() => {
     if (!annotation) {
       setElement(null);
       setRect(null);
+      setIsVisible(true);
       return;
     }
 
@@ -90,27 +115,89 @@ export function ElementHighlight({ annotation }: ElementHighlightProps) {
       // Scroll element into view
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      const updateRect = () => {
-        setRect(targetElement.getBoundingClientRect());
-      };
-
-      updateRect();
-
-      // Update on scroll/resize
-      window.addEventListener('scroll', updateRect, true);
-      window.addEventListener('resize', updateRect);
-
-      return () => {
-        window.removeEventListener('scroll', updateRect, true);
-        window.removeEventListener('resize', updateRect);
-      };
+      // Initial rect and visibility calculation
+      setRect(targetElement.getBoundingClientRect());
+      setIsVisible(isElementVisible(targetElement));
     } else {
       setElement(null);
       setRect(null);
+      setIsVisible(true);
     }
   }, [annotation]);
 
-  if (!element || !rect || !annotation) {
+  /**
+   * Update highlight position on window scroll/resize and parent container scroll
+   */
+  useEffect(() => {
+    if (!element) return;
+
+    // Find all scrollable ancestors
+    const scrollableAncestors: HTMLElement[] = [];
+    let parent = element.parentElement;
+
+    while (parent) {
+      const computedStyle = window.getComputedStyle(parent);
+      const overflow = computedStyle.overflow + computedStyle.overflowY + computedStyle.overflowX;
+
+      if (overflow.includes('scroll') || overflow.includes('auto')) {
+        scrollableAncestors.push(parent);
+      }
+
+      parent = parent.parentElement;
+    }
+
+    // Throttle updates for performance
+    let throttleTimer: number | null = null;
+
+    const handleUpdate = () => {
+      if (throttleTimer !== null) {
+        return;
+      }
+
+      throttleTimer = window.setTimeout(() => {
+        updateRect();
+        throttleTimer = null;
+      }, 100);
+    };
+
+    // Add listeners to window and scrollable ancestors
+    window.addEventListener('scroll', handleUpdate, true);
+    window.addEventListener('resize', handleUpdate);
+
+    scrollableAncestors.forEach(el => {
+      el.addEventListener('scroll', handleUpdate, { passive: true });
+    });
+
+    // Watch for DOM changes (e.g., modals opening/closing)
+    const mutationObserver = new MutationObserver(() => {
+      handleUpdate();
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class'], // Watch for style/class changes that might affect visibility
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleUpdate, true);
+      window.removeEventListener('resize', handleUpdate);
+
+      scrollableAncestors.forEach(el => {
+        el.removeEventListener('scroll', handleUpdate);
+      });
+
+      mutationObserver.disconnect();
+
+      if (throttleTimer !== null) {
+        clearTimeout(throttleTimer);
+      }
+    };
+  }, [element, updateRect]);
+
+  // Don't render highlight if element is not visible (behind modal/overlay)
+  if (!element || !rect || !annotation || !isVisible) {
     return null;
   }
 

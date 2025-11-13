@@ -59,6 +59,51 @@ export function useElementSelector() {
     };
   }, [selectedElement]);
 
+  /**
+   * Observe DOM mutations to detect if selected element is removed
+   *
+   * This handles cases where:
+   * - User starts annotating an element inside a modal
+   * - Modal is closed while popover is still open
+   * - Element is removed from DOM by framework (React, Vue, etc.)
+   *
+   * When element is removed, we auto-clear the selection to prevent errors.
+   */
+  useEffect(() => {
+    if (!selectedElement) {
+      return;
+    }
+
+    let timeoutId: number | null = null;
+
+    const observer = new MutationObserver(() => {
+      // Debounce checks to avoid excessive calls during rapid DOM changes
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = window.setTimeout(() => {
+        // Check if element is still in the document
+        if (!document.body.contains(selectedElement)) {
+          clearSelection();
+        }
+      }, 50);
+    });
+
+    // Observe entire document for child list changes
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [selectedElement, clearSelection]);
+
   useEffect(() => {
     if (mode !== 'selecting') {
       return;
@@ -104,6 +149,28 @@ export function useElementSelector() {
 
       // Don't select DevCaddy's own UI elements
       if (target.closest('[data-dev-caddy]')) {
+        return;
+      }
+
+      // Don't select modal backdrops/overlays
+      // Common patterns from popular modal libraries:
+      // - Material-UI: .MuiBackdrop-root, .MuiModal-backdrop
+      // - Chakra UI: .chakra-modal__overlay
+      // - Radix UI: [data-radix-portal] with overlay role
+      // - Headless UI: [data-headlessui-portal] with overlay
+      // - Generic: .modal-backdrop, .overlay, [data-backdrop]
+      const backdropSelectors = [
+        '.modal-backdrop',
+        '.overlay',
+        '[data-backdrop]',
+        '.MuiBackdrop-root',
+        '.MuiModal-backdrop',
+        '.chakra-modal__overlay',
+        '[role="presentation"]',
+      ];
+
+      if (backdropSelectors.some(selector => target.matches(selector))) {
+        // Let click pass through - user likely wants to close modal
         return;
       }
 

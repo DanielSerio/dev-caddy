@@ -15,6 +15,7 @@ import { useElementSelector, useAuth } from "./hooks";
 import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
 import type { CreateAnnotationInput, Annotation } from "../../types/annotations";
+import type { SelectionMode } from "./hooks/useElementSelector";
 import "./styles/output/dev-caddy.scss";
 import { Skeleton } from "./Skeleton";
 
@@ -24,15 +25,24 @@ import { Skeleton } from "./Skeleton";
 function DevCaddyContent({
   uiMode,
   windowStyles,
+  mode,
+  setMode,
+  selectedElement,
+  clearSelection,
+  viewingAnnotation,
+  setViewingAnnotation,
 }: {
   uiMode: DevCaddyMode;
   windowStyles: React.CSSProperties;
+  mode: SelectionMode;
+  setMode: (mode: SelectionMode) => void;
+  selectedElement: HTMLElement | null;
+  clearSelection: () => void;
+  viewingAnnotation: Annotation | null;
+  setViewingAnnotation: (annotation: Annotation | null) => void;
 }) {
   const { addAnnotation } = useAnnotations();
-  const { mode, setMode, selectedElement, clearSelection } =
-    useElementSelector();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(null);
 
   // Get user ID and email from authenticated session
   const currentUserId = user?.id || "";
@@ -143,6 +153,43 @@ function DevCaddyContent({
   );
 }
 
+/**
+ * Wrapper component to share state between DevCaddyContent and AnnotationBadges
+ */
+function DevCaddyWithBadges({
+  uiMode,
+  windowStyles,
+  devCaddyIsActive,
+}: {
+  uiMode: DevCaddyMode;
+  windowStyles: React.CSSProperties;
+  devCaddyIsActive: boolean;
+}) {
+  const { mode, setMode, selectedElement, clearSelection } = useElementSelector();
+  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(null);
+
+  return (
+    <>
+      <DevCaddyContent
+        uiMode={uiMode}
+        windowStyles={windowStyles}
+        mode={mode}
+        setMode={setMode}
+        selectedElement={selectedElement}
+        clearSelection={clearSelection}
+        viewingAnnotation={viewingAnnotation}
+        setViewingAnnotation={setViewingAnnotation}
+      />
+      <AnnotationBadges
+        isActive={devCaddyIsActive}
+        selectionMode={mode}
+        selectedElement={selectedElement}
+        viewingAnnotation={viewingAnnotation}
+      />
+    </>
+  );
+}
+
 export function DevCaddy({
   corner = "bottom-left",
   offset = 48,
@@ -166,8 +213,11 @@ export function DevCaddy({
       />
       {devCaddyIsActive && UI_MODE && (
         <AnnotationProvider>
-          <DevCaddyContent uiMode={UI_MODE} windowStyles={windowStyles} />
-          <AnnotationBadges isActive={devCaddyIsActive} />
+          <DevCaddyWithBadges
+            uiMode={UI_MODE}
+            windowStyles={windowStyles}
+            devCaddyIsActive={devCaddyIsActive}
+          />
         </AnnotationProvider>
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, type KeyboardEvent } from 'react';
+import React, { useState, useEffect, useRef, useCallback, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -40,7 +40,7 @@ export function AnnotationPopover({
   /**
    * Calculate popover position based on selected element
    */
-  useEffect(() => {
+  const calculatePosition = useCallback(() => {
     const rect = selectedElement.getBoundingClientRect();
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
@@ -63,6 +63,67 @@ export function AnnotationPopover({
 
     setPosition({ top, left });
   }, [selectedElement]);
+
+  /**
+   * Initial position calculation
+   */
+  useEffect(() => {
+    calculatePosition();
+  }, [calculatePosition]);
+
+  /**
+   * Update position when scrollable parent containers scroll
+   *
+   * This ensures the popover follows the element when:
+   * - Element is inside a modal with scrollable content
+   * - Element is in any scrollable container (overflow: auto/scroll)
+   */
+  useEffect(() => {
+    // Find all scrollable ancestors
+    const scrollableAncestors: HTMLElement[] = [];
+    let parent = selectedElement.parentElement;
+
+    while (parent) {
+      const computedStyle = window.getComputedStyle(parent);
+      const overflow = computedStyle.overflow + computedStyle.overflowY + computedStyle.overflowX;
+
+      if (overflow.includes('scroll') || overflow.includes('auto')) {
+        scrollableAncestors.push(parent);
+      }
+
+      parent = parent.parentElement;
+    }
+
+    // Throttle position updates to avoid excessive recalculations
+    let throttleTimer: number | null = null;
+
+    const handleScroll = () => {
+      if (throttleTimer !== null) {
+        return;
+      }
+
+      throttleTimer = window.setTimeout(() => {
+        calculatePosition();
+        throttleTimer = null;
+      }, 100);
+    };
+
+    // Add scroll listeners to all scrollable ancestors
+    scrollableAncestors.forEach(el => {
+      el.addEventListener('scroll', handleScroll, { passive: true });
+    });
+
+    // Cleanup
+    return () => {
+      scrollableAncestors.forEach(el => {
+        el.removeEventListener('scroll', handleScroll);
+      });
+
+      if (throttleTimer !== null) {
+        clearTimeout(throttleTimer);
+      }
+    };
+  }, [selectedElement, calculatePosition]);
 
   /**
    * Auto-focus textarea on mount
