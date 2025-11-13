@@ -1,25 +1,28 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { AnnotationFilters, type FilterOptions } from '../ui/Developer/AnnotationFilters';
-import { useState } from 'react';
-import { ANNOTATION_STATUS } from '../types/annotations';
+import type { Meta, StoryObj } from "@storybook/react";
+import {
+  AnnotationFilters,
+  type FilterOptions,
+} from "../src/ui/Developer/AnnotationFilters";
+import { ComponentProps, useState } from "react";
+import { ANNOTATION_STATUS } from "../src/types/annotations";
 
 const meta = {
-  title: 'Developer/AnnotationFilters',
+  title: "Developer/AnnotationFilters",
   component: AnnotationFilters,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     filters: {
-      description: 'Current filter values',
+      description: "Current filter values",
     },
     onFiltersChange: {
-      action: 'filters changed',
-      description: 'Callback when filters change',
+      action: "filters changed",
+      description: "Callback when filters change",
     },
     availablePages: {
-      description: 'List of unique page paths from annotations',
+      description: "List of unique page paths from annotations",
     },
   },
 } satisfies Meta<typeof AnnotationFilters>;
@@ -30,7 +33,14 @@ type Story = StoryObj<typeof meta>;
 /**
  * Sample page paths for testing
  */
-const samplePages = ['/', '/products', '/dashboard', '/settings', '/about', '/blog'];
+const samplePages = [
+  "/",
+  "/products",
+  "/dashboard",
+  "/settings",
+  "/about",
+  "/blog",
+];
 
 /**
  * Default state with all filters set to "all"
@@ -38,9 +48,9 @@ const samplePages = ['/', '/products', '/dashboard', '/settings', '/about', '/bl
 export const Default: Story = {
   args: {
     filters: {
-      status: 'all',
-      author: '',
-      page: 'all',
+      status: "all",
+      author: "",
+      page: "all",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -54,8 +64,8 @@ export const FilteredByNewStatus: Story = {
   args: {
     filters: {
       status: ANNOTATION_STATUS.NEW,
-      author: '',
-      page: 'all',
+      author: "",
+      page: "all",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -69,8 +79,8 @@ export const FilteredByInProgress: Story = {
   args: {
     filters: {
       status: ANNOTATION_STATUS.IN_PROGRESS,
-      author: '',
-      page: 'all',
+      author: "",
+      page: "all",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -83,9 +93,9 @@ export const FilteredByInProgress: Story = {
 export const FilteredByAuthor: Story = {
   args: {
     filters: {
-      status: 'all',
-      author: 'john@example.com',
-      page: 'all',
+      status: "all",
+      author: "john@example.com",
+      page: "all",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -98,9 +108,9 @@ export const FilteredByAuthor: Story = {
 export const FilteredByCurrentPage: Story = {
   args: {
     filters: {
-      status: 'all',
-      author: '',
-      page: 'current',
+      status: "all",
+      author: "",
+      page: "current",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -113,9 +123,9 @@ export const FilteredByCurrentPage: Story = {
 export const FilteredBySpecificPage: Story = {
   args: {
     filters: {
-      status: 'all',
-      author: '',
-      page: '/products',
+      status: "all",
+      author: "",
+      page: "/products",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -129,8 +139,8 @@ export const MultipleFilters: Story = {
   args: {
     filters: {
       status: ANNOTATION_STATUS.IN_PROGRESS,
-      author: 'designer',
-      page: '/dashboard',
+      author: "designer",
+      page: "/dashboard",
     },
     availablePages: samplePages,
     onFiltersChange: () => {},
@@ -143,9 +153,9 @@ export const MultipleFilters: Story = {
 export const NoAvailablePages: Story = {
   args: {
     filters: {
-      status: 'all',
-      author: '',
-      page: 'all',
+      status: "all",
+      author: "",
+      page: "all",
     },
     availablePages: [],
     onFiltersChange: () => {},
@@ -158,24 +168,24 @@ export const NoAvailablePages: Story = {
 export const ManyPages: Story = {
   args: {
     filters: {
-      status: 'all',
-      author: '',
-      page: 'all',
+      status: "all",
+      author: "",
+      page: "all",
     },
     availablePages: [
-      '/',
-      '/about',
-      '/blog',
-      '/blog/post-1',
-      '/blog/post-2',
-      '/checkout',
-      '/dashboard',
-      '/products',
-      '/products/category-1',
-      '/products/category-2',
-      '/settings',
-      '/settings/account',
-      '/settings/security',
+      "/",
+      "/about",
+      "/blog",
+      "/blog/post-1",
+      "/blog/post-2",
+      "/checkout",
+      "/dashboard",
+      "/products",
+      "/products/category-1",
+      "/products/category-2",
+      "/settings",
+      "/settings/account",
+      "/settings/security",
     ],
     onFiltersChange: () => {},
   },
@@ -186,9 +196,9 @@ export const ManyPages: Story = {
  */
 function InteractiveFilters() {
   const [filters, setFilters] = useState<FilterOptions>({
-    status: 'all',
-    author: '',
-    page: 'all',
+    status: "all",
+    author: "",
+    page: "all",
   });
 
   return (
@@ -198,9 +208,18 @@ function InteractiveFilters() {
         onFiltersChange={setFilters}
         availablePages={samplePages}
       />
-      <div style={{ marginTop: '20px', padding: '12px', background: '#1a1a1a', borderRadius: '4px' }}>
-        <h4 style={{ marginTop: 0, fontSize: '14px' }}>Current Filter State:</h4>
-        <pre style={{ fontSize: '12px', margin: 0 }}>
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "12px",
+          background: "#1a1a1a",
+          borderRadius: "4px",
+        }}
+      >
+        <h4 style={{ marginTop: 0, fontSize: "14px" }}>
+          Current Filter State:
+        </h4>
+        <pre style={{ fontSize: "12px", margin: 0 }}>
           {JSON.stringify(filters, null, 2)}
         </pre>
       </div>
@@ -209,6 +228,7 @@ function InteractiveFilters() {
 }
 
 export const Interactive: Story = {
+  args: {} as ComponentProps<typeof AnnotationFilters>,
   render: () => <InteractiveFilters />,
 };
 
@@ -216,13 +236,14 @@ export const Interactive: Story = {
  * Narrow width demonstration
  */
 export const NarrowWidth: Story = {
+  args: {} as ComponentProps<typeof AnnotationFilters>,
   render: () => (
-    <div style={{ width: '300px' }}>
+    <div style={{ width: "300px" }}>
       <AnnotationFilters
         filters={{
-          status: 'all',
-          author: '',
-          page: 'all',
+          status: "all",
+          author: "",
+          page: "all",
         }}
         availablePages={samplePages}
         onFiltersChange={() => {}}
@@ -235,13 +256,14 @@ export const NarrowWidth: Story = {
  * Wide width demonstration
  */
 export const WideWidth: Story = {
+  args: {} as ComponentProps<typeof AnnotationFilters>,
   render: () => (
-    <div style={{ width: '800px' }}>
+    <div style={{ width: "800px" }}>
       <AnnotationFilters
         filters={{
-          status: 'all',
-          author: '',
-          page: 'all',
+          status: "all",
+          author: "",
+          page: "all",
         }}
         availablePages={samplePages}
         onFiltersChange={() => {}}

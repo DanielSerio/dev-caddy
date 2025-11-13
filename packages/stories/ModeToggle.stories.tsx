@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ModeToggle } from "../ui/Core/ModeToggle";
+import { ModeToggle } from "../src/ui/Core/ModeToggle";
 import { useState, type Dispatch, type SetStateAction } from "react";
 
 const meta = {
