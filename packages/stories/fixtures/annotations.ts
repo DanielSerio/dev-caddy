@@ -1,5 +1,5 @@
-import type { Annotation } from '../../types/annotations';
-import { ANNOTATION_STATUS } from '../../types/annotations';
+import type { Annotation } from '../../src/types/annotations';
+import { ANNOTATION_STATUS } from '../../src/types/annotations';
 
 /**
  * Base mock annotation for testing
