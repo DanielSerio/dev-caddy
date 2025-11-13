@@ -1,10 +1,14 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationFilters, type FilterOptions } from "./AnnotationFilters";
 import { AnnotationItem } from "./AnnotationItem";
 import type { Annotation } from "../../types/annotations";
 import { Skeleton } from "../Core";
+import {
+  navigateToAnnotation,
+  checkPendingAnnotation,
+} from "../Core/utility/navigation";
 
 /**
  * Props for AnnotationManager component
@@ -62,11 +66,26 @@ export function AnnotationManager({
 
   /**
    * Handle selecting an annotation to view details
+   * Supports cross-page navigation
    */
   const handleSelectAnnotation = (annotation: Annotation) => {
-    setSelectedAnnotation(annotation);
-    onAnnotationSelect?.(annotation);
+    navigateToAnnotation(annotation, (ann) => {
+      setSelectedAnnotation(ann);
+      onAnnotationSelect?.(ann);
+    });
   };
+
+  /**
+   * Check for pending annotation after cross-page navigation
+   */
+  useEffect(() => {
+    if (!loading && annotations.length > 0) {
+      checkPendingAnnotation(annotations, (annotation) => {
+        setSelectedAnnotation(annotation);
+        onAnnotationSelect?.(annotation);
+      });
+    }
+  }, [loading, annotations, onAnnotationSelect]);
 
   /**
    * Handle navigating back from detail view

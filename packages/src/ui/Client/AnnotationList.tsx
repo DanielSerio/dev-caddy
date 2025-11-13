@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
 import { Skeleton } from "../Core";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { sanitizeContent } from "../Core/utility/sanitize";
 import type { Annotation } from "../../types/annotations";
+import {
+  navigateToAnnotation,
+  checkPendingAnnotation,
+} from "../Core/utility/navigation";
 
 /**
  * Props for AnnotationList component
@@ -44,11 +48,26 @@ export function AnnotationList({
 
   /**
    * Handle selecting an annotation to view details
+   * Supports cross-page navigation
    */
   const handleSelectAnnotation = (annotation: Annotation) => {
-    setSelectedAnnotation(annotation);
-    onAnnotationSelect?.(annotation);
+    navigateToAnnotation(annotation, (ann) => {
+      setSelectedAnnotation(ann);
+      onAnnotationSelect?.(ann);
+    });
   };
+
+  /**
+   * Check for pending annotation after cross-page navigation
+   */
+  useEffect(() => {
+    if (!loading && annotations.length > 0) {
+      checkPendingAnnotation(annotations, (annotation) => {
+        setSelectedAnnotation(annotation);
+        onAnnotationSelect?.(annotation);
+      });
+    }
+  }, [loading, annotations, onAnnotationSelect]);
 
   /**
    * Handle navigating back from detail view
