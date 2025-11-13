@@ -10,7 +10,7 @@ import type { WindowCorner } from "../../types";
 import { AnnotationIcon } from "./icons/AnnotationIcon";
 import { CloseIcon } from "./icons/CloseIcon";
 
-interface ModeToggleProps
+export interface ModeToggleProps
   extends Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
     "type" | "children" | "onToggle"
