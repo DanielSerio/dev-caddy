@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
 import { DevCaddyPlugin } from 'dev-caddy';
 
@@ -9,6 +9,9 @@ export default defineConfig((context) => ({
     DevCaddyPlugin({
       context,
       enabled: process.env.VITE_DEVCADDY_ENABLED !== 'false', // enabled by default
-    })
+    }) as PluginOption
   ],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
 }));

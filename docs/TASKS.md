@@ -36,9 +36,10 @@
 - **Test plan audit and improvements** (high-priority fixes applied)
 
 **🔄 In Progress:**
-- Phase 5: Security & Polish (1 of 3 sub-phases complete)
+- Phase 5: Security & Polish (1 of 4 sub-phases complete)
 
 **Next Up:**
+- Modal/popup annotation support (Phase 5.4) ⚡ PRIORITY
 - Input validation (Phase 5.2)
 - Production safety guard (Phase 5.3)
 - Testing infrastructure setup (Phase 6.2)
@@ -58,10 +59,11 @@
   - ✅ Phase 4.1: Plugin architecture fixes
   - ✅ Phase 4.2: Environment variable integration
   - ✅ Phase 4.3: Window type safety
-- **Phase 5:** 🔄 33% Complete (Security & Polish)
+- **Phase 5:** 🔄 25% Complete (Security & Polish)
   - ✅ Phase 5.1: Content sanitization
   - ❌ Phase 5.2: Input validation
   - ❌ Phase 5.3: Production safety guard
+  - ❌ Phase 5.4: Modal/popup annotation support ⚡
 - **Phase 6:** 📋 Planned (Documentation & Testing Setup)
 - **Testing Infrastructure:** 📋 Planned (see Phase 6.2 and docs/TEST_PLAN.md)
 
@@ -675,6 +677,141 @@
 **Dependencies:** None
 **Blocks:** None
 **Aligns with:** Secure by default, production-safe
+
+---
+
+### 5.4 Modal/Popup Annotation Support ❌
+
+**Priority:** HIGH (user experience, critical workflow)
+
+**Context:** Users need to annotate elements inside modals, dialogs, drawers, and popups. DevCaddy can be activated while a modal is already open, so all features must work correctly in this scenario.
+
+**Current Status:**
+- ✅ Toggle button z-index: 9000 (clickable above typical modals)
+- ✅ Popover z-index: 999999 (appears above modal content)
+- ✅ Badges z-index: 999998 (visible on modal elements)
+- ✅ Element highlighting z-index: 999997
+- ✅ Selection works: event listeners on `document` capture clicks anywhere
+- ✅ Badges mount correctly: `querySelector` finds elements in modals
+
+**Remaining Challenges:**
+1. Toggle/window might be hidden by extremely high z-index modals (>10000)
+2. Modal closing while annotation in progress → selected element removed from DOM
+3. Scrollable modal content → popover position becomes incorrect
+4. Modal backdrop clicks might be captured as element selection
+5. Element position updates needed when modal content scrolls
+
+**Sub-Tasks:**
+
+- [ ] **Phase 5.4.1: Z-index Defensive Strategy**
+  - [ ] Update `packages/src/ui/Core/styles/critical/_layout.scss`
+    - [ ] Change toggle/window z-index from `9000` to `999995`
+    - [ ] Add comment explaining hierarchy: toggle/window < highlight < badges < popover
+    - [ ] Ensures toggle always clickable, even with extreme modal z-index values
+  - [ ] Verify hierarchy remains correct:
+    - [ ] Toggle & Window: `999995`
+    - [ ] Element Highlight: `999997`
+    - [ ] Annotation Badges: `999998`
+    - [ ] Popover, ErrorBoundary, AuthPrompt: `999999`
+  - [ ] Build and test
+    - [ ] Verify no visual regressions
+    - [ ] Test toggle clickable with modal open
+
+- [ ] **Phase 5.4.2: DOM Mutation Observer**
+  - [ ] Update `packages/src/ui/Core/hooks/useElementSelector.ts`
+    - [ ] Add effect to observe selected element removal
+    - [ ] Create `MutationObserver` watching `document.body`
+    - [ ] Check if `document.body.contains(selectedElement)` on mutations
+    - [ ] Call `clearSelection()` if element no longer in DOM
+    - [ ] Add debouncing (50ms) to avoid excessive checks
+    - [ ] Disconnect observer on cleanup
+  - [ ] Add JSDoc explaining modal closure handling
+  - [ ] Keep file under 200 lines
+  - [ ] Test scenarios:
+    - [ ] Open modal, start annotation, close modal → selection auto-clears
+    - [ ] No memory leaks from observer
+
+- [ ] **Phase 5.4.3: Scroll Container Detection**
+  - [ ] Update `packages/src/ui/Core/AnnotationPopover.tsx`
+    - [ ] Create utility: `getScrollableAncestors(element)`
+    - [ ] Walk up DOM tree checking `overflow: scroll|auto`
+    - [ ] Add scroll listeners to all scrollable ancestors
+    - [ ] Recalculate popover position on scroll
+    - [ ] Throttle position updates (100ms) for performance
+    - [ ] Use passive event listeners
+    - [ ] Cleanup listeners on unmount
+  - [ ] Update `packages/src/ui/Core/ElementHighlight.tsx`
+    - [ ] Apply same scroll handling for highlight overlay
+  - [ ] Test scenarios:
+    - [ ] Annotate element in scrollable modal → popover follows
+    - [ ] Scroll modal content → highlight stays aligned
+
+- [ ] **Phase 5.4.4: Modal Backdrop Detection**
+  - [ ] Update `packages/src/ui/Core/hooks/useElementSelector.ts`
+    - [ ] Add backdrop detection in `handleClick`
+    - [ ] Check for common backdrop selectors:
+      - [ ] `.modal-backdrop, .overlay, [data-backdrop]`
+      - [ ] `[aria-modal="true"]` (on backdrop elements)
+      - [ ] Elements with `pointer-events: none`
+    - [ ] If backdrop clicked, return early (don't select)
+    - [ ] Allow click to pass through for modal close behavior
+  - [ ] Add JSDoc with examples of supported modal libraries
+  - [ ] Test scenarios:
+    - [ ] Click modal backdrop → modal closes, nothing selected
+    - [ ] Click element in modal → element selected correctly
+
+- [ ] **Phase 5.4.5: Enhanced Positioning Logic** (Optional - Low Priority)
+  - [ ] Update `packages/src/ui/Core/AnnotationPopover.tsx`
+    - [ ] Improve edge case handling
+    - [ ] Add horizontal centering option
+    - [ ] Better viewport bounds checking
+    - [ ] Add offset from element edges (8px minimum)
+  - [ ] Keep existing logic, enhance incrementally
+  - [ ] Test with small viewport sizes
+
+- [ ] **Phase 5.4.6: Testing & Documentation**
+  - [ ] Test late activation scenario:
+    - [ ] Open modal in example app
+    - [ ] Click DevCaddy toggle (activate while modal open)
+    - [ ] Enter selection mode
+    - [ ] Annotate button inside modal → verify popover appears
+  - [ ] Test with common modal libraries:
+    - [ ] Material-UI Dialog
+    - [ ] Chakra UI Modal
+    - [ ] Radix UI Dialog
+    - [ ] Headless UI Dialog
+    - [ ] Native `<dialog>` element
+  - [ ] Test edge cases:
+    - [ ] Nested modals (modal inside modal)
+    - [ ] Drawer/sidebar panels
+    - [ ] Dropdown menus
+    - [ ] Modal with fixed positioning
+    - [ ] Modal with CSS transforms
+  - [ ] Update documentation:
+    - [ ] Add "Modal Support" section to packages/README.md
+    - [ ] Document z-index hierarchy
+    - [ ] List tested modal libraries
+    - [ ] Known limitations (if any)
+
+**Files to Modify:**
+- `packages/src/ui/Core/styles/critical/_layout.scss` (z-index)
+- `packages/src/ui/Core/hooks/useElementSelector.ts` (mutation observer + backdrop detection)
+- `packages/src/ui/Core/AnnotationPopover.tsx` (scroll handling)
+- `packages/src/ui/Core/ElementHighlight.tsx` (scroll handling)
+- `packages/README.md` (documentation)
+
+**Timeline Estimate:**
+- Phase 5.4.1 (Z-index): 15 minutes
+- Phase 5.4.2 (Mutation observer): 45 minutes
+- Phase 5.4.3 (Scroll handling): 1.5 hours
+- Phase 5.4.4 (Backdrop detection): 30 minutes
+- Phase 5.4.5 (Enhanced positioning): 45 minutes (optional)
+- Phase 5.4.6 (Testing & docs): 1 hour
+**Total: ~4.5 hours** (or ~3.75 hours without optional Phase 5.4.5)
+
+**Dependencies:** None (can start immediately)
+**Blocks:** None (but critical for real-world usage)
+**Aligns with:** Real-world UX, works with common modal libraries
 
 ---
 
