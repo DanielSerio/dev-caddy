@@ -83,8 +83,8 @@ npm run dev              # Test the plugin with example app
 ```
 
 **Testing Different UI Modes:**
-- `npm run dev:developer` - Opens with full developer access (all annotations, filters, editing)
-- `npm run dev:client` - Opens in client/reviewer mode (own annotations only)
+- `npm run dev:developer` - Opens with full developer access (view all annotations, filter by page/status/author, edit/delete all)
+- `npm run dev:client` - Opens in client/reviewer mode (view all annotations, edit/delete own only)
 - Both commands automatically open the browser and use environment-based mode detection
 - For manual mode switching, add `?devCaddyMode=client` or `?devCaddyMode=developer` to URL
 
@@ -372,9 +372,10 @@ Current implementation includes:
 - Anon key safe to use client-side with RLS
 
 **Real-time Annotation Sync:**
-- Use Supabase Realtime with page-scoped channels
-- Channel format: `annotations:${normalizedUrl}`
-- Normalize URLs by stripping protocol, query params, hash
+- Use Supabase Realtime with project-wide channel (v0.2.0)
+- Channel format: `annotations:all` (single subscription)
+- All users see all annotations across entire project
+- Cross-page navigation via sessionStorage + window.location
 
 **Magic Links:**
 - **Generation:** Server-side only via CLI tool (not bundled with client)
@@ -390,18 +391,22 @@ Current implementation includes:
 
 **Developer vs Client Mode Features:**
 
-| Feature                | Client Mode | Developer Mode |
-| ---------------------- | ----------- | -------------- |
-| Create annotations     | ✅          | ✅             |
-| View own annotations   | ✅          | ✅             |
-| View all annotations   | ❌          | ✅             |
-| Mark as resolved       | ❌          | ✅             |
-| Mark own as resolved   | ✅          | ✅             |
-| Delete annotations     | ❌          | ✅             |
-| Delete own annotations | ✅          | ✅             |
-| Reply to annotations   | ❌          | ✅             |
-| Filter by status       | ✅          | ✅             |
-| Export annotations     | ❌          | ✅             |
+| Feature                        | Client Mode | Developer Mode |
+| ------------------------------ | ----------- | -------------- |
+| Create annotations             | ✅          | ✅             |
+| View own annotations           | ✅          | ✅             |
+| View all annotations (project) | ✅          | ✅             |
+| Navigate to annotation page    | ✅          | ✅             |
+| Filter by page                 | ❌          | ✅             |
+| Filter by status               | ✅          | ✅             |
+| Filter by author               | ❌          | ✅             |
+| Edit all annotations           | ❌          | ✅             |
+| Edit own annotations           | ✅          | ✅             |
+| Delete all annotations         | ❌          | ✅             |
+| Delete own annotations         | ✅          | ✅             |
+| Change status                  | ❌          | ✅             |
+| Reply to annotations           | ❌          | ✅             |
+| Export annotations             | ❌          | ✅             |
 
 ### Configuration
 

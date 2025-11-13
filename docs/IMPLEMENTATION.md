@@ -204,45 +204,32 @@ getAnnotationsByPage(window.location.pathname)
 
 **Question:** How should we handle realtime subscription cleanup and page changes?
 
-**Decision:** Re-subscribe on URL change (Option A)
+**Decision:** Single project-wide subscription (Changed in v0.2.0)
 
 **Implementation:**
 ```typescript
+// Subscribe once to all annotations
 useEffect(() => {
-  const handleUrlChange = () => {
-    const newPath = window.location.pathname;
-    if (newPath !== currentPage) {
-      setCurrentPage(newPath);
-    }
-  };
-
-  // Browser back/forward
-  window.addEventListener('popstate', handleUrlChange);
-
-  // Intercept pushState/replaceState for SPA navigation
-  const originalPushState = window.history.pushState;
-  window.history.pushState = function(...args) {
-    originalPushState.apply(this, args);
-    handleUrlChange();
-  };
-
-  return () => {
-    window.removeEventListener('popstate', handleUrlChange);
-    window.history.pushState = originalPushState;
-  };
-}, [currentPage]);
-
-// Re-subscribe when URL changes
-useEffect(() => {
-  const unsubscribe = subscribeToAnnotations(currentPage, callback);
+  const unsubscribe = subscribeToAllAnnotations(callback);
   return unsubscribe;
-}, [currentPage]);
+}, []); // No dependencies - subscribe once on mount
+
+// No URL change tracking needed
+// Users see all annotations and can filter/navigate as needed
 ```
 
 **Rationale:**
-- Annotations always match current page
-- Handles SPA navigation correctly
-- Works with all routing libraries
+- Simpler state management (no re-subscription on navigation)
+- Better user experience (see all project feedback at once)
+- Enables cross-page navigation to annotations
+- Better collaboration (reviewers see full project context)
+
+**Previous Approach (v0.1.0):**
+- Page-scoped subscriptions that re-subscribed on URL changes
+- Required URL change detection via `popstate` and `pushState` interception
+- Changed to project-wide to meet user feedback for full project visibility
+
+**See Also:** Decision 8 for annotation scoping rationale
 
 ---
 
@@ -309,6 +296,68 @@ CHECK (status_id >= 1 AND status_id <= 5);
 - No external dependencies
 - Simple for current scope
 - Can migrate to Zustand/Redux later if needed
+
+---
+
+### Decision 8: Annotation Scoping
+
+**Question:** Should annotations be page-scoped or project-wide?
+
+**Decision:** Project-Wide (Changed from page-scoped in v0.2.0)
+
+**Implementation:**
+```typescript
+// Load all annotations on mount
+const data = await getAllAnnotations();
+
+// Subscribe to all changes (single subscription)
+const unsubscribe = subscribeToAllAnnotations(callback);
+
+// Cross-page navigation
+function navigateToAnnotation(annotation: Annotation) {
+  if (annotation.page !== window.location.pathname) {
+    sessionStorage.setItem('devcaddy_pending_annotation', annotation.id.toString());
+    window.location.pathname = annotation.page;
+  } else {
+    selectAnnotation(annotation);
+  }
+}
+```
+
+**Features Enabled:**
+- View all annotations across entire project in single list
+- Click annotation to navigate to that page and highlight element
+- Page badges show which page each annotation belongs to
+- Real-time updates across all pages (not just current)
+- Developer mode: filter by page, status, and author
+- Client mode: see all users' annotations (not just own)
+
+**Rationale:**
+- Users need to see full project context (not just current page)
+- Enables cross-page navigation to annotations
+- Simplifies state management (no re-subscription on navigation)
+- Better collaboration (reviewers see all feedback at once)
+- Aligns with user feedback: "I think we need the users to see ALL annotations all the time"
+
+**Trade-offs:**
+- More annotations loaded initially (performance consideration)
+- More real-time updates (all pages, not just current)
+- Acceptable up to ~500 annotations (performance baseline)
+- Can add pagination/virtualization later if needed
+
+**When Changed:** 2025-11-13 (v0.2.0)
+
+**Why Changed:** User feedback indicated need for project-wide visibility and cross-page navigation
+
+**Previous Approach (v0.1.0):**
+- Annotations scoped to current page only
+- Users could only see annotations on the page they were viewing
+- Required page-scoped subscriptions with re-subscription on navigation
+
+**See Also:**
+- Decision 4 for realtime subscription changes
+- `docs/PROJECT-WIDE-ANNOTATIONS-PLAN.md` for implementation plan
+- `docs/specs/project-wide-annotations.feature` for specifications
 
 ---
 

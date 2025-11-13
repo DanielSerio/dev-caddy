@@ -54,6 +54,8 @@ Developer → Sees annotation on that exact button in their local dev
 
 ✅ **Zero Setup** - Just enter your email, get a magic link, start annotating
 ✅ **Click Any Element** - Point at the button, input, div, whatever needs feedback
+✅ **See Entire Project** - View all feedback across all pages in one list
+✅ **Navigate Anywhere** - Click annotation to jump to its page and see it highlighted
 ✅ **No Screenshots** - Your feedback stays attached to the live UI
 ✅ **Real-time Updates** - See when developers mark your feedback as resolved
 ✅ **Simple Workflow** - Create, track, resolve. That's it.
@@ -61,8 +63,10 @@ Developer → Sees annotation on that exact button in their local dev
 ### For Developers
 
 ✅ **See Feedback In Context** - Annotations appear directly on elements in your local dev
+✅ **Project-Wide View** - See all annotations across entire project in single list
+✅ **Cross-Page Navigation** - Click any annotation to jump to its page
 ✅ **Real-time Sync** - Feedback streams in as reviewers create it
-✅ **Triage UI** - Filter by status (new, in-progress, resolved), author, date
+✅ **Advanced Filtering** - Filter by page, status, author, date
 ✅ **Auto Mode Switching** - Developer mode locally, client mode in staging (automatic)
 ✅ **5-Minute Setup** - Run 2 SQL scripts, add 3 lines of code, done
 
@@ -195,8 +199,8 @@ DevCaddy knows where it's running:
 
 | Environment | Mode | Who Uses It | Permissions |
 |-------------|------|-------------|-------------|
-| `npm run dev` | **Developer** | You, the dev | View/edit/delete ALL annotations |
-| Staging/preview | **Client** | Designers, clients, QA | View ALL, edit/delete OWN |
+| `npm run dev` | **Developer** | You, the dev | View ALL (project-wide), filter by page/status/author, edit/delete ALL |
+| Staging/preview | **Client** | Designers, clients, QA | View ALL (project-wide), navigate to annotation pages, edit/delete OWN |
 | Production build | **Disabled** | No one | DevCaddy completely removed |
 
 **Override for testing:**
@@ -205,23 +209,29 @@ http://localhost:5173?devCaddyMode=client       # Test as client
 http://localhost:5173?devCaddyMode=developer    # Test as developer
 ```
 
-### Real-time Sync
+### Real-time Sync & Cross-Page Navigation
 
-Built on Supabase Realtime. When a reviewer adds feedback:
+Built on Supabase Realtime with project-wide visibility (v0.2.0):
 
 ```
-Reviewer clicks button → Creates annotation
+Reviewer clicks button on /products → Creates annotation
   ↓
-Saved to Supabase
+Saved to Supabase with page path
   ↓
-Supabase Realtime broadcasts
+Supabase Realtime broadcasts to ALL connected users
   ↓
-Your dev environment updates instantly
+Developer on /home sees new annotation in list
   ↓
-You see the annotation on that exact button
+Developer clicks annotation → Navigates to /products → Element highlights
 ```
 
-No polling, no refresh, no delay. WebSocket magic.
+**Key features:**
+- See ALL annotations across entire project (not just current page)
+- Click any annotation to navigate to its page and highlight element
+- Page badges show which page each annotation belongs to
+- Real-time updates across all pages
+
+No polling, no refresh, no delay. WebSocket magic + smart navigation.
 
 ---
 
@@ -292,8 +302,9 @@ import {
   createAnnotation,
   updateAnnotation,
   deleteAnnotation,
+  getAllAnnotations,
   getAnnotationsByPage,
-  subscribeToAnnotations,
+  subscribeToAllAnnotations,
   ANNOTATION_STATUS,
 } from 'dev-caddy';
 
@@ -307,9 +318,15 @@ await createAnnotation({
   status_id: ANNOTATION_STATUS.NEW,
 });
 
-// Subscribe to changes
-const unsubscribe = subscribeToAnnotations('/products', (annotations) => {
-  console.log('New annotations:', annotations);
+// Get all annotations (project-wide)
+const allAnnotations = await getAllAnnotations();
+
+// Get annotations for specific page
+const productAnnotations = await getAnnotationsByPage('/products');
+
+// Subscribe to all changes (project-wide, v0.2.0)
+const unsubscribe = subscribeToAllAnnotations((annotations) => {
+  console.log('All annotations:', annotations);
 });
 ```
 

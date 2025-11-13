@@ -54,11 +54,11 @@ Client UI Mode                     Developer UI Mode
 
 ### UI Modes
 
-| Mode               | Trigger                    | UI Components        | Capabilities                          |
-| ------------------ | -------------------------- | -------------------- | ------------------------------------- |
-| **Developer Mode** | Local dev (`vite dev`)     | Full UI + controls   | View/edit/delete ALL annotations      |
-| **Client Mode**    | Staging build              | Limited UI           | View ALL, edit/delete OWN annotations |
-| **Disabled**       | Production build           | None                 | Production-safe by default            |
+| Mode               | Trigger                    | UI Components        | Capabilities                                    |
+| ------------------ | -------------------------- | -------------------- | ----------------------------------------------- |
+| **Developer Mode** | Local dev (`vite dev`)     | Full UI + controls   | View ALL annotations, filter by page/status/author, edit/delete ALL |
+| **Client Mode**    | Staging build              | Limited UI           | View ALL annotations across project, edit/delete OWN |
+| **Disabled**       | Production build           | None                 | Production-safe by default                      |
 
 ### Authentication Flow
 
@@ -86,7 +86,7 @@ Client UI Mode                     Developer UI Mode
 **Key Fields:**
 - `created_by` - User UUID from `auth.uid()`
 - `status_id` - 1=new, 2=in-progress, 3=in-review, 4=hold, 5=resolved
-- `page` - URL pathname for annotation scoping
+- `page` - URL pathname (used for cross-page navigation and filtering)
 - `element_*` - Selector data for re-highlighting elements
 
 **Security:**
@@ -179,7 +179,7 @@ See **TASKS.md** for detailed task breakdown.
 ### State Management: React Context
 - **Why:** Sufficient for 1-2 levels of nesting, no external dependencies
 - **How:** `AnnotationProvider` with Supabase Realtime subscriptions
-- **Scope:** Single page (re-subscribes on navigation)
+- **Scope:** Project-wide (single subscription to all annotations, v0.2.0)
 
 ---
 
