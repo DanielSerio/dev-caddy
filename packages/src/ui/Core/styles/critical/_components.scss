@@ -118,3 +118,149 @@
   gap: 4px;
   align-items: center;
 }
+
+// Form Components
+.dev-caddy .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--dc-text);
+
+    .required-indicator {
+      color: var(--dc-danger);
+    }
+  }
+
+  .field-error {
+    font-size: 11px;
+    color: var(--dc-danger);
+    margin-top: 2px;
+  }
+}
+
+// Filter Components (already styled in _annotations.scss under .manager-filters)
+
+// Action Button (uses existing btn- classes)
+.dev-caddy .button-spinner,
+.dev-caddy .button-icon {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+// Composite Components
+
+// Annotation Header
+.dev-caddy .annotation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+// Annotation Meta
+.dev-caddy .annotation-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--dc-text-muted);
+
+  .annotation-meta-author {
+    font-weight: 500;
+    color: var(--dc-text);
+  }
+
+  .annotation-meta-separator {
+    color: var(--dc-text-muted);
+  }
+
+  .annotation-meta-label {
+    font-weight: 500;
+  }
+}
+
+// Loading State
+.dev-caddy .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  text-align: center;
+
+  .loading-spinner {
+    font-size: 24px;
+    margin-bottom: 8px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .loading-message {
+    font-size: 12px;
+    color: var(--dc-text-muted);
+    margin: 0;
+  }
+
+  &.loading-small {
+    padding: 16px 8px;
+
+    .loading-spinner {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .loading-message {
+      font-size: 11px;
+    }
+  }
+
+  &.loading-large {
+    padding: 32px 24px;
+
+    .loading-spinner {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .loading-message {
+      font-size: 14px;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Popover Header
+.dev-caddy .popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--dc-border);
+  background-color: var(--dc-background-raised);
+
+  .popover-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dc-text);
+  }
+
+  .popover-close {
+    min-width: auto;
+    padding: 4px 8px;
+    font-size: 16px;
+    line-height: 1;
+  }
+}
