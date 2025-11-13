@@ -1,19 +1,10 @@
 import { useState, useMemo } from "react";
 import { useAnnotations } from "../Core/context";
-import { getStatusName } from "../Core/lib/status";
-import { ANNOTATION_STATUS } from "../../types/annotations";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { sanitizeContent } from "../Core/utility/sanitize";
+import { AnnotationFilters, type FilterOptions } from "./AnnotationFilters";
+import { AnnotationItem } from "./AnnotationItem";
 import type { Annotation } from "../../types/annotations";
 import { Skeleton } from "../Core";
-
-/**
- * Filter options for annotations
- */
-interface FilterOptions {
-  status: number | "all";
-  author: string;
-}
 
 /**
  * Props for AnnotationManager component
@@ -85,19 +76,13 @@ export function AnnotationManager({
     onAnnotationSelect?.(null);
   };
 
-  /**
-   * Format date for display
-   */
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
-
   // Show detail view if annotation is selected
   if (selectedAnnotation) {
     // Find the latest version of the selected annotation from context
     // This ensures we always show the most up-to-date data after real-time updates
-    const latestAnnotation = annotations.find(a => a.id === selectedAnnotation.id);
+    const latestAnnotation = annotations.find(
+      (a) => a.id === selectedAnnotation.id
+    );
 
     // If annotation was deleted, go back to list
     if (!latestAnnotation) {
@@ -173,42 +158,7 @@ export function AnnotationManager({
           All Annotations ({filteredAnnotations.length}/{annotations.length})
         </h3>
 
-        <div className="manager-filters">
-          <div className="filter-group">
-            <label htmlFor="status-filter">Status:</label>
-            <select
-              id="status-filter"
-              value={filters.status}
-              onChange={(e) =>
-                setFilters({
-                  ...filters,
-                  status:
-                    e.target.value === "all" ? "all" : Number(e.target.value),
-                })
-              }
-            >
-              <option value="all">All</option>
-              <option value={ANNOTATION_STATUS.NEW}>New</option>
-              <option value={ANNOTATION_STATUS.IN_PROGRESS}>In Progress</option>
-              <option value={ANNOTATION_STATUS.IN_REVIEW}>In Review</option>
-              <option value={ANNOTATION_STATUS.HOLD}>Hold</option>
-              <option value={ANNOTATION_STATUS.RESOLVED}>Resolved</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label htmlFor="author-filter">Author:</label>
-            <input
-              id="author-filter"
-              type="text"
-              placeholder="Filter by author..."
-              value={filters.author}
-              onChange={(e) =>
-                setFilters({ ...filters, author: e.target.value })
-              }
-            />
-          </div>
-        </div>
+        <AnnotationFilters filters={filters} onFiltersChange={setFilters} />
       </div>
 
       {filteredAnnotations.length === 0 ? (
@@ -220,52 +170,11 @@ export function AnnotationManager({
       ) : (
         <div className="annotation-items">
           {filteredAnnotations.map((annotation) => (
-            <div
+            <AnnotationItem
               key={annotation.id}
-              className={`annotation-item status-${getStatusName(
-                annotation.status_id
-              )}`}
-              onClick={() => handleSelectAnnotation(annotation)}
-              data-testid="annotation-list-item"
-            >
-              <div className="annotation-header">
-                <span className="annotation-element">
-                  {annotation.element_tag}
-                  {annotation.element_id && `#${annotation.element_id}`}
-                  {annotation.element_role && ` [${annotation.element_role}]`}
-                </span>
-                <span
-                  className={`annotation-status status-${getStatusName(
-                    annotation.status_id
-                  )}`}
-                >
-                  {getStatusName(annotation.status_id)}
-                </span>
-              </div>
-
-              <div className="annotation-content">
-                <p>{sanitizeContent(annotation.content)}</p>
-              </div>
-
-              <div className="annotation-meta">
-                <span className="annotation-author">
-                  By: {annotation.created_by_email || annotation.created_by}
-                </span>
-                <span className="annotation-date">
-                  {formatDate(annotation.created_at)}
-                </span>
-                {annotation.updated_at !== annotation.created_at && (
-                  <span className="annotation-updated">
-                    Updated: {formatDate(annotation.updated_at)}
-                  </span>
-                )}
-                {annotation.resolved_at && (
-                  <span className="annotation-resolved">
-                    Resolved: {formatDate(annotation.resolved_at)}
-                  </span>
-                )}
-              </div>
-            </div>
+              annotation={annotation}
+              onClick={handleSelectAnnotation}
+            />
           ))}
         </div>
       )}
