@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
-import { sanitizeContent } from "../Core/utility/sanitize";
+import { formatDate, formatElementSelector, sanitizeContent } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
 
 /**
@@ -75,14 +75,6 @@ export function AnnotationDetail({
     }
   };
 
-  /**
-   * Format date for display
-   */
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
-
   const statusName = getStatusName(annotation.status_id);
 
   return (
@@ -102,12 +94,7 @@ export function AnnotationDetail({
         <div className="detail-section">
           <label className="detail-label">Element</label>
           <div className="detail-value element-info">
-            <code>
-              {annotation.element_tag}
-              {annotation.element_id && `#${annotation.element_id}`}
-              {annotation.element_test_id &&
-                ` [data-testid="${annotation.element_test_id}"]`}
-            </code>
+            <code>{formatElementSelector(annotation)}</code>
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
 import { Skeleton } from "../Core";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { sanitizeContent } from "../Core/utility/sanitize";
+import { formatDate, formatElementSelector, sanitizeContent } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
 import {
   navigateToAnnotation,
@@ -73,14 +73,6 @@ export function AnnotationList({
   const handleBack = () => {
     setSelectedAnnotation(null);
     onAnnotationSelect?.(null);
-  };
-
-  /**
-   * Format date for display
-   */
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
   // Show detail view if annotation is selected
@@ -174,8 +166,7 @@ export function AnnotationList({
           >
             <div className="annotation-header">
               <span className="annotation-element">
-                {annotation.element_tag}
-                {annotation.element_id && `#${annotation.element_id}`}
+                {formatElementSelector(annotation)}
               </span>
               <div className="annotation-badges">
                 <span

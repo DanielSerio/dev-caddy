@@ -1,5 +1,5 @@
 import { getStatusName } from "../Core/lib/status";
-import { sanitizeContent } from "../Core/utility/sanitize";
+import { formatDate, formatElementSelector, sanitizeContent } from "../Core/utility";
 import { isCurrentPage } from "../Core/utility/navigation";
 import type { Annotation } from "../../types/annotations";
 
@@ -29,14 +29,6 @@ interface AnnotationItemProps {
  * />
  */
 export function AnnotationItem({ annotation, onClick }: AnnotationItemProps) {
-  /**
-   * Format date for display
-   */
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
-
   return (
     <div
       className={`annotation-item status-${getStatusName(
@@ -47,9 +39,7 @@ export function AnnotationItem({ annotation, onClick }: AnnotationItemProps) {
     >
       <div className="annotation-header">
         <span className="annotation-element">
-          {annotation.element_tag}
-          {annotation.element_id && `#${annotation.element_id}`}
-          {annotation.element_role && ` [${annotation.element_role}]`}
+          {formatElementSelector(annotation)}
         </span>
         <div className="annotation-badges">
           <span
