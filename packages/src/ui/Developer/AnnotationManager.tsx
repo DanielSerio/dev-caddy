@@ -4,10 +4,7 @@ import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationFilters, type FilterOptions } from "./AnnotationFilters";
 import { AnnotationItem } from "./AnnotationItem";
 import type { Annotation } from "../../types/annotations";
-import {
-  navigateToAnnotation,
-  checkPendingAnnotation,
-} from "../Core/utility/navigation";
+import { useAnnotationNavigation } from "../Core/hooks";
 import { LoadingState } from "../Core/components/composite";
 import { EmptyState, ErrorDisplay } from "../Core/components/display";
 
@@ -35,6 +32,7 @@ export function AnnotationManager({
   onAnnotationSelect,
 }: AnnotationManagerProps) {
   const { annotations, loading, error } = useAnnotations();
+  const { navigateToAnnotation, checkPendingAnnotation } = useAnnotationNavigation();
 
   const [filters, setFilters] = useState<FilterOptions>({
     status: "all",

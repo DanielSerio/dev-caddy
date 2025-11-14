@@ -4,10 +4,7 @@ import { getStatusName } from "../Core/lib/status";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { sanitizeContent, formatElementSelector } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
-import {
-  navigateToAnnotation,
-  checkPendingAnnotation,
-} from "../Core/utility/navigation";
+import { useAnnotationNavigation } from "../Core/hooks";
 import { LoadingState } from "../Core/components/composite";
 import { EmptyState, ErrorDisplay } from "../Core/components/display";
 import { AnnotationBadge, AnnotationMeta } from "../Core/components/composite";
@@ -42,6 +39,7 @@ export function AnnotationList({
   onAnnotationSelect,
 }: AnnotationListProps) {
   const { annotations, loading, error } = useAnnotations();
+  const { navigateToAnnotation, checkPendingAnnotation } = useAnnotationNavigation();
   const [selectedAnnotation, setSelectedAnnotation] =
     useState<Annotation | null>(null);
 
@@ -66,7 +64,7 @@ export function AnnotationList({
         onAnnotationSelect?.(annotation);
       });
     }
-  }, [loading, annotations, onAnnotationSelect]);
+  }, [loading, annotations, onAnnotationSelect, checkPendingAnnotation]);
 
   /**
    * Handle navigating back from detail view
