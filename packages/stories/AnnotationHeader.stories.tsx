@@ -12,7 +12,10 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="dev-caddy" style={{ padding: "20px", background: "#1a1a1a" }}>
+      <div
+        className="dev-caddy"
+        style={{ padding: "20px", background: "#1a1a1a" }}
+      >
         <Story />
       </div>
     ),
@@ -24,10 +27,6 @@ const meta = {
     onBack: {
       description: "Callback when back button is clicked",
       action: "back clicked",
-    },
-    showFullPath: {
-      control: "boolean",
-      description: "Show full page path instead of 'Current Page'",
     },
   },
 } satisfies Meta<typeof AnnotationHeader>;
@@ -91,7 +90,6 @@ export const OtherPageInProgress: Story = {
 export const WithFullPath: Story = {
   args: {
     annotation: currentPageAnnotation,
-    showFullPath: true,
     onBack: () => console.log("Back clicked"),
   },
 };

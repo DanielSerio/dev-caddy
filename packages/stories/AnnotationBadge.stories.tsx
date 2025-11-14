@@ -12,7 +12,10 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="dev-caddy" style={{ padding: "20px", background: "#1a1a1a" }}>
+      <div
+        className="dev-caddy"
+        style={{ padding: "20px", background: "#1a1a1a" }}
+      >
         <Story />
       </div>
     ),
@@ -28,10 +31,6 @@ const meta = {
     showStatus: {
       control: "boolean",
       description: "Show status badge",
-    },
-    showFullPath: {
-      control: "boolean",
-      description: "Show full page path instead of 'Current Page'",
     },
   },
 } satisfies Meta<typeof AnnotationBadge>;
@@ -110,7 +109,6 @@ export const FullPath: Story = {
     annotation: otherPageAnnotation,
     showPage: true,
     showStatus: true,
-    showFullPath: true,
   },
 };
 
@@ -137,27 +135,42 @@ export const AllStatuses: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       <AnnotationBadge
-        annotation={{ ...currentPageAnnotation, status_id: ANNOTATION_STATUS.NEW }}
+        annotation={{
+          ...currentPageAnnotation,
+          status_id: ANNOTATION_STATUS.NEW,
+        }}
         showStatus
         showPage={false}
       />
       <AnnotationBadge
-        annotation={{ ...currentPageAnnotation, status_id: ANNOTATION_STATUS.IN_PROGRESS }}
+        annotation={{
+          ...currentPageAnnotation,
+          status_id: ANNOTATION_STATUS.IN_PROGRESS,
+        }}
         showStatus
         showPage={false}
       />
       <AnnotationBadge
-        annotation={{ ...currentPageAnnotation, status_id: ANNOTATION_STATUS.IN_REVIEW }}
+        annotation={{
+          ...currentPageAnnotation,
+          status_id: ANNOTATION_STATUS.IN_REVIEW,
+        }}
         showStatus
         showPage={false}
       />
       <AnnotationBadge
-        annotation={{ ...currentPageAnnotation, status_id: ANNOTATION_STATUS.HOLD }}
+        annotation={{
+          ...currentPageAnnotation,
+          status_id: ANNOTATION_STATUS.HOLD,
+        }}
         showStatus
         showPage={false}
       />
       <AnnotationBadge
-        annotation={{ ...currentPageAnnotation, status_id: ANNOTATION_STATUS.RESOLVED }}
+        annotation={{
+          ...currentPageAnnotation,
+          status_id: ANNOTATION_STATUS.RESOLVED,
+        }}
         showStatus
         showPage={false}
       />

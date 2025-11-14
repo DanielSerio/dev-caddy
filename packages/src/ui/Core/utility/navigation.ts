@@ -89,3 +89,28 @@ export function checkPendingAnnotation(
 export function isCurrentPage(annotation: Annotation): boolean {
   return annotation.page === window.location.pathname;
 }
+
+
+function isFullURL(url: string): boolean {
+  return /^(https?|ftp):\/\/[^\s\/$.?#].[^\s]*$/.test(url);
+}
+
+/**
+ * Take a string or URL input and return a properly formatted URL.
+ * 
+ * @param url - The url to format
+ * @returns URL object.
+ */
+export function formattedURL(url: string | URL) {
+  if (typeof url !== "string") {
+    return url;
+  }
+
+  if (isFullURL(url)) {
+    return new URL(url);
+  }
+
+  const { origin } = window;
+
+  return new URL(`${origin}${url}`.replace(/\/\//g, "/"));
+}

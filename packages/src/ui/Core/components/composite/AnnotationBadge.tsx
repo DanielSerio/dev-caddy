@@ -12,8 +12,6 @@ export interface AnnotationBadgeProps {
   showPage?: boolean;
   /** Show status badge */
   showStatus?: boolean;
-  /** Show full page path instead of "Current Page" */
-  showFullPath?: boolean;
   /** Additional CSS class name */
   className?: string;
 }
@@ -40,7 +38,6 @@ export function AnnotationBadge({
   annotation,
   showPage = true,
   showStatus = true,
-  showFullPath = false,
   className = "",
 }: AnnotationBadgeProps) {
   // If nothing to show, return null
@@ -49,8 +46,11 @@ export function AnnotationBadge({
   }
 
   return (
-    <div className={`annotation-badges ${className}`.trim()} data-testid="annotation-badge">
-      {showPage && <PageBadge annotation={annotation} showFullPath={showFullPath} />}
+    <div
+      className={`annotation-badges ${className}`.trim()}
+      data-testid="annotation-badge"
+    >
+      {showPage && <PageBadge annotation={annotation} />}
       {showStatus && <StatusBadge statusId={annotation.status_id} />}
     </div>
   );

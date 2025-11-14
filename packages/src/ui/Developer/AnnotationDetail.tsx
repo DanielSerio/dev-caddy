@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
-import { sanitizeContent } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
-import { BackButton } from "../Core/components/button";
 import { DetailSection } from "../Core/components/layout";
-import { ElementCode } from "../Core/components/display";
 import { StatusSelect } from "../Core/components/form";
-import { TextArea } from "../Core/components/form";
-import { ActionButton } from "../Core/components/button";
 import { AnnotationMeta } from "../Core/components/composite";
+import {
+  AnnotationDetailHeader,
+  AnnotationDetailContent,
+  AnnotationContentEditor,
+  AnnotationDetailActions,
+} from "../Core/components/annotation";
 
 /**
  * Props for AnnotationDetail component
@@ -64,6 +65,14 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
   };
 
   /**
+   * Handle canceling edit
+   */
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditContent(annotation.content);
+  };
+
+  /**
    * Handle status change
    */
   const handleStatusChange = async (newStatusId: number) => {
@@ -95,15 +104,19 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
 
   return (
     <div className="dev-caddy-annotation-detail">
-      <div className="detail-header">
-        <BackButton onClick={onBack} />
-        <h3>Annotation Details</h3>
-      </div>
+      <AnnotationDetailHeader onBack={onBack} />
 
       <div className="detail-content">
-        <DetailSection label="Element">
-          <ElementCode annotation={annotation} />
-        </DetailSection>
+        {isEditing ? (
+          <AnnotationContentEditor
+            content={editContent}
+            onChange={setEditContent}
+            onSave={handleSaveEdit}
+            onCancel={handleCancelEdit}
+          />
+        ) : (
+          <AnnotationDetailContent annotation={annotation} />
+        )}
 
         <DetailSection label="Status">
           <StatusSelect
@@ -111,20 +124,6 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
             onChange={handleStatusChange}
             data-testid="annotation-status-select"
           />
-        </DetailSection>
-
-        <DetailSection label="Feedback">
-          {isEditing ? (
-            <TextArea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              autoFocus
-              data-testid="annotation-edit-textarea"
-              className="detail-textarea"
-            />
-          ) : (
-            <p className="annotation-content">{sanitizeContent(annotation.content)}</p>
-          )}
         </DetailSection>
 
         <DetailSection label="Author">
@@ -152,50 +151,13 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
         )}
       </div>
 
-      <div className="detail-actions">
-        {isEditing ? (
-          <>
-            <ActionButton
-              variant="primary"
-              onClick={handleSaveEdit}
-              title="Save changes"
-              data-testid="save-annotation-btn"
-            >
-              Save
-            </ActionButton>
-            <ActionButton
-              variant="secondary"
-              onClick={() => {
-                setIsEditing(false);
-                setEditContent(annotation.content);
-              }}
-              title="Cancel editing"
-              data-testid="cancel-edit-btn"
-            >
-              Cancel
-            </ActionButton>
-          </>
-        ) : (
-          <>
-            <ActionButton
-              variant="secondary"
-              onClick={() => setIsEditing(true)}
-              title="Edit annotation"
-              data-testid="edit-annotation-btn"
-            >
-              Edit
-            </ActionButton>
-            <ActionButton
-              variant="danger"
-              onClick={handleDelete}
-              title="Delete annotation"
-              data-testid="delete-annotation-btn"
-            >
-              Delete
-            </ActionButton>
-          </>
-        )}
-      </div>
+      <AnnotationDetailActions
+        isEditing={isEditing}
+        onEdit={() => setIsEditing(true)}
+        onDelete={handleDelete}
+        onSave={handleSaveEdit}
+        onCancel={handleCancelEdit}
+      />
     </div>
   );
 }

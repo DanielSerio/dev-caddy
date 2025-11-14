@@ -1,4 +1,4 @@
-import { isCurrentPage } from "../../utility/navigation";
+import { formattedURL, isCurrentPage } from "../../utility/navigation";
 import type { Annotation } from "../../../../types/annotations";
 
 /**
@@ -7,8 +7,6 @@ import type { Annotation } from "../../../../types/annotations";
 export interface PageBadgeProps {
   /** The annotation containing page information */
   annotation: Annotation;
-  /** Whether to show the full path or "Current Page" label */
-  showFullPath?: boolean;
   /** Additional CSS class name */
   className?: string;
 }
@@ -25,22 +23,30 @@ export interface PageBadgeProps {
  * <PageBadge annotation={annotation} showFullPath={true} />
  * ```
  */
-export function PageBadge({
-  annotation,
-  showFullPath = false,
-  className = "",
-}: PageBadgeProps) {
+export function PageBadge({ annotation, className = "" }: PageBadgeProps) {
   const isCurrent = isCurrentPage(annotation);
-  const pageLabel = isCurrent && !showFullPath ? "Current Page" : annotation.page;
+  const pageUrl = formattedURL(annotation.page);
+  const pageLabel = pageUrl.pathname;
+  const paramsEntries = Array.from(pageUrl.searchParams.entries());
 
   return (
-    <span
+    <details
       className={`annotation-page-badge ${
         isCurrent ? "current-page" : "other-page"
       } ${className}`.trim()}
       data-testid="page-badge"
     >
-      {pageLabel}
-    </span>
+      <summary>{pageLabel}</summary>
+
+      <div>
+        {paramsEntries.map(([value, key]) => {
+          return (
+            <div key={`${key}:${value}`}>
+              {key}: {value}
+            </div>
+          );
+        })}
+      </div>
+    </details>
   );
 }

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback, type KeyboardEvent } from 'react';
+import React, { useState, useEffect, useRef, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { validateAnnotationContent } from '../../plugin/utility/validate';
+import { useElementPosition } from './hooks';
 
 /**
  * Props for AnnotationPopover component
@@ -35,21 +36,23 @@ export function AnnotationPopover({
   onCancel,
 }: AnnotationPopoverProps) {
   const [content, setContent] = useState('');
-  const [position, setPosition] = useState({ top: 0, left: 0 });
   const [error, setError] = useState<string | null>(null);
+  const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Use useElementPosition hook for automatic position tracking
+  const { position } = useElementPosition(selectedElement, { throttleMs: 100 });
+
   /**
-   * Calculate popover position based on selected element
+   * Calculate popover position with screen bounds checking
    */
-  const calculatePosition = useCallback(() => {
-    const rect = selectedElement.getBoundingClientRect();
+  useEffect(() => {
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
 
     // Position below the element by default
-    let top = rect.bottom + scrollY + 8;
-    let left = rect.left + scrollX;
+    let top = position.top + position.height + scrollY + 8;
+    let left = position.left + scrollX;
 
     // If popover would go off-screen to the right, align to right edge
     const popoverWidth = 320; // Approximate width
@@ -60,72 +63,11 @@ export function AnnotationPopover({
     // If popover would go off-screen at the bottom, position above
     const popoverHeight = 200; // Approximate height
     if (top + popoverHeight > window.innerHeight + scrollY) {
-      top = rect.top + scrollY - popoverHeight - 8;
+      top = position.top + scrollY - popoverHeight - 8;
     }
 
-    setPosition({ top, left });
-  }, [selectedElement]);
-
-  /**
-   * Initial position calculation
-   */
-  useEffect(() => {
-    calculatePosition();
-  }, [calculatePosition]);
-
-  /**
-   * Update position when scrollable parent containers scroll
-   *
-   * This ensures the popover follows the element when:
-   * - Element is inside a modal with scrollable content
-   * - Element is in any scrollable container (overflow: auto/scroll)
-   */
-  useEffect(() => {
-    // Find all scrollable ancestors
-    const scrollableAncestors: HTMLElement[] = [];
-    let parent = selectedElement.parentElement;
-
-    while (parent) {
-      const computedStyle = window.getComputedStyle(parent);
-      const overflow = computedStyle.overflow + computedStyle.overflowY + computedStyle.overflowX;
-
-      if (overflow.includes('scroll') || overflow.includes('auto')) {
-        scrollableAncestors.push(parent);
-      }
-
-      parent = parent.parentElement;
-    }
-
-    // Throttle position updates to avoid excessive recalculations
-    let throttleTimer: number | null = null;
-
-    const handleScroll = () => {
-      if (throttleTimer !== null) {
-        return;
-      }
-
-      throttleTimer = window.setTimeout(() => {
-        calculatePosition();
-        throttleTimer = null;
-      }, 100);
-    };
-
-    // Add scroll listeners to all scrollable ancestors
-    scrollableAncestors.forEach(el => {
-      el.addEventListener('scroll', handleScroll, { passive: true });
-    });
-
-    // Cleanup
-    return () => {
-      scrollableAncestors.forEach(el => {
-        el.removeEventListener('scroll', handleScroll);
-      });
-
-      if (throttleTimer !== null) {
-        clearTimeout(throttleTimer);
-      }
-    };
-  }, [selectedElement, calculatePosition]);
+    setPopoverPosition({ top, left });
+  }, [position]);
 
   /**
    * Auto-focus textarea on mount
@@ -190,8 +132,8 @@ export function AnnotationPopover({
       aria-label="Create annotation"
       style={{
         position: 'absolute',
-        top: `${position.top}px`,
-        left: `${position.left}px`,
+        top: `${popoverPosition.top}px`,
+        left: `${popoverPosition.left}px`,
         zIndex: 999999,
       }}
     >

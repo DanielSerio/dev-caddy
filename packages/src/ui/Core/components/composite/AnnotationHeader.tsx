@@ -11,8 +11,6 @@ export interface AnnotationHeaderProps {
   annotation: Annotation;
   /** Callback when back button is clicked */
   onBack: () => void;
-  /** Show full page path instead of "Current Page" */
-  showFullPath?: boolean;
   /** Additional CSS class name */
   className?: string;
 }
@@ -34,7 +32,6 @@ export interface AnnotationHeaderProps {
 export function AnnotationHeader({
   annotation,
   onBack,
-  showFullPath = false,
   className = "",
 }: AnnotationHeaderProps) {
   return (
@@ -44,7 +41,7 @@ export function AnnotationHeader({
     >
       <BackButton onClick={onBack} />
       <div className="annotation-badges">
-        <PageBadge annotation={annotation} showFullPath={showFullPath} />
+        <PageBadge annotation={annotation} />
         <StatusBadge statusId={annotation.status_id} />
       </div>
     </div>

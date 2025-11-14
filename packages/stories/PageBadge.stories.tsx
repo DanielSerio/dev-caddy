@@ -42,10 +42,6 @@ const meta = {
     annotation: {
       description: "The annotation containing page information",
     },
-    showFullPath: {
-      control: "boolean",
-      description: "Whether to show the full path or 'Current Page' label",
-    },
     className: {
       control: "text",
       description: "Additional CSS class name",
@@ -80,7 +76,6 @@ export const OtherPage: Story = {
 export const CurrentPageWithFullPath: Story = {
   args: {
     annotation: currentPageAnnotation,
-    showFullPath: true,
   },
 };
 
@@ -102,16 +97,25 @@ export const AllVariations: Story = {
     annotation: currentPageAnnotation,
   },
   render: () => (
-    <div style={{ display: "flex", gap: "12px", flexDirection: "column", alignItems: "flex-start" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "12px",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
       <div>
-        <strong>Current Page:</strong> <PageBadge annotation={currentPageAnnotation} />
+        <strong>Current Page:</strong>{" "}
+        <PageBadge annotation={currentPageAnnotation} />
       </div>
       <div>
-        <strong>Other Page:</strong> <PageBadge annotation={otherPageAnnotation} />
+        <strong>Other Page:</strong>{" "}
+        <PageBadge annotation={otherPageAnnotation} />
       </div>
       <div>
         <strong>Current Page (Full Path):</strong>{" "}
-        <PageBadge annotation={currentPageAnnotation} showFullPath={true} />
+        <PageBadge annotation={currentPageAnnotation} />
       </div>
     </div>
   ),
