@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AnnotationMeta } from "../src/ui/Core/components/composite/AnnotationMeta";
 import type { Annotation } from "../src/types/annotations";
-import { ANNOTATION_STATUS } from "../src/ui/Core/lib/annotation/constants";
+import { ANNOTATION_STATUS } from "../src/types/annotations";
 
 const meta = {
   title: "Core/Composite/AnnotationMeta",
@@ -37,21 +37,24 @@ const updatedDate = new Date("2025-01-13T14:45:00Z").toISOString();
 
 // Mock annotation
 const mockAnnotation: Annotation = {
-  id: "1",
-  project_id: "project-1",
+  id: 1,
   page: "/dashboard",
   element_tag: "button",
+  compressed_element_tree: "html>body>div>button",
   element_id: "submit-btn",
   element_test_id: "submit-button",
   element_role: "button",
-  element_text: "Submit",
-  x_position: 100,
-  y_position: 200,
+  element_unique_classes: "btn btn-primary",
+  element_parent_selector: "div.form-container",
+  element_nth_child: 1,
   content: "This needs fixing",
-  author: "john.doe@example.com",
   status_id: ANNOTATION_STATUS.NEW,
+  created_by: "user-123",
+  created_by_email: "john.doe@example.com",
   created_at: createdDate,
+  updated_by: null,
   updated_at: updatedDate,
+  resolved_at: null,
 };
 
 /**
@@ -80,7 +83,7 @@ export const LongEmail: Story = {
   args: {
     annotation: {
       ...mockAnnotation,
-      author: "very.long.email.address@company-domain.com",
+      created_by_email: "very.long.email.address@company-domain.com",
     },
   },
 };
@@ -92,7 +95,7 @@ export const ShortName: Story = {
   args: {
     annotation: {
       ...mockAnnotation,
-      author: "Dev",
+      created_by_email: "Dev",
     },
   },
 };
@@ -101,6 +104,9 @@ export const ShortName: Story = {
  * Side-by-side comparison of created vs updated
  */
 export const Comparison: Story = {
+  args: {
+    annotation: mockAnnotation,
+  },
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>

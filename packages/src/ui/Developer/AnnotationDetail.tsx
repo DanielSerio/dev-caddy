@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
-import { getStatusName } from "../Core/lib/status";
-import { ANNOTATION_STATUS } from "../../types/annotations";
-import { formatDate, formatElementSelector, sanitizeContent } from "../Core/utility";
+import { sanitizeContent } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
+import { BackButton } from "../Core/components/button";
+import { DetailSection } from "../Core/components/layout";
+import { ElementCode } from "../Core/components/display";
+import { StatusSelect } from "../Core/components/form";
+import { TextArea } from "../Core/components/form";
+import { ActionButton } from "../Core/components/button";
+import { AnnotationMeta } from "../Core/components/composite";
 
 /**
  * Props for AnnotationDetail component
@@ -88,155 +93,106 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
     }
   };
 
-  const statusName = getStatusName(statusId);
-
   return (
     <div className="dev-caddy-annotation-detail">
       <div className="detail-header">
-        <button
-          onClick={onBack}
-          className="btn-back"
-          data-testid="back-to-list-btn"
-        >
-          ← Back
-        </button>
+        <BackButton onClick={onBack} />
         <h3>Annotation Details</h3>
       </div>
 
       <div className="detail-content">
-        <div className="detail-section">
-          <label className="detail-label">Element</label>
-          <div className="detail-value element-info">
-            <code>{formatElementSelector(annotation)}</code>
-          </div>
-        </div>
+        <DetailSection label="Element">
+          <ElementCode annotation={annotation} />
+        </DetailSection>
 
-        <div className="detail-section">
-          <label className="detail-label">Status</label>
-          <div className="detail-value">
-            <select
-              value={statusId}
-              onChange={(e) => handleStatusChange(Number(e.target.value))}
-              className={`annotation-status status-${statusName}`}
-              data-testid="annotation-status-select"
-            >
-              <option value={ANNOTATION_STATUS.NEW}>New</option>
-              <option value={ANNOTATION_STATUS.IN_PROGRESS}>In Progress</option>
-              <option value={ANNOTATION_STATUS.IN_REVIEW}>In Review</option>
-              <option value={ANNOTATION_STATUS.HOLD}>Hold</option>
-              <option value={ANNOTATION_STATUS.RESOLVED}>Resolved</option>
-            </select>
-          </div>
-        </div>
+        <DetailSection label="Status">
+          <StatusSelect
+            value={statusId}
+            onChange={handleStatusChange}
+            data-testid="annotation-status-select"
+          />
+        </DetailSection>
 
-        <div className="detail-section">
-          <label className="detail-label">Feedback</label>
-          <div className="detail-value">
-            {isEditing ? (
-              <textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                autoFocus
-                data-testid="annotation-edit-textarea"
-                className="detail-textarea"
-              />
-            ) : (
-              <p className="annotation-content">{sanitizeContent(annotation.content)}</p>
-            )}
-          </div>
-        </div>
+        <DetailSection label="Feedback">
+          {isEditing ? (
+            <TextArea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              autoFocus
+              data-testid="annotation-edit-textarea"
+              className="detail-textarea"
+            />
+          ) : (
+            <p className="annotation-content">{sanitizeContent(annotation.content)}</p>
+          )}
+        </DetailSection>
 
-        <div className="detail-section">
-          <label className="detail-label">Author</label>
-          <div className="detail-value">
-            <span className="detail-author">
-              {annotation.created_by_email || annotation.created_by}
-            </span>
-          </div>
-        </div>
+        <DetailSection label="Author">
+          <span className="detail-author">
+            {annotation.created_by_email || annotation.created_by}
+          </span>
+        </DetailSection>
 
-        <div className="detail-section">
-          <label className="detail-label">Created</label>
-          <div className="detail-value">
-            <span className="detail-date">{formatDate(annotation.created_at)}</span>
-          </div>
-        </div>
-
-        {annotation.updated_at !== annotation.created_at && (
-          <div className="detail-section">
-            <label className="detail-label">Updated</label>
-            <div className="detail-value">
-              <span className="detail-date">
-                {formatDate(annotation.updated_at)}
-              </span>
-            </div>
-          </div>
-        )}
+        <AnnotationMeta annotation={annotation} showUpdated={true} />
 
         {annotation.resolved_at && (
-          <div className="detail-section">
-            <label className="detail-label">Resolved</label>
-            <div className="detail-value">
-              <span className="detail-date">
-                {formatDate(annotation.resolved_at)}
-              </span>
-            </div>
-          </div>
+          <DetailSection label="Resolved">
+            <span className="detail-date">
+              {new Date(annotation.resolved_at).toLocaleString()}
+            </span>
+          </DetailSection>
         )}
 
         {annotation.element_parent_selector && (
-          <div className="detail-section">
-            <label className="detail-label">Parent Selector</label>
-            <div className="detail-value">
-              <code className="selector-code">
-                {annotation.element_parent_selector}
-              </code>
-            </div>
-          </div>
+          <DetailSection label="Parent Selector">
+            <code className="selector-code">
+              {annotation.element_parent_selector}
+            </code>
+          </DetailSection>
         )}
       </div>
 
       <div className="detail-actions">
         {isEditing ? (
           <>
-            <button
+            <ActionButton
+              variant="primary"
               onClick={handleSaveEdit}
-              className="btn-save"
               title="Save changes"
               data-testid="save-annotation-btn"
             >
               Save
-            </button>
-            <button
+            </ActionButton>
+            <ActionButton
+              variant="secondary"
               onClick={() => {
                 setIsEditing(false);
                 setEditContent(annotation.content);
               }}
-              className="btn-cancel"
               title="Cancel editing"
               data-testid="cancel-edit-btn"
             >
               Cancel
-            </button>
+            </ActionButton>
           </>
         ) : (
           <>
-            <button
+            <ActionButton
+              variant="secondary"
               onClick={() => setIsEditing(true)}
-              className="btn-edit"
               title="Edit annotation"
               data-testid="edit-annotation-btn"
             >
               Edit
-            </button>
-            <button
+            </ActionButton>
+            <ActionButton
+              variant="danger"
               onClick={handleDelete}
-              className="btn-delete"
               title="Delete annotation"
               data-testid="delete-annotation-btn"
             >
               Delete
-            </button>
+            </ActionButton>
           </>
         )}
       </div>

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AnnotationHeader } from "../src/ui/Core/components/composite/AnnotationHeader";
 import type { Annotation } from "../src/types/annotations";
-import { ANNOTATION_STATUS } from "../src/ui/Core/lib/annotation/constants";
+import { ANNOTATION_STATUS } from "../src/types/annotations";
 
 const meta = {
   title: "Core/Composite/AnnotationHeader",
@@ -37,27 +37,30 @@ type Story = StoryObj<typeof meta>;
 
 // Mock annotation for current page
 const currentPageAnnotation: Annotation = {
-  id: "1",
-  project_id: "project-1",
+  id: 1,
   page: window.location.pathname,
   element_tag: "button",
+  compressed_element_tree: "html>body>div>button",
   element_id: "submit-btn",
   element_test_id: "submit-button",
   element_role: "button",
-  element_text: "Submit",
-  x_position: 100,
-  y_position: 200,
+  element_unique_classes: "btn btn-primary",
+  element_parent_selector: "div.form-container",
+  element_nth_child: 1,
   content: "This button needs better styling",
-  author: "john.doe@example.com",
   status_id: ANNOTATION_STATUS.NEW,
+  created_by: "user-123",
+  created_by_email: "john.doe@example.com",
   created_at: new Date().toISOString(),
+  updated_by: null,
   updated_at: new Date().toISOString(),
+  resolved_at: null,
 };
 
 // Mock annotation for other page
 const otherPageAnnotation: Annotation = {
   ...currentPageAnnotation,
-  id: "2",
+  id: 2,
   page: "/dashboard",
   status_id: ANNOTATION_STATUS.IN_PROGRESS,
 };
@@ -68,6 +71,7 @@ const otherPageAnnotation: Annotation = {
 export const CurrentPageNew: Story = {
   args: {
     annotation: currentPageAnnotation,
+    onBack: () => console.log("Back clicked"),
   },
 };
 
@@ -77,6 +81,7 @@ export const CurrentPageNew: Story = {
 export const OtherPageInProgress: Story = {
   args: {
     annotation: otherPageAnnotation,
+    onBack: () => console.log("Back clicked"),
   },
 };
 
@@ -87,6 +92,7 @@ export const WithFullPath: Story = {
   args: {
     annotation: currentPageAnnotation,
     showFullPath: true,
+    onBack: () => console.log("Back clicked"),
   },
 };
 
@@ -99,6 +105,7 @@ export const InReview: Story = {
       ...currentPageAnnotation,
       status_id: ANNOTATION_STATUS.IN_REVIEW,
     },
+    onBack: () => console.log("Back clicked"),
   },
 };
 
@@ -111,6 +118,7 @@ export const OnHold: Story = {
       ...currentPageAnnotation,
       status_id: ANNOTATION_STATUS.HOLD,
     },
+    onBack: () => console.log("Back clicked"),
   },
 };
 
@@ -123,6 +131,7 @@ export const Resolved: Story = {
       ...currentPageAnnotation,
       status_id: ANNOTATION_STATUS.RESOLVED,
     },
+    onBack: () => console.log("Back clicked"),
   },
 };
 
@@ -132,6 +141,7 @@ export const Resolved: Story = {
 export const Interactive: Story = {
   args: {
     annotation: currentPageAnnotation,
+    onBack: () => alert("Back button clicked!"),
   },
   render: (args) => {
     return (

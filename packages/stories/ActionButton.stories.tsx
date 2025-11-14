@@ -99,26 +99,45 @@ export const WithIcon: Story = {
  * All variants displayed together
  */
 export const AllVariants: Story = {
+  args: {
+    variant: "primary",
+  },
   render: () => (
-    <div style={{ display: "flex", gap: "12px", flexDirection: "column", alignItems: "flex-start" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "12px",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
       <div>
         <strong>Primary:</strong>
         <br />
-        <ActionButton variant="primary" onClick={() => console.log("Primary clicked")}>
+        <ActionButton
+          variant="primary"
+          onClick={() => console.log("Primary clicked")}
+        >
           Save
         </ActionButton>
       </div>
       <div>
         <strong>Secondary:</strong>
         <br />
-        <ActionButton variant="secondary" onClick={() => console.log("Secondary clicked")}>
+        <ActionButton
+          variant="secondary"
+          onClick={() => console.log("Secondary clicked")}
+        >
           Cancel
         </ActionButton>
       </div>
       <div>
         <strong>Danger:</strong>
         <br />
-        <ActionButton variant="danger" onClick={() => console.log("Danger clicked")}>
+        <ActionButton
+          variant="danger"
+          onClick={() => console.log("Danger clicked")}
+        >
           Delete
         </ActionButton>
       </div>
@@ -144,6 +163,9 @@ export const AllVariants: Story = {
  * Common action button combinations
  */
 export const CommonCombinations: Story = {
+  args: {
+    variant: "primary",
+  },
   render: () => (
     <div style={{ display: "flex", gap: "24px", flexDirection: "column" }}>
       <div>

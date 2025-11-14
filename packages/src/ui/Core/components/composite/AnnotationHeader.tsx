@@ -1,5 +1,5 @@
 import type { Annotation } from "../../../../types/annotations";
-import { BackButton } from "../layout/BackButton";
+import { BackButton } from "../button/BackButton";
 import { PageBadge } from "../badges/PageBadge";
 import { StatusBadge } from "../badges/StatusBadge";
 
@@ -38,7 +38,10 @@ export function AnnotationHeader({
   className = "",
 }: AnnotationHeaderProps) {
   return (
-    <div className={`annotation-header ${className}`.trim()} data-testid="annotation-header">
+    <div
+      className={`annotation-header ${className}`.trim()}
+      data-testid="annotation-header"
+    >
       <BackButton onClick={onBack} />
       <div className="annotation-badges">
         <PageBadge annotation={annotation} showFullPath={showFullPath} />

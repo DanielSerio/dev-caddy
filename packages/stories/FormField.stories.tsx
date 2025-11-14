@@ -53,7 +53,9 @@ export const WithTextArea: Story = {
   args: {
     label: "Comments",
     htmlFor: "comments",
-    children: <textarea id="comments" placeholder="Enter your comments..." rows={4} />,
+    children: (
+      <textarea id="comments" placeholder="Enter your comments..." rows={4} />
+    ),
   },
 };
 
@@ -98,8 +100,20 @@ export const RequiredWithError: Story = {
  * Complete form example
  */
 export const FormExample: Story = {
+  args: {
+    label: "Search:",
+    htmlFor: "search-filter",
+    children: <input id="search-filter" type="text" placeholder="Search..." />,
+  },
   render: () => (
-    <div style={{ width: "300px", display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div
+      style={{
+        width: "300px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      }}
+    >
       <FormField label="Email Address" htmlFor="form-email" required>
         <input id="form-email" type="email" placeholder="you@example.com" />
       </FormField>

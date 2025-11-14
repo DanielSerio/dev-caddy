@@ -70,8 +70,20 @@ export const WithDateInput: Story = {
  * Multiple filter groups together
  */
 export const MultipleFilters: Story = {
+  args: {
+    label: "Search:",
+    htmlFor: "search-filter",
+    children: <input id="search-filter" type="text" placeholder="Search..." />,
+  },
   render: () => (
-    <div style={{ display: "flex", gap: "12px", flexDirection: "column", width: "300px" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "12px",
+        flexDirection: "column",
+        width: "300px",
+      }}
+    >
       <FilterGroup label="Status:" htmlFor="multi-status">
         <select id="multi-status">
           <option value="all">All</option>
@@ -82,7 +94,11 @@ export const MultipleFilters: Story = {
       </FilterGroup>
 
       <FilterGroup label="Author:" htmlFor="multi-author">
-        <input id="multi-author" type="text" placeholder="Filter by author..." />
+        <input
+          id="multi-author"
+          type="text"
+          placeholder="Filter by author..."
+        />
       </FilterGroup>
 
       <FilterGroup label="Page:" htmlFor="multi-page">
@@ -101,6 +117,11 @@ export const MultipleFilters: Story = {
  * Filter groups in horizontal layout
  */
 export const HorizontalLayout: Story = {
+  args: {
+    label: "Search:",
+    htmlFor: "search-filter",
+    children: <input id="search-filter" type="text" placeholder="Search..." />,
+  },
   render: () => (
     <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
       <FilterGroup label="Status:" htmlFor="horiz-status">
@@ -125,9 +146,23 @@ export const HorizontalLayout: Story = {
  * Filter panel example (mimics AnnotationFilters)
  */
 export const FilterPanel: Story = {
+  args: {
+    label: "Search:",
+    htmlFor: "search-filter",
+    children: <input id="search-filter" type="text" placeholder="Search..." />,
+  },
   render: () => (
-    <div style={{ padding: "16px", background: "#1a1a1a", borderRadius: "8px", width: "400px" }}>
-      <h3 style={{ margin: "0 0 12px", fontSize: "14px", color: "#fff" }}>Filters</h3>
+    <div
+      style={{
+        padding: "16px",
+        background: "#1a1a1a",
+        borderRadius: "8px",
+        width: "400px",
+      }}
+    >
+      <h3 style={{ margin: "0 0 12px", fontSize: "14px", color: "#fff" }}>
+        Filters
+      </h3>
       <div style={{ display: "flex", gap: "12px" }}>
         <FilterGroup label="Page:" htmlFor="panel-page">
           <select id="panel-page">
@@ -145,7 +180,11 @@ export const FilterPanel: Story = {
         </FilterGroup>
 
         <FilterGroup label="Author:" htmlFor="panel-author">
-          <input id="panel-author" type="text" placeholder="Filter by author..." />
+          <input
+            id="panel-author"
+            type="text"
+            placeholder="Filter by author..."
+          />
         </FilterGroup>
       </div>
     </div>

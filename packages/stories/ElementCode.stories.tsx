@@ -4,38 +4,41 @@ import type { Annotation } from "../src/types/annotations";
 
 // Mock annotation with all element attributes
 const fullAnnotation: Annotation = {
-  id: "1",
+  id: 1,
   content: "Test annotation",
   page: "/dashboard",
   element_tag: "button",
+  compressed_element_tree: "html>body>div>button",
   element_id: "submit-btn",
   element_unique_classes: "btn-primary",
   element_role: "button",
   element_test_id: "submit-button",
+  element_parent_selector: "div.form-container",
+  element_nth_child: 1,
   status_id: 1,
   created_by: "user-123",
   created_by_email: "user@example.com",
   created_at: new Date().toISOString(),
+  updated_by: null,
   updated_at: new Date().toISOString(),
   resolved_at: null,
-  project_id: "project-1",
 };
 
 // Mock annotation with minimal attributes
 const minimalAnnotation: Annotation = {
   ...fullAnnotation,
-  id: "2",
-  element_id: "",
-  element_role: "",
-  element_test_id: "",
+  id: 2,
+  element_id: null,
+  element_role: null,
+  element_test_id: null,
 };
 
 // Mock annotation with just tag and id
 const tagAndIdAnnotation: Annotation = {
   ...fullAnnotation,
-  id: "3",
-  element_role: "",
-  element_test_id: "",
+  id: 3,
+  element_role: null,
+  element_test_id: null,
 };
 
 const meta = {
@@ -100,6 +103,9 @@ export const WithCustomClass: Story = {
  * Various element code examples
  */
 export const AllVariations: Story = {
+  args: {
+    annotation: fullAnnotation,
+  },
   render: () => (
     <div style={{ display: "flex", gap: "16px", flexDirection: "column", width: "400px" }}>
       <div>

@@ -58,7 +58,8 @@ export const WithError: Story = {
  */
 export const WithKeyboardShortcuts: Story = {
   args: {
-    placeholder: "Press Enter to submit, Esc to cancel, Shift+Enter for new line",
+    placeholder:
+      "Press Enter to submit, Esc to cancel, Shift+Enter for new line",
     rows: 4,
     onKeyboardShortcut: (key) => {
       if (key === "submit") alert("Submit!");
@@ -124,7 +125,14 @@ export const Interactive: Story = {
  */
 export const Sizes: Story = {
   render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "400px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+        width: "400px",
+      }}
+    >
       <div>
         <strong>Small (2 rows):</strong>
         <TextArea placeholder="Small textarea..." rows={2} />

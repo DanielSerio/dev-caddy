@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BackButton } from "../src/ui/Core/components/button/BackButton";
+import { ComponentProps } from "react";
 
 const meta = {
   title: "Core/Button/BackButton",
@@ -70,13 +71,21 @@ export const WithCustomClass: Story = {
  * Interactive back button demo
  */
 export const Interactive: Story = {
+  args: {} as ComponentProps<typeof BackButton>,
   render: () => {
     const handleClick = () => {
       alert("Navigating back...");
     };
 
     return (
-      <div style={{ display: "flex", gap: "16px", flexDirection: "column", alignItems: "flex-start" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "16px",
+          flexDirection: "column",
+          alignItems: "flex-start",
+        }}
+      >
         <div>
           <strong>Default:</strong>
           <br />
@@ -90,13 +99,15 @@ export const Interactive: Story = {
         <div>
           <strong>In Header Context:</strong>
           <br />
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            padding: "12px",
-            borderBottom: "1px solid #ccc"
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              padding: "12px",
+              borderBottom: "1px solid #ccc",
+            }}
+          >
             <BackButton onClick={handleClick} />
             <h3 style={{ margin: 0 }}>Annotation Details</h3>
           </div>

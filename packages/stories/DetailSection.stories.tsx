@@ -6,21 +6,24 @@ import type { Annotation } from "../src/types/annotations";
 
 // Mock annotation
 const mockAnnotation: Annotation = {
-  id: "1",
+  id: 1,
   content: "Test annotation",
   page: "/dashboard",
   element_tag: "button",
+  compressed_element_tree: "html>body>div>button",
   element_id: "submit-btn",
   element_unique_classes: "btn-primary",
   element_role: "button",
   element_test_id: "submit-button",
+  element_parent_selector: "div.form-container",
+  element_nth_child: 1,
   status_id: 1,
   created_by: "user-123",
   created_by_email: "user@example.com",
   created_at: new Date().toISOString(),
+  updated_by: null,
   updated_at: new Date().toISOString(),
   resolved_at: null,
-  project_id: "project-1",
 };
 
 const meta = {
@@ -108,8 +111,20 @@ export const WithCustomClass: Story = {
  * Multiple detail sections together
  */
 export const MultipleSections: Story = {
+  args: {
+    label: "Custom Section",
+    children: <span>Custom styled content</span>,
+    className: "custom-detail-section",
+  },
   render: () => (
-    <div style={{ display: "flex", gap: "16px", flexDirection: "column", width: "400px" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "16px",
+        flexDirection: "column",
+        width: "400px",
+      }}
+    >
       <DetailSection label="Element">
         <ElementCode annotation={mockAnnotation} />
       </DetailSection>

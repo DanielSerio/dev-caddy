@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AnnotationBadge } from "../src/ui/Core/components/composite/AnnotationBadge";
 import type { Annotation } from "../src/types/annotations";
-import { ANNOTATION_STATUS } from "../src/ui/Core/lib/annotation/constants";
+import { ANNOTATION_STATUS } from "../src/types/annotations";
 
 const meta = {
   title: "Core/Composite/AnnotationBadge",
@@ -41,27 +41,30 @@ type Story = StoryObj<typeof meta>;
 
 // Mock annotation for current page
 const currentPageAnnotation: Annotation = {
-  id: "1",
-  project_id: "project-1",
+  id: 1,
   page: window.location.pathname,
   element_tag: "button",
+  compressed_element_tree: "html>body>div>button",
   element_id: "submit-btn",
   element_test_id: "submit-button",
   element_role: "button",
-  element_text: "Submit",
-  x_position: 100,
-  y_position: 200,
+  element_unique_classes: "btn btn-primary",
+  element_parent_selector: "div.form-container",
+  element_nth_child: 1,
   content: "This needs fixing",
-  author: "john.doe@example.com",
   status_id: ANNOTATION_STATUS.NEW,
+  created_by: "user-123",
+  created_by_email: "john.doe@example.com",
   created_at: new Date().toISOString(),
+  updated_by: null,
   updated_at: new Date().toISOString(),
+  resolved_at: null,
 };
 
 // Mock annotation for other page
 const otherPageAnnotation: Annotation = {
   ...currentPageAnnotation,
-  id: "2",
+  id: 2,
   page: "/dashboard",
   status_id: ANNOTATION_STATUS.IN_PROGRESS,
 };
@@ -126,6 +129,11 @@ export const OtherPage: Story = {
  * All status variations
  */
 export const AllStatuses: Story = {
+  args: {
+    annotation: currentPageAnnotation,
+    showStatus: true,
+    showPage: false,
+  },
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       <AnnotationBadge

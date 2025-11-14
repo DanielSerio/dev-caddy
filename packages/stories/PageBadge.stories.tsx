@@ -4,27 +4,30 @@ import type { Annotation } from "../src/types/annotations";
 
 // Mock annotation for current page
 const currentPageAnnotation: Annotation = {
-  id: "1",
+  id: 1,
   content: "Test annotation",
   page: window.location.pathname,
   element_tag: "button",
+  compressed_element_tree: "html>body>div>button",
   element_id: "submit",
   element_unique_classes: "btn-primary",
   element_role: "button",
   element_test_id: "submit-btn",
+  element_parent_selector: "div.form",
+  element_nth_child: 1,
   status_id: 1,
   created_by: "user-123",
   created_by_email: "user@example.com",
   created_at: new Date().toISOString(),
+  updated_by: null,
   updated_at: new Date().toISOString(),
   resolved_at: null,
-  project_id: "project-1",
 };
 
 // Mock annotation for another page
 const otherPageAnnotation: Annotation = {
   ...currentPageAnnotation,
-  id: "2",
+  id: 2,
   page: "/dashboard",
 };
 
@@ -95,6 +98,9 @@ export const WithCustomClass: Story = {
  * All page badge variations displayed together
  */
 export const AllVariations: Story = {
+  args: {
+    annotation: currentPageAnnotation,
+  },
   render: () => (
     <div style={{ display: "flex", gap: "12px", flexDirection: "column", alignItems: "flex-start" }}>
       <div>

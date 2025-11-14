@@ -90,6 +90,7 @@ export const Resolved: Story = {
 export const Disabled: Story = {
   args: {
     value: ANNOTATION_STATUS.IN_PROGRESS,
+    onChange: () => {},
     disabled: true,
   },
 };
@@ -98,8 +99,12 @@ export const Disabled: Story = {
  * Interactive status select
  */
 export const Interactive: Story = {
+  args: {
+    value: ANNOTATION_STATUS.NEW,
+    onChange: () => {},
+  },
   render: () => {
-    const [status, setStatus] = useState(ANNOTATION_STATUS.NEW);
+    const [status, setStatus] = useState<number>(ANNOTATION_STATUS.NEW);
 
     const statusNames = {
       [ANNOTATION_STATUS.NEW]: "New",
@@ -114,7 +119,7 @@ export const Interactive: Story = {
         <div>
           <strong>Current Status:</strong> {statusNames[status]}
         </div>
-        <StatusSelect value={status} onChange={setStatus} />
+        <StatusSelect value={status} onChange={(newStatus) => setStatus(newStatus)} />
         <div style={{ fontSize: "12px", color: "#888" }}>
           Try changing the status to see the color update
         </div>
@@ -127,6 +132,10 @@ export const Interactive: Story = {
  * All statuses displayed
  */
 export const AllStatuses: Story = {
+  args: {
+    value: ANNOTATION_STATUS.NEW,
+    onChange: () => {},
+  },
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-start" }}>
       <div>

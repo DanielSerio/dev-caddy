@@ -65,8 +65,18 @@ export const WithCustomClass: Story = {
  * All status types displayed together
  */
 export const AllStatuses: Story = {
+  args: {
+    statusId: 2,
+  },
   render: () => (
-    <div style={{ display: "flex", gap: "12px", flexDirection: "column", alignItems: "flex-start" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "12px",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
       <div>
         <strong>Open:</strong> <StatusBadge statusId={1} />
       </div>

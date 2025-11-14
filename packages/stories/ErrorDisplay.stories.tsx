@@ -59,7 +59,9 @@ export const WithRetryButton: Story = {
  */
 export const NetworkError: Story = {
   args: {
-    error: new Error("Unable to connect to server. Please check your internet connection."),
+    error: new Error(
+      "Unable to connect to server. Please check your internet connection."
+    ),
     onRetry: () => console.log("Retrying connection..."),
   },
 };
@@ -78,8 +80,18 @@ export const WithCustomClass: Story = {
  * Various error display examples
  */
 export const AllVariations: Story = {
+  args: {
+    error: new Error("Network connection failed"),
+  },
   render: () => (
-    <div style={{ display: "flex", gap: "24px", flexDirection: "column", width: "400px" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "24px",
+        flexDirection: "column",
+        width: "400px",
+      }}
+    >
       <div>
         <strong>Simple Error:</strong>
         <ErrorDisplay error="Failed to load data." />

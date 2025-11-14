@@ -49,7 +49,8 @@ export const NoResults: Story = {
  */
 export const NewProject: Story = {
   args: {
-    message: 'No annotations in this project yet. Click "Add Annotation" to create the first one.',
+    message:
+      'No annotations in this project yet. Click "Add Annotation" to create the first one.',
   },
 };
 
@@ -77,8 +78,18 @@ export const WithCustomClass: Story = {
  * Various empty state messages
  */
 export const AllVariations: Story = {
+  args: {
+    message: "No annotations yet.",
+  },
   render: () => (
-    <div style={{ display: "flex", gap: "24px", flexDirection: "column", width: "400px" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "24px",
+        flexDirection: "column",
+        width: "400px",
+      }}
+    >
       <EmptyState message="No annotations yet." />
       <EmptyState message="No annotations match the current filters." />
       <EmptyState

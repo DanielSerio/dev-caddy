@@ -36,6 +36,7 @@ type Story = StoryObj<typeof meta>;
 export const AddAnnotation: Story = {
   args: {
     title: "Add Annotation",
+    onClose: () => console.log("Close clicked"),
   },
 };
 
@@ -45,6 +46,7 @@ export const AddAnnotation: Story = {
 export const EditAnnotation: Story = {
   args: {
     title: "Edit Annotation",
+    onClose: () => console.log("Close clicked"),
   },
 };
 
@@ -54,6 +56,7 @@ export const EditAnnotation: Story = {
 export const ShortTitle: Story = {
   args: {
     title: "Edit",
+    onClose: () => console.log("Close clicked"),
   },
 };
 
@@ -63,6 +66,7 @@ export const ShortTitle: Story = {
 export const LongTitle: Story = {
   args: {
     title: "This is a very long title that might need to wrap",
+    onClose: () => console.log("Close clicked"),
   },
 };
 
@@ -70,6 +74,10 @@ export const LongTitle: Story = {
  * In a popover container
  */
 export const InPopover: Story = {
+  args: {
+    title: "Add Annotation",
+    onClose: () => console.log("Close clicked"),
+  },
   render: (args) => (
     <div
       style={{
@@ -94,6 +102,7 @@ export const InPopover: Story = {
 export const Interactive: Story = {
   args: {
     title: "Add Annotation",
+    onClose: () => alert("Close button clicked!"),
   },
   render: (args) => (
     <div>

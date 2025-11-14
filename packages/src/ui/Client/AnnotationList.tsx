@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { useAnnotations } from "../Core/context";
 import { getStatusName } from "../Core/lib/status";
-import { Skeleton } from "../Core";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { formatDate, formatElementSelector, sanitizeContent } from "../Core/utility";
+import { sanitizeContent, formatElementSelector } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
 import {
   navigateToAnnotation,
   checkPendingAnnotation,
-  isCurrentPage,
 } from "../Core/utility/navigation";
+import { LoadingState } from "../Core/components/composite";
+import { EmptyState, ErrorDisplay } from "../Core/components/display";
+import { AnnotationBadge, AnnotationMeta } from "../Core/components/composite";
 
 /**
  * Props for AnnotationList component
@@ -100,32 +101,7 @@ export function AnnotationList({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-list">
-        {/* Title skeleton matching "My Annotations (X)" */}
-        <Skeleton variant="text" width="60%" height="24px" />
-
-        <div className="annotation-items">
-          {/* Skeleton for 3 annotation items */}
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="annotation-item">
-              {/* Header with element tag and status badge */}
-              <div className="annotation-header">
-                <Skeleton variant="text" width="40%" height="16px" />
-                <Skeleton variant="text" width="20%" height="20px" />
-              </div>
-
-              {/* Content text */}
-              <div className="annotation-content">
-                <Skeleton variant="text" width="90%" height="14px" />
-                <Skeleton variant="text" width="75%" height="14px" />
-              </div>
-
-              {/* Meta information (date) */}
-              <div className="annotation-meta">
-                <Skeleton variant="text" width="35%" height="12px" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <LoadingState message="Loading annotations..." />
       </div>
     );
   }
@@ -134,7 +110,7 @@ export function AnnotationList({
   if (error) {
     return (
       <div className="dev-caddy-annotation-list">
-        <p className="error">Error: {error.message}</p>
+        <ErrorDisplay error={error} />
       </div>
     );
   }
@@ -143,9 +119,7 @@ export function AnnotationList({
   if (annotations.length === 0) {
     return (
       <div className="dev-caddy-annotation-list">
-        <p className="empty-state">
-          No annotations in this project yet. Click "Add Annotation" to create the first one.
-        </p>
+        <EmptyState message='No annotations in this project yet. Click "Add Annotation" to create the first one.' />
       </div>
     );
   }
@@ -168,38 +142,14 @@ export function AnnotationList({
               <span className="annotation-element">
                 {formatElementSelector(annotation)}
               </span>
-              <div className="annotation-badges">
-                <span
-                  className={`annotation-page-badge ${
-                    isCurrentPage(annotation) ? "current-page" : "other-page"
-                  }`}
-                >
-                  {isCurrentPage(annotation) ? "Current Page" : annotation.page}
-                </span>
-                <span
-                  className={`annotation-status status-${getStatusName(
-                    annotation.status_id
-                  )}`}
-                >
-                  {getStatusName(annotation.status_id)}
-                </span>
-              </div>
+              <AnnotationBadge annotation={annotation} showPage showStatus />
             </div>
 
             <div className="annotation-content">
               <p>{sanitizeContent(annotation.content)}</p>
             </div>
 
-            <div className="annotation-meta">
-              <span className="annotation-date">
-                {formatDate(annotation.created_at)}
-              </span>
-              {annotation.resolved_at && (
-                <span className="annotation-resolved">
-                  Resolved: {formatDate(annotation.resolved_at)}
-                </span>
-              )}
-            </div>
+            <AnnotationMeta annotation={annotation} showUpdated={false} />
           </div>
         ))}
       </div>

@@ -4,11 +4,12 @@ import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationFilters, type FilterOptions } from "./AnnotationFilters";
 import { AnnotationItem } from "./AnnotationItem";
 import type { Annotation } from "../../types/annotations";
-import { Skeleton } from "../Core";
 import {
   navigateToAnnotation,
   checkPendingAnnotation,
 } from "../Core/utility/navigation";
+import { LoadingState } from "../Core/components/composite";
+import { EmptyState, ErrorDisplay } from "../Core/components/display";
 
 /**
  * Props for AnnotationManager component
@@ -136,47 +137,7 @@ export function AnnotationManager({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-manager" data-dev-caddy>
-        <div className="manager-header">
-          {/* Title skeleton matching "All Annotations (X/Y)" */}
-          <Skeleton variant="text" width="60%" height="24px" />
-
-          {/* Filter controls skeleton */}
-          <div className="manager-filters">
-            <div className="filter-group">
-              <Skeleton variant="text" width="50px" height="16px" />
-              <Skeleton variant="rectangular" width="120px" height="32px" />
-            </div>
-            <div className="filter-group">
-              <Skeleton variant="text" width="50px" height="16px" />
-              <Skeleton variant="rectangular" width="150px" height="32px" />
-            </div>
-          </div>
-        </div>
-
-        <div className="annotation-items">
-          {/* Skeleton for 3 annotation items */}
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="annotation-item">
-              {/* Header with element tag and status badge */}
-              <div className="annotation-header">
-                <Skeleton variant="text" width="45%" height="16px" />
-                <Skeleton variant="text" width="22%" height="20px" />
-              </div>
-
-              {/* Content text */}
-              <div className="annotation-content">
-                <Skeleton variant="text" width="90%" height="14px" />
-                <Skeleton variant="text" width="75%" height="14px" />
-              </div>
-
-              {/* Meta information (author, dates) */}
-              <div className="annotation-meta">
-                <Skeleton variant="text" width="30%" height="12px" />
-                <Skeleton variant="text" width="40%" height="12px" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <LoadingState message="Loading annotations..." />
       </div>
     );
   }
@@ -184,7 +145,7 @@ export function AnnotationManager({
   if (error) {
     return (
       <div className="dev-caddy-annotation-manager" data-dev-caddy>
-        <p className="error">Error: {error.message}</p>
+        <ErrorDisplay error={error} />
       </div>
     );
   }
@@ -204,11 +165,13 @@ export function AnnotationManager({
       </div>
 
       {filteredAnnotations.length === 0 ? (
-        <p className="empty-state">
-          {annotations.length === 0
-            ? "No annotations yet."
-            : "No annotations match the current filters."}
-        </p>
+        <EmptyState
+          message={
+            annotations.length === 0
+              ? "No annotations yet."
+              : "No annotations match the current filters."
+          }
+        />
       ) : (
         <div className="annotation-items">
           {filteredAnnotations.map((annotation) => (
