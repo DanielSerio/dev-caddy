@@ -72,7 +72,7 @@ export const WithKeyboardShortcuts: Story = {
  * Interactive textarea with state
  */
 export const Interactive: Story = {
-  render: () => {
+  render: function RenderInteractive() {
     const [value, setValue] = useState("");
     const [submitted, setSubmitted] = useState<string | null>(null);
 

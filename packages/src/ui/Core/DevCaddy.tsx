@@ -3,7 +3,7 @@ import type { DevCaddyMode, DevCaddyProps } from "../../types";
 import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
 import { getCornerStyles } from "./utility";
-import { AnnotationProvider, useAnnotations } from "./context";
+import { AnnotationProvider } from "./context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "./AnnotationPopover";
@@ -11,10 +11,13 @@ import { AnnotationBadges } from "./AnnotationBadges";
 import { ElementHighlight } from "./ElementHighlight";
 import { AuthPrompt } from "./AuthPrompt";
 import { ModeSwitcher } from "./ModeSwitcher";
-import { useElementSelector, useAuth } from "./hooks";
+import { useElementSelector, useAuth, useAnnotations } from "./hooks";
 import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
-import type { CreateAnnotationInput, Annotation } from "../../types/annotations";
+import type {
+  CreateAnnotationInput,
+  Annotation,
+} from "../../types/annotations";
 import type { SelectionMode } from "./hooks/useElementSelector";
 import "./styles/output/dev-caddy.scss";
 import { Skeleton } from "./Skeleton";
@@ -85,10 +88,7 @@ function DevCaddyContent({
   if (authLoading) {
     return (
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
-        <div
-          className="caddy-content"
-          data-testid="devcaddy-panel"
-        >
+        <div className="caddy-content" data-testid="devcaddy-panel">
           <div className="auth-loading" data-testid="auth-loading">
             {/* <p>Checking authentication...</p> */}
             <Skeleton />
@@ -116,7 +116,7 @@ function DevCaddyContent({
                   setMode(mode === "selecting" ? "idle" : "selecting")
                 }
                 className={`btn-add-annotation ${
-                  mode === "selecting" ? "active" : ""
+                  mode === "selecting" ? "active" : "default"
                 }`}
                 aria-label="Add annotation to UI element"
                 data-testid="add-annotation-btn"
@@ -146,9 +146,7 @@ function DevCaddyContent({
         />
       )}
 
-      {viewingAnnotation && (
-        <ElementHighlight annotation={viewingAnnotation} />
-      )}
+      {viewingAnnotation && <ElementHighlight annotation={viewingAnnotation} />}
     </>
   );
 }
@@ -165,8 +163,11 @@ function DevCaddyWithBadges({
   windowStyles: React.CSSProperties;
   devCaddyIsActive: boolean;
 }) {
-  const { mode, setMode, selectedElement, clearSelection } = useElementSelector();
-  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(null);
+  const { mode, setMode, selectedElement, clearSelection } =
+    useElementSelector();
+  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(
+    null
+  );
 
   return (
     <>

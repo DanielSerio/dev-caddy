@@ -47,6 +47,7 @@ const samplePages = [
  */
 export const Default: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: "all",
       author: "",
@@ -62,6 +63,7 @@ export const Default: Story = {
  */
 export const FilteredByNewStatus: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: ANNOTATION_STATUS.NEW,
       author: "",
@@ -77,6 +79,7 @@ export const FilteredByNewStatus: Story = {
  */
 export const FilteredByInProgress: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: ANNOTATION_STATUS.IN_PROGRESS,
       author: "",
@@ -92,6 +95,7 @@ export const FilteredByInProgress: Story = {
  */
 export const FilteredByAuthor: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: "all",
       author: "john@example.com",
@@ -107,6 +111,7 @@ export const FilteredByAuthor: Story = {
  */
 export const FilteredByCurrentPage: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: "all",
       author: "",
@@ -122,6 +127,7 @@ export const FilteredByCurrentPage: Story = {
  */
 export const FilteredBySpecificPage: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: "all",
       author: "",
@@ -137,6 +143,7 @@ export const FilteredBySpecificPage: Story = {
  */
 export const MultipleFilters: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: ANNOTATION_STATUS.IN_PROGRESS,
       author: "designer",
@@ -152,6 +159,7 @@ export const MultipleFilters: Story = {
  */
 export const NoAvailablePages: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: "all",
       author: "",
@@ -167,6 +175,7 @@ export const NoAvailablePages: Story = {
  */
 export const ManyPages: Story = {
   args: {
+    isOpen: true,
     filters: {
       status: "all",
       author: "",
@@ -204,6 +213,7 @@ function InteractiveFilters() {
   return (
     <div>
       <AnnotationFilters
+        isOpen={true}
         filters={filters}
         onFiltersChange={setFilters}
         availablePages={samplePages}
@@ -240,6 +250,7 @@ export const NarrowWidth: Story = {
   render: () => (
     <div style={{ width: "300px" }}>
       <AnnotationFilters
+        isOpen={true}
         filters={{
           status: "all",
           author: "",
@@ -260,6 +271,7 @@ export const WideWidth: Story = {
   render: () => (
     <div style={{ width: "800px" }}>
       <AnnotationFilters
+        isOpen={true}
         filters={{
           status: "all",
           author: "",

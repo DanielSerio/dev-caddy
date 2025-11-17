@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { useAnnotations } from "../Core/context";
-import { getStatusName } from "../Core/lib/status";
+import { useAnnotations } from "../Core/hooks";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { sanitizeContent, formatElementSelector } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
 import { useAnnotationNavigation } from "../Core/hooks";
 import { LoadingState } from "../Core/components/composite";
 import { EmptyState, ErrorDisplay } from "../Core/components/display";
-import { AnnotationBadge, AnnotationMeta } from "../Core/components/composite";
+import { AnnotationListItem } from "./components";
 
 /**
  * Props for AnnotationList component
@@ -128,27 +126,11 @@ export function AnnotationList({
       <h3>All Annotations ({annotations.length})</h3>
       <div className="annotation-items">
         {annotations.map((annotation) => (
-          <div
+          <AnnotationListItem
             key={annotation.id}
-            className={`annotation-item status-${getStatusName(
-              annotation.status_id
-            )}`}
-            onClick={() => handleSelectAnnotation(annotation)}
-            data-testid="annotation-list-item"
-          >
-            <div className="annotation-header">
-              <span className="annotation-element">
-                {formatElementSelector(annotation)}
-              </span>
-              <AnnotationBadge annotation={annotation} showPage showStatus />
-            </div>
-
-            <div className="annotation-content">
-              <p>{sanitizeContent(annotation.content)}</p>
-            </div>
-
-            <AnnotationMeta annotation={annotation} showUpdated={false} />
-          </div>
+            annotation={annotation}
+            onClick={handleSelectAnnotation}
+          />
         ))}
       </div>
     </div>

@@ -50,8 +50,8 @@ export function AnnotationBadge({
       className={`annotation-badges ${className}`.trim()}
       data-testid="annotation-badge"
     >
-      {showPage && <PageBadge annotation={annotation} />}
       {showStatus && <StatusBadge statusId={annotation.status_id} />}
+      {showPage && <PageBadge annotation={annotation} />}
     </div>
   );
 }

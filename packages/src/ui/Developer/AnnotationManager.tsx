@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
-import { useAnnotations } from "../Core/context";
+import { useAnnotations } from "../Core/hooks";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { AnnotationFilters, type FilterOptions } from "./AnnotationFilters";
-import { AnnotationItem } from "./AnnotationItem";
+import { type FilterOptions } from "./AnnotationFilters";
 import type { Annotation } from "../../types/annotations";
 import { useAnnotationNavigation } from "../Core/hooks";
 import { LoadingState } from "../Core/components/composite";
-import { EmptyState, ErrorDisplay } from "../Core/components/display";
+import { ErrorDisplay } from "../Core/components/display";
+import { AnnotationManagerHeader, AnnotationListView } from "./components";
 
 /**
  * Props for AnnotationManager component
@@ -32,7 +32,8 @@ export function AnnotationManager({
   onAnnotationSelect,
 }: AnnotationManagerProps) {
   const { annotations, loading, error } = useAnnotations();
-  const { navigateToAnnotation, checkPendingAnnotation } = useAnnotationNavigation();
+  const { navigateToAnnotation, checkPendingAnnotation } =
+    useAnnotationNavigation();
 
   const [filters, setFilters] = useState<FilterOptions>({
     status: "all",
@@ -103,7 +104,7 @@ export function AnnotationManager({
         onAnnotationSelect?.(annotation);
       });
     }
-  }, [loading, annotations, onAnnotationSelect]);
+  }, [loading, annotations, onAnnotationSelect, checkPendingAnnotation]);
 
   /**
    * Handle navigating back from detail view
@@ -150,37 +151,19 @@ export function AnnotationManager({
 
   return (
     <div className="dev-caddy-annotation-manager" data-dev-caddy>
-      <div className="manager-header">
-        <h3>
-          All Annotations ({filteredAnnotations.length}/{annotations.length})
-        </h3>
+      <AnnotationManagerHeader
+        filteredCount={filteredAnnotations.length}
+        totalCount={annotations.length}
+        filters={filters}
+        onFiltersChange={setFilters}
+        availablePages={availablePages}
+      />
 
-        <AnnotationFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          availablePages={availablePages}
-        />
-      </div>
-
-      {filteredAnnotations.length === 0 ? (
-        <EmptyState
-          message={
-            annotations.length === 0
-              ? "No annotations yet."
-              : "No annotations match the current filters."
-          }
-        />
-      ) : (
-        <div className="annotation-items">
-          {filteredAnnotations.map((annotation) => (
-            <AnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              onClick={handleSelectAnnotation}
-            />
-          ))}
-        </div>
-      )}
+      <AnnotationListView
+        annotations={filteredAnnotations}
+        totalCount={annotations.length}
+        onAnnotationClick={handleSelectAnnotation}
+      />
     </div>
   );
 }

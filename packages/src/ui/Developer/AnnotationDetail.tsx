@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAnnotations } from "../Core/context";
+import { useAnnotations } from "../Core/hooks";
 import type { Annotation } from "../../types/annotations";
 import { DetailSection } from "../Core/components/layout";
 import { StatusSelect } from "../Core/components/form";

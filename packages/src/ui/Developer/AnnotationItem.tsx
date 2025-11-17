@@ -41,11 +41,14 @@ export function AnnotationItem({ annotation, onClick }: AnnotationItemProps) {
         <span className="annotation-element">
           {formatElementSelector(annotation)}
         </span>
-        <AnnotationBadge annotation={annotation} showPage showStatus />
       </div>
 
       <div className="annotation-content">
         <p>{sanitizeContent(annotation.content)}</p>
+      </div>
+
+      <div className="annotation-badges">
+        <AnnotationBadge annotation={annotation} showPage showStatus />
       </div>
 
       <AnnotationMeta

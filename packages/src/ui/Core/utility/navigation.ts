@@ -92,7 +92,7 @@ export function isCurrentPage(annotation: Annotation): boolean {
 
 
 function isFullURL(url: string): boolean {
-  return /^(https?|ftp):\/\/[^\s\/$.?#].[^\s]*$/.test(url);
+  return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url);
 }
 
 /**

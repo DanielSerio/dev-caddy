@@ -103,7 +103,7 @@ export const Interactive: Story = {
     value: ANNOTATION_STATUS.NEW,
     onChange: () => {},
   },
-  render: () => {
+  render: function RenderInteractive() {
     const [status, setStatus] = useState<number>(ANNOTATION_STATUS.NEW);
 
     const statusNames = {

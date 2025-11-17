@@ -6,6 +6,9 @@
 export { useElementSelector, type SelectionMode } from './useElementSelector';
 export { useAuth, sendMagicLink, signOut, type AuthState } from './useAuth';
 
+// Annotation context
+export { useAnnotations } from './useAnnotations';
+
 // Position and visibility tracking
 export { useThrottledPosition } from './useThrottledPosition';
 export { useScrollableParents } from './useScrollableParents';

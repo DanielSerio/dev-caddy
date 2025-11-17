@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useAnnotations } from './context';
+import { useAnnotations } from './hooks';
 import { getStatusName } from './lib/status';
 import type { Annotation } from '../../types/annotations';
-import { findElement, isElementVisible, getBadgePosition } from './lib/element';
+import { findElement, getBadgePosition } from './lib/element';
 import { getElementKey, groupAnnotations } from './lib/annotation';
+import { useElementVisibility, useThrottledPosition } from './hooks';
 
 /**
  * Single annotation badge component for one status on one element
@@ -21,39 +22,27 @@ function SingleBadge({
 }) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
   const [element, setElement] = useState<Element | null>(null);
-  const [visible, setVisible] = useState(true);
 
+  // Find the element
   useEffect(() => {
     const firstAnnotation = annotations[0];
     const targetElement = findElement(firstAnnotation);
     setElement(targetElement);
-
-    if (targetElement) {
-      const updatePosition = () => {
-        setPosition(getBadgePosition(targetElement));
-        setVisible(isElementVisible(targetElement));
-      };
-
-      updatePosition();
-
-      window.addEventListener('scroll', updatePosition, true);
-      window.addEventListener('resize', updatePosition);
-
-      const observer = new MutationObserver(updatePosition);
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class'],
-      });
-
-      return () => {
-        window.removeEventListener('scroll', updatePosition, true);
-        window.removeEventListener('resize', updatePosition);
-        observer.disconnect();
-      };
-    }
   }, [annotations]);
+
+  // Track visibility with hook
+  const visible = useElementVisibility(element);
+
+  // Update position with throttled hook
+  useThrottledPosition(
+    element,
+    () => {
+      if (element) {
+        setPosition(getBadgePosition(element));
+      }
+    },
+    100 // throttle to 100ms
+  );
 
   if (!element || !position || !visible) {
     return null;

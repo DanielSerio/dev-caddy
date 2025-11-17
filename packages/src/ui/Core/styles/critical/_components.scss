@@ -49,10 +49,11 @@
   border-radius: 3px;
   white-space: nowrap;
   display: inline-block;
+  border-width: 1px;
+  border-style: solid;
 
   &.current-page {
-    background-color: var(--dc-success);
-    color: black;
+    color: var(--dc-success);
   }
 
   &.other-page {
@@ -158,7 +159,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  border-bottom: 1px solid var(--dc-border);
 }
 
 // Annotation Meta

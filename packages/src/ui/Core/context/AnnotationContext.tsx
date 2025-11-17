@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useState,
   useEffect,
   useCallback,
@@ -23,7 +22,7 @@ import type { RealtimeEventType } from '../../../client';
 /**
  * Annotation context interface
  */
-interface AnnotationContextValue {
+export interface AnnotationContextValue {
   /** All annotations across the entire project */
   annotations: Annotation[];
   /** Create a new annotation */
@@ -44,7 +43,7 @@ interface AnnotationContextValue {
 /**
  * Annotation context
  */
-const AnnotationContext = createContext<AnnotationContextValue | undefined>(
+export const AnnotationContext = createContext<AnnotationContextValue | undefined>(
   undefined
 );
 
@@ -234,22 +233,4 @@ export function AnnotationProvider({
   );
 }
 
-/**
- * Hook to access annotation context
- *
- * @throws {Error} If used outside of AnnotationProvider
- *
- * @example
- * const { annotations, addAnnotation } = useAnnotations();
- */
-export function useAnnotations(): AnnotationContextValue {
-  const context = useContext(AnnotationContext);
-
-  if (!context) {
-    throw new Error(
-      'useAnnotations must be used within an AnnotationProvider'
-    );
-  }
-
-  return context;
-}
+// useAnnotations hook moved to hooks/useAnnotations.ts to fix Fast Refresh warning

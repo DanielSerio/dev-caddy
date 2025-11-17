@@ -16,8 +16,8 @@ export function ModeSwitcher() {
   const [isDevelopment, setIsDevelopment] = useState(false);
 
   useEffect(() => {
-    // Get current mode from window
-    const mode = (window as any).__DEV_CADDY_UI_MODE__;
+    // Get current mode from window (type defined in global.d.ts)
+    const mode = window.__DEV_CADDY_UI_MODE__;
     setCurrentMode(mode);
 
     // Only show in development (check if override is possible)
