@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnnotationFilters, type FilterOptions } from "../AnnotationFilters";
 import { IconButton } from "../../Core/components";
-import { FilterIcon } from "lucide-react";
+import { FilterIcon } from "../../Core/icons";
 
 /**
  * Props for AnnotationManagerHeader component

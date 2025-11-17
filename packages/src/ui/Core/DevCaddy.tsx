@@ -90,7 +90,6 @@ function DevCaddyContent({
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
         <div className="caddy-content" data-testid="devcaddy-panel">
           <div className="auth-loading" data-testid="auth-loading">
-            {/* <p>Checking authentication...</p> */}
             <Skeleton />
           </div>
         </div>
@@ -128,7 +127,6 @@ function DevCaddyContent({
 
           {uiMode === "client" && (
             <AnnotationList
-              currentUserId={currentUserId}
               onAnnotationSelect={setViewingAnnotation}
             />
           )}
@@ -157,11 +155,9 @@ function DevCaddyContent({
 function DevCaddyWithBadges({
   uiMode,
   windowStyles,
-  devCaddyIsActive,
 }: {
   uiMode: DevCaddyMode;
   windowStyles: React.CSSProperties;
-  devCaddyIsActive: boolean;
 }) {
   const { mode, setMode, selectedElement, clearSelection } =
     useElementSelector();
@@ -182,8 +178,6 @@ function DevCaddyWithBadges({
         setViewingAnnotation={setViewingAnnotation}
       />
       <AnnotationBadges
-        isActive={devCaddyIsActive}
-        selectionMode={mode}
         selectedElement={selectedElement}
         viewingAnnotation={viewingAnnotation}
       />
@@ -217,7 +211,6 @@ export function DevCaddy({
           <DevCaddyWithBadges
             uiMode={UI_MODE}
             windowStyles={windowStyles}
-            devCaddyIsActive={devCaddyIsActive}
           />
         </AnnotationProvider>
       )}

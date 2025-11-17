@@ -19,8 +19,6 @@ interface AnnotationDetailProps {
   annotation: Annotation;
   /** Callback to navigate back to list */
   onBack: () => void;
-  /** Current user ID for permission checks */
-  currentUserId: string;
 }
 
 /**
@@ -28,9 +26,10 @@ interface AnnotationDetailProps {
  *
  * Displays full details of a single annotation with edit and delete actions.
  * Clients can only edit content and delete their own annotations.
+ * User ID is obtained from auth context for permission checks.
  *
  * @example
- * <AnnotationDetail annotation={annotation} onBack={() => {}} currentUserId="user-123" />
+ * <AnnotationDetail annotation={annotation} onBack={() => {}} />
  */
 export function AnnotationDetail({
   annotation,

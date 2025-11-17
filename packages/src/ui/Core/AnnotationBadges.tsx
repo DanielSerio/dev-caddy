@@ -80,10 +80,6 @@ function SingleBadge({
  * Props for AnnotationBadges component
  */
 interface AnnotationBadgesProps {
-  /** Whether DevCaddy is open/active */
-  isActive: boolean;
-  /** Current selection mode ('idle' | 'selecting') */
-  selectionMode: 'idle' | 'selecting';
   /** Currently selected element (if any) */
   selectedElement: HTMLElement | null;
   /** Currently viewing annotation (if any) */
@@ -106,8 +102,6 @@ interface AnnotationBadgesProps {
  *
  * @example
  * <AnnotationBadges
- *   isActive={devCaddyIsActive}
- *   selectionMode={mode}
  *   selectedElement={selectedElement}
  *   viewingAnnotation={viewingAnnotation}
  * />

@@ -4,4 +4,5 @@
  * Note: useAnnotations hook is exported from hooks/useAnnotations.ts
  */
 
-export { AnnotationProvider } from './AnnotationContext';
+export { AnnotationProvider } from './AnnotationProvider';
+export { AnnotationContext, type AnnotationContextValue } from './AnnotationContext';

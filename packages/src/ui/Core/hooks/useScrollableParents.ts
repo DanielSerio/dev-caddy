@@ -7,6 +7,11 @@ import { getScrollableAncestors } from '../lib/element';
  * Returns an array of all scrollable ancestor elements for the given element.
  * Uses memoization to avoid unnecessary recalculations.
  *
+ * @internal
+ * Reserved for future scroll handling enhancements. Currently exported but
+ * not used in UI. May be needed for nested scroll container support in
+ * complex layouts with multiple scrollable regions.
+ *
  * @param element - The element to find scrollable parents for
  * @returns Array of scrollable parent HTML elements
  *

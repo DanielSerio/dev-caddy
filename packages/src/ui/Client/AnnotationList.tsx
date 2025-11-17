@@ -11,8 +11,6 @@ import { AnnotationListItem } from "./components";
  * Props for AnnotationList component
  */
 interface AnnotationListProps {
-  /** Current user ID to filter annotations */
-  currentUserId: string;
   /** Callback when an annotation is selected for viewing */
   onAnnotationSelect?: (annotation: Annotation | null) => void;
 }
@@ -28,12 +26,12 @@ interface AnnotationListProps {
  *
  * Note: Clients can view ALL annotations but can only edit/delete their own.
  * Clients cannot change annotation status - only developers can do that.
+ * User ID is obtained from auth context in AnnotationDetail for permission checks.
  *
  * @example
- * <AnnotationList currentUserId="user-123" />
+ * <AnnotationList />
  */
 export function AnnotationList({
-  currentUserId,
   onAnnotationSelect,
 }: AnnotationListProps) {
   const { annotations, loading, error } = useAnnotations();
@@ -88,7 +86,6 @@ export function AnnotationList({
       <AnnotationDetail
         annotation={latestAnnotation}
         onBack={handleBack}
-        currentUserId={currentUserId}
       />
     );
   }
