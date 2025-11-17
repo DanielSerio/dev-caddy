@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react-vite";
 import React from "react";
-import "../dist/dev-caddy.css";
+import "../src/ui/Core/styles/output/dev-caddy.scss";
 
 const preview: Preview = {
   parameters: {
