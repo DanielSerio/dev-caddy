@@ -1,0 +1,9 @@
+/**
+ * Layout Components
+ *
+ * Structural components: window, toggle, etc.
+ */
+
+@forward "./positioning"; // CRITICAL: Must be first - sets fixed positioning
+@forward "./toggle";
+@forward "./window";

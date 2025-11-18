@@ -1,0 +1,12 @@
+/**
+ * Foundation - Design Tokens
+ *
+ * Core design tokens that define the visual language.
+ * All other styles should reference these tokens.
+ */
+
+@forward "./colors";
+@forward "./typography";
+@forward "./spacing";
+@forward "./borders";
+@forward "./motion";

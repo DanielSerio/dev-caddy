@@ -1,0 +1,35 @@
+/**
+ * Icon Button Component
+ *
+ * Square icon-only buttons with playful hover states
+ */
+
+.dev-caddy {
+  button.icon {
+    height: 38px;
+    width: 38px;
+    font-size: var(--dc-text-xl);
+    display: grid;
+    place-content: center;
+    line-height: 0;
+
+    &.btn-default:not(:disabled) {
+      color: var(--dc-text-muted);
+      background: var(--dc-background);
+      transition:
+        background var(--dc-duration-normal) var(--dc-ease-smooth),
+        color var(--dc-duration-fast) var(--dc-ease-smooth),
+        transform var(--dc-duration-fast) var(--dc-ease-spring);
+
+      &:hover {
+        background: var(--dc-background-raised);
+        color: var(--dc-text);
+        transform: scale(1.08);
+      }
+
+      &:active {
+        transform: scale(0.92);
+      }
+    }
+  }
+}

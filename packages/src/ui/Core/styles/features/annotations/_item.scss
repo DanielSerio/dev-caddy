@@ -1,0 +1,87 @@
+/**
+ * Annotation Item (Card) Component
+ *
+ * Individual annotation cards with playful lift hover effect
+ * Pulsing indicator for new annotations draws attention
+ */
+
+.dev-caddy .annotation-item {
+  max-width: 302px;
+  background-color: var(--dc-background-raised);
+  border: var(--dc-border-width-thin) solid var(--dc-border-muted);
+  border-radius: var(--dc-radius-md);
+  flex-direction: column;
+  gap: var(--dc-gap-xs);
+  cursor: pointer;
+  position: relative;
+  transition:
+    transform var(--dc-duration-normal) var(--dc-ease-spring),
+    background-color var(--dc-duration-normal) var(--dc-ease-smooth),
+    border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+    box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
+
+  // Playful lift on hover
+  &:hover {
+    background-color: var(--dc-background);
+    border-color: var(--dc-border);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  // Squish on click
+  &:active {
+    transform: translateY(-2px) scale(0.99);
+    transition-duration: var(--dc-duration-instant);
+  }
+
+  // Status-based left border accent
+  &.status-new {
+    border-left: var(--dc-border-width-thick) solid var(--dc-primary);
+
+    // Pulsing dot for new annotations
+    &::before {
+      content: "";
+      position: absolute;
+      top: var(--dc-space-2);
+      left: calc(var(--dc-space-2) * -1);
+      width: 8px;
+      height: 8px;
+      background: var(--dc-primary);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--dc-primary);
+    }
+  }
+
+  &.status-in_progress,
+  &.status-in-progress {
+    border-left: var(--dc-border-width-thick) solid var(--dc-accent);
+  }
+
+  &.status-in_review,
+  &.status-in-review {
+    border-left: var(--dc-border-width-thick) solid var(--dc-success);
+  }
+
+  &.status-hold {
+    border-left: var(--dc-border-width-thick) solid var(--dc-danger);
+  }
+
+  &.status-resolved {
+    border-left: var(--dc-border-width-thick) solid var(--dc-secondary);
+    opacity: 0.7;
+  }
+}
+
+// Pulsing dot animation for new annotations
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+  }
+}

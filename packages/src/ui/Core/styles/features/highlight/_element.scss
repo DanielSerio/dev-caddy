@@ -1,0 +1,32 @@
+/**
+ * Element Highlight Component
+ *
+ * Visual highlight when selecting elements for annotation
+ * Playful pulsing animation draws attention
+ */
+
+.dev-caddy-element-highlight {
+  border: var(--dc-border-width-thick) solid var(--dc-primary);
+  background-color: rgba(155, 100, 255, 0.1);
+  border-radius: var(--dc-radius-sm);
+  box-shadow: 0 0 0 4px rgba(155, 100, 255, 0.2);
+  animation: pulse-highlight 2s var(--dc-ease-smooth) infinite;
+  pointer-events: none; // Don't block clicks
+}
+
+// Pulsing glow animation - makes selected element stand out
+@keyframes pulse-highlight {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 4px rgba(155, 100, 255, 0.2),
+      0 0 20px rgba(155, 100, 255, 0.15);
+    border-color: var(--dc-primary);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(155, 100, 255, 0.3),
+      0 0 30px rgba(155, 100, 255, 0.25);
+    border-color: var(--dc-primary-highlight);
+  }
+}

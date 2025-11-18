@@ -1,0 +1,62 @@
+/**
+ * Select Component
+ *
+ * Dropdown selects with playful focus states
+ */
+
+.dev-caddy {
+  select {
+    padding: var(--dc-space-1) var(--dc-space-2);
+    background-color: var(--dc-background);
+    border: var(--dc-border-width-thin) solid var(--dc-border);
+    border-radius: var(--dc-radius-sm);
+    color: var(--dc-text);
+    font-family: var(--dc-font-sans);
+    font-size: var(--dc-text-base);
+    font-weight: var(--dc-weight-normal);
+    cursor: pointer;
+    transition:
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      background-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      transform var(--dc-duration-fast) var(--dc-ease-spring);
+
+    &:hover:not(:disabled) {
+      background-color: var(--dc-background-raised);
+      border-color: var(--dc-border-em);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--dc-primary);
+      background-color: var(--dc-background-raised);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  // Status select (special styling for status badges as selects)
+  select.annotation-status {
+    padding: 2px var(--dc-gap-sm);
+    border: none;
+    cursor: pointer;
+    font-size: var(--dc-text-xs);
+    font-weight: var(--dc-weight-semibold);
+    text-transform: uppercase;
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+  }
+}

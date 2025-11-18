@@ -1,0 +1,22 @@
+/**
+ * Motion Tokens
+ *
+ * Design philosophy: "Bounce & Spring" - Playful, energetic animations
+ * Custom easing curves make interactions feel more alive
+ */
+
+:root:has(.dev-caddy) {
+  // Duration scale
+  --dc-duration-instant: 100ms;
+  --dc-duration-fast: 150ms;
+  --dc-duration-normal: 250ms;
+  --dc-duration-slow: 350ms;
+  --dc-duration-slower: 500ms;
+
+  // Easing curves - more playful than standard ease
+  --dc-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55); // Bouncy overshoot
+  --dc-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); // Spring effect
+  --dc-ease-smooth: cubic-bezier(0.4, 0.0, 0.2, 1); // Material smooth
+  --dc-ease-out: cubic-bezier(0.0, 0.0, 0.2, 1); // Quick start, slow end
+  --dc-ease-in: cubic-bezier(0.4, 0.0, 1, 1); // Slow start, quick end
+}

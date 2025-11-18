@@ -1,0 +1,132 @@
+/**
+ * Button Base Styles
+ *
+ * Foundation for all button variants with playful interactions
+ * Shine effect and gradient backgrounds add visual delight
+ */
+
+.dev-caddy {
+  button {
+    border: none;
+    font-weight: var(--dc-weight-medium);
+    cursor: pointer;
+    border-radius: var(--dc-radius-sm);
+    transition:
+      transform var(--dc-duration-fast) var(--dc-ease-spring),
+      box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
+    position: relative;
+    overflow: hidden;
+
+    // Universal squish on click - tactile feedback
+    &:active {
+      transform: scale(0.96);
+    }
+
+    // Disabled state
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    // Primary actions (resolve, edit, save) - gradient + shine
+    &.btn-resolve,
+    &.btn-edit,
+    &.btn-save {
+      background: var(--dc-gradient-primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(155, 100, 255, 0.3);
+
+      // Shine effect on hover
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left var(--dc-duration-slow) ease;
+      }
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 4px 16px rgba(155, 100, 255, 0.4);
+
+        &::before {
+          left: 100%;
+        }
+      }
+    }
+
+    // Danger actions (delete) - gradient + shine
+    &.btn-delete {
+      background: var(--dc-gradient-danger);
+      color: white;
+      box-shadow: 0 2px 8px rgba(255, 100, 120, 0.3);
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left var(--dc-duration-slow) ease;
+      }
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 4px 16px rgba(255, 100, 120, 0.4);
+
+        &::before {
+          left: 100%;
+        }
+      }
+    }
+
+    // Secondary actions (cancel) - subtle
+    &.btn-cancel {
+      background-color: var(--dc-background-raised);
+      color: var(--dc-text);
+      border: var(--dc-border-width-thin) solid var(--dc-border);
+
+      &:hover:not(:disabled) {
+        background-color: var(--dc-background);
+        border-color: var(--dc-border-em);
+      }
+    }
+  }
+
+  // Action button groups
+  .annotation-actions,
+  .detail-actions {
+    gap: var(--dc-gap-sm);
+    justify-content: flex-end;
+
+    button {
+      padding: var(--dc-space-1) var(--dc-space-2);
+      font-size: var(--dc-text-sm);
+    }
+  }
+
+  .detail-actions {
+    display: flex;
+    padding-top: var(--dc-space-2);
+    border-top: var(--dc-border-width-thin) solid var(--dc-border-muted);
+
+    button {
+      padding: var(--dc-gap-sm) var(--dc-gap-md);
+      font-size: var(--dc-text-base);
+    }
+  }
+}

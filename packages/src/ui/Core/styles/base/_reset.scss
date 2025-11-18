@@ -1,0 +1,32 @@
+/**
+ * Base Styles & Reset
+ *
+ * Foundational styles for all DevCaddy components
+ * Sets up box-sizing, font defaults, and base theming
+ */
+
+.dev-caddy {
+  font-family: var(--dc-font-sans);
+  color-scheme: dark;
+  accent-color: var(--dc-primary-highlight);
+  color: var(--dc-text);
+  font-weight: var(--dc-weight-normal);
+
+  // Box-sizing reset
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Base window styles
+  .caddy-window {
+    background-color: var(--dc-background);
+  }
+
+  // Drop shadows for elevation
+  .caddy-window,
+  .caddy-mode-toggle {
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4)); // Slightly stronger shadow
+  }
+}

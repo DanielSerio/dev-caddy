@@ -22,6 +22,8 @@
     "lint": "npm run lint -w packages",
     "clean": "rm -rf packages/dist && rm -rf examples/simple/dist",
     "migrations:bundle": "node scripts/bundle-migrations.js",
+    "storybook": "npm run storybook -w packages",
+    "build-storybook": "npm run build-storybook -w packages",
     "test:integration": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

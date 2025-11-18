@@ -1,0 +1,28 @@
+/**
+ * Skeleton Loading Component
+ *
+ * Enhanced shimmer animation with playful purple accent
+ * Makes loading feel delightful instead of frustrating
+ */
+
+// Skeleton shimmer animation - faster and bouncier
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  // Prevent text selection and interaction
+  vertical-align: middle;
+  user-select: none;
+  pointer-events: none;
+
+  // Enhanced shimmer with purple accent (inline styles in component handle base)
+  // Note: Base styles are in the component for flexibility
+  // This ensures proper animation timing
+  animation: skeleton-shimmer 1.8s var(--dc-ease-smooth) infinite;
+}

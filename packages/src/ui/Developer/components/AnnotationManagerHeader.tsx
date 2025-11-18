@@ -52,18 +52,20 @@ export function AnnotationManagerHeader({
 
   return (
     <div className={`manager-header ${className}`.trim()}>
-      <h3 className="text-muted">
-        ({filteredCount}/{totalCount})
-      </h3>
+      <div className="manager-header-top-bar">
+        <h3 className="text-muted">
+          ({filteredCount}/{totalCount})
+        </h3>
 
-      <IconButton
-        className="manager-filter-button"
-        variant="default"
-        onClick={toggleFilterWindow}
-        data-testid="toggle-filters"
-      >
-        <FilterIcon />
-      </IconButton>
+        <IconButton
+          className="manager-filter-button"
+          variant="default"
+          onClick={toggleFilterWindow}
+          data-testid="toggle-filters"
+        >
+          <FilterIcon />
+        </IconButton>
+      </div>
 
       <AnnotationFilters
         isOpen={filterWindowIsOpen}
