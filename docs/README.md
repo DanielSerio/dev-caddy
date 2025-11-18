@@ -24,7 +24,7 @@ Developers triage and resolve this feedback **inside their local dev environment
 
 ### Core Value Proposition
 
-| For Reviewers / Clients                | For Developers                            |
+| For Clients                            | For Developers                            |
 | -------------------------------------- | ----------------------------------------- |
 | Click any UI element to leave feedback | See annotations directly on UI during dev |
 | Magic-link authentication (one time)   | Resolve / filter / inspect feedback       |
@@ -42,7 +42,7 @@ Team Lead (one-time setup)
   ↓ Creates users & assigns roles via SQL
 Supabase Auth (app_metadata for roles)
   ↓
-Reviewer (magic link)                Developer (local dev)
+Client (magic link)                  Developer (local dev)
   ↓                                    ↓
 Staging/Preview Build              Local Dev Server
   ↓                                    ↓
@@ -104,6 +104,7 @@ Client UI Mode                     Developer UI Mode
 - **TASKS.md** - Active development tasks organized by phase
 - **IMPLEMENTATION.md** - Development principles, decisions, testing strategy
 - **SETUP.md** - Complete setup guide for Supabase and role assignment
+- **MAGIC_LINKS.md** - Magic link authentication guide and troubleshooting
 
 ### Archived Documentation
 

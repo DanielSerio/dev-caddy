@@ -52,9 +52,9 @@ DevCaddy uses a **hybrid approach** combining Spec-Driven Development (SDD) and 
 
 **1. Write Spec (Gherkin)**
 ```gherkin
-Feature: Reviewer Annotation Flow
-  Scenario: Reviewer adds annotation to UI element
-    Given a reviewer has authenticated via magic link
+Feature: Client Annotation Flow
+  Scenario: Client adds annotation to UI element
+    Given a client has authenticated via magic link
     When they click on a button element
     And they add the comment "Change this to blue"
     Then the annotation should appear on the element
@@ -63,7 +63,7 @@ Feature: Reviewer Annotation Flow
 
 **2. Implement E2E Test (Playwright)**
 ```typescript
-test('reviewer can add annotation to UI element', async ({ page }) => {
+test('client can add annotation to UI element', async ({ page }) => {
   await page.goto('http://localhost:5173');
   await page.click('button#submit');
   await page.fill('[data-testid="annotation-input"]', 'Change this to blue');
@@ -222,7 +222,7 @@ useEffect(() => {
 - Simpler state management (no re-subscription on navigation)
 - Better user experience (see all project feedback at once)
 - Enables cross-page navigation to annotations
-- Better collaboration (reviewers see full project context)
+- Better collaboration (clients see full project context)
 
 **Previous Approach (v0.1.0):**
 - Page-scoped subscriptions that re-subscribed on URL changes
@@ -336,7 +336,7 @@ function navigateToAnnotation(annotation: Annotation) {
 - Users need to see full project context (not just current page)
 - Enables cross-page navigation to annotations
 - Simplifies state management (no re-subscription on navigation)
-- Better collaboration (reviewers see all feedback at once)
+- Better collaboration (clients see all feedback at once)
 - Aligns with user feedback: "I think we need the users to see ALL annotations all the time"
 
 **Trade-offs:**

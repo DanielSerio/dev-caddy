@@ -12,7 +12,8 @@
       "Bash(echo:*)",
       "Bash(fi:*)",
       "Bash(done)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

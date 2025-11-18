@@ -3,7 +3,7 @@ import { useAnnotations } from "../Core/hooks";
 import { AnnotationDetail } from "./AnnotationDetail";
 import type { Annotation } from "../../types/annotations";
 import { useAnnotationNavigation } from "../Core/hooks";
-import { LoadingState } from "../Core/components/composite";
+import { Skeleton } from "../Core/Skeleton";
 import { EmptyState, ErrorDisplay } from "../Core/components/display";
 import { AnnotationListItem } from "./components";
 
@@ -94,7 +94,11 @@ export function AnnotationList({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-list">
-        <LoadingState message="Loading annotations..." />
+        <div data-testid="annotation-list-loading">
+          <Skeleton />
+          <Skeleton />
+          <Skeleton />
+        </div>
       </div>
     );
   }

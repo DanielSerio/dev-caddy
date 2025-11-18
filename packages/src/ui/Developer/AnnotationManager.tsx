@@ -4,7 +4,7 @@ import { AnnotationDetail } from "./AnnotationDetail";
 import { type FilterOptions } from "./AnnotationFilters";
 import type { Annotation } from "../../types/annotations";
 import { useAnnotationNavigation } from "../Core/hooks";
-import { LoadingState } from "../Core/components/composite";
+import { Skeleton } from "../Core/Skeleton";
 import { ErrorDisplay } from "../Core/components/display";
 import { AnnotationManagerHeader, AnnotationListView } from "./components";
 
@@ -136,7 +136,11 @@ export function AnnotationManager({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-manager" data-dev-caddy>
-        <LoadingState message="Loading annotations..." />
+        <div data-testid="annotation-manager-loading">
+          <Skeleton />
+          <Skeleton />
+          <Skeleton />
+        </div>
       </div>
     );
   }
