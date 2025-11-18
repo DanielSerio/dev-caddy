@@ -1,0 +1,83 @@
+/**
+ * Annotation Manager Filters
+ *
+ * Popup filter controls for developer mode annotation manager
+ */
+
+.dev-caddy {
+  .manager-header {
+    position: relative; // Positioning context for absolute popup
+
+    .manager-header-top-bar {
+      // Add overflow visible to prevent button outline clipping
+      overflow: visible;
+    }
+
+    // Filter toggle button - prevent outline clipping
+    .manager-filter-button {
+      // Ensure outline is visible even when container has overflow
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  // Filter popup container
+  .manager-filters {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: var(--dc-space-1);
+    background: var(--dc-background);
+    border: var(--dc-border-width-thin) solid var(--dc-border);
+    border-radius: var(--dc-radius-md);
+    padding: var(--dc-space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--dc-space-2);
+    min-width: 240px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+
+    // Closed state - hidden
+    &.closed {
+      display: none;
+    }
+
+    // Open state - visible with animation
+    &.open {
+      display: flex;
+      animation: fadeInPopup var(--dc-duration-normal) var(--dc-ease-smooth);
+    }
+
+    // Individual filter group
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--dc-space-1);
+
+      label {
+        font-size: var(--dc-text-xs);
+        font-weight: var(--dc-weight-semibold);
+        color: var(--dc-text-muted);
+        text-transform: uppercase;
+      }
+
+      select,
+      input {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Popup fade-in animation
+@keyframes fadeInPopup {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

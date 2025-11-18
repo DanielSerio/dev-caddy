@@ -30,6 +30,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    overflow: visible; // Allow filter button outline and popup to overflow
 
     h3 {
       margin: 0;
@@ -67,12 +68,16 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible; // Allow filter popup to overflow
       min-height: 0;
 
       > h3 {
         flex-shrink: 0;
         margin-bottom: var(--dc-space-2);
+      }
+
+      .annotation-meta-author {
+        display: block;
       }
 
       // Scrollable annotation items
@@ -82,6 +87,7 @@
         overflow-x: hidden;
         display: flex;
         flex-direction: column;
+        padding-top: var(--dc-space-2);
         gap: var(--dc-space-2); // Compact spacing between cards
 
         // Smooth scrolling

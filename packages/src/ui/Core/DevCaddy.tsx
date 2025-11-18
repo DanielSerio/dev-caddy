@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { DevCaddyMode, DevCaddyProps } from "../../types";
 import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
@@ -7,7 +7,6 @@ import { AnnotationProvider } from "./context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "./AnnotationPopover";
-import { AnnotationBadges } from "./AnnotationBadges";
 import { ElementHighlight } from "./ElementHighlight";
 import { AuthPrompt } from "./AuthPrompt";
 import { ModeSwitcher } from "./ModeSwitcher";
@@ -20,7 +19,7 @@ import type {
 } from "../../types/annotations";
 import type { SelectionMode } from "./hooks/useElementSelector";
 import "./styles/output/dev-caddy.scss";
-import { Skeleton } from "./Skeleton";
+import { AnnotationItemSkeleton } from "./AnnotationItemSkeleton";
 
 /**
  * Inner component that has access to AnnotationProvider context
@@ -89,8 +88,10 @@ function DevCaddyContent({
     return (
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
         <div className="caddy-content" data-testid="devcaddy-panel">
-          <div className="auth-loading" data-testid="auth-loading">
-            <Skeleton />
+          <div className="annotation-items" data-testid="auth-loading">
+            <AnnotationItemSkeleton />
+            <AnnotationItemSkeleton />
+            <AnnotationItemSkeleton />
           </div>
         </div>
       </CaddyWindow>
@@ -165,6 +166,11 @@ function DevCaddyWithBadges({
     null
   );
 
+  // Memoize the callback to ensure stable reference
+  const handleAnnotationSelect = useCallback((annotation: Annotation | null) => {
+    setViewingAnnotation(annotation);
+  }, []);
+
   return (
     <>
       <DevCaddyContent
@@ -175,11 +181,7 @@ function DevCaddyWithBadges({
         selectedElement={selectedElement}
         clearSelection={clearSelection}
         viewingAnnotation={viewingAnnotation}
-        setViewingAnnotation={setViewingAnnotation}
-      />
-      <AnnotationBadges
-        selectedElement={selectedElement}
-        viewingAnnotation={viewingAnnotation}
+        setViewingAnnotation={handleAnnotationSelect}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import { getStatusName } from "../../Core/lib/status";
-import { sanitizeContent, formatElementSelector } from "../../Core/utility";
+import { sanitizeContent } from "../../Core/utility";
 import { AnnotationBadge, AnnotationMeta } from "../../Core/components/composite";
 import type { Annotation } from "../../../types/annotations";
 
@@ -44,9 +44,6 @@ export function AnnotationListItem({
       data-testid="annotation-list-item"
     >
       <div className="annotation-header">
-        <span className="annotation-element">
-          {formatElementSelector(annotation)}
-        </span>
         <AnnotationBadge annotation={annotation} showPage showStatus />
       </div>
 

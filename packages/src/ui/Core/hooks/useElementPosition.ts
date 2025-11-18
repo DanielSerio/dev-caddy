@@ -53,7 +53,12 @@ export function useElementPosition(
   element: Element | null,
   options: PositionOptions = {}
 ): { position: Position; isVisible: boolean } {
-  const { throttleMs = 100, offset = {} } = options;
+  const { throttleMs = 100, offset } = options;
+
+  // Stabilize offset to prevent creating new object on every render
+  const offsetTop = offset?.top || 0;
+  const offsetLeft = offset?.left || 0;
+
   const [position, setPosition] = useState<Position>({
     top: 0,
     left: 0,
@@ -68,12 +73,12 @@ export function useElementPosition(
 
     const rect = element.getBoundingClientRect();
     setPosition({
-      top: rect.top + (offset.top || 0),
-      left: rect.left + (offset.left || 0),
+      top: rect.top + offsetTop,
+      left: rect.left + offsetLeft,
       width: rect.width,
       height: rect.height,
     });
-  }, [element, offset.top, offset.left]);
+  }, [element, offsetTop, offsetLeft]);
 
   useThrottledPosition(element, calculatePosition, throttleMs);
 

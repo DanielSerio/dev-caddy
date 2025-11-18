@@ -1,5 +1,5 @@
 import { getStatusName } from "../Core/lib/status";
-import { formatElementSelector, sanitizeContent } from "../Core/utility";
+import { sanitizeContent } from "../Core/utility";
 import type { Annotation } from "../../types/annotations";
 import { AnnotationBadge, AnnotationMeta } from "../Core/components";
 
@@ -38,17 +38,11 @@ export function AnnotationItem({ annotation, onClick }: AnnotationItemProps) {
       data-testid="annotation-list-item"
     >
       <div className="annotation-header">
-        <span className="annotation-element">
-          {formatElementSelector(annotation)}
-        </span>
+        <AnnotationBadge annotation={annotation} showPage showStatus />
       </div>
 
       <div className="annotation-content">
         <p>{sanitizeContent(annotation.content)}</p>
-      </div>
-
-      <div className="annotation-badges">
-        <AnnotationBadge annotation={annotation} showPage showStatus />
       </div>
 
       <AnnotationMeta

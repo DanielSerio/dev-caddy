@@ -41,7 +41,6 @@ export function AnnotationMeta({
       <span className="annotation-meta-author" data-testid="annotation-author">
         {annotation.created_by_email}
       </span>
-      <span className="annotation-meta-separator">•</span>
       <span className="annotation-meta-date" data-testid="annotation-date">
         <span className="annotation-meta-label">{label}:</span>{" "}
         {formatDate(timestamp)}

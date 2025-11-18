@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import type { Annotation } from '../../types/annotations';
 import { findElement } from './lib/element';
@@ -24,8 +24,11 @@ interface ElementHighlightProps {
 export function ElementHighlight({ annotation }: ElementHighlightProps) {
   const [element, setElement] = useState<Element | null>(null);
 
+  // Memoize options to prevent new object on every render
+  const positionOptions = useMemo(() => ({ throttleMs: 100 }), []);
+
   // Use useElementPosition hook for automatic position and visibility tracking
-  const { position, isVisible } = useElementPosition(element, { throttleMs: 100 });
+  const { position, isVisible } = useElementPosition(element, positionOptions);
 
   // Find and scroll to element when annotation changes
   useEffect(() => {

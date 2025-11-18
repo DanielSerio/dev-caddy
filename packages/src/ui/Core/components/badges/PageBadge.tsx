@@ -29,12 +29,18 @@ export function PageBadge({ annotation, className = "" }: PageBadgeProps) {
   const pageLabel = pageUrl.pathname;
   const paramsEntries = Array.from(pageUrl.searchParams.entries());
 
+  // Build full page path for title attribute
+  const fullPath = pageUrl.search
+    ? `${pageUrl.pathname}${pageUrl.search}`
+    : pageUrl.pathname;
+
   return (
     <details
       className={`annotation-page-badge ${
         isCurrent ? "current-page" : "other-page"
       } ${className}`.trim()}
       data-testid="page-badge"
+      title={fullPath}
     >
       <summary>{pageLabel}</summary>
 

@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useAnnotations } from "../Core/hooks";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { type FilterOptions } from "./AnnotationFilters";
 import type { Annotation } from "../../types/annotations";
 import { useAnnotationNavigation } from "../Core/hooks";
-import { Skeleton } from "../Core/Skeleton";
+import { AnnotationItemSkeleton } from "../Core/AnnotationItemSkeleton";
 import { ErrorDisplay } from "../Core/components/display";
 import { AnnotationManagerHeader, AnnotationListView } from "./components";
 
@@ -104,15 +104,27 @@ export function AnnotationManager({
         onAnnotationSelect?.(annotation);
       });
     }
-  }, [loading, annotations, onAnnotationSelect, checkPendingAnnotation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, annotations.length]); // checkPendingAnnotation and onAnnotationSelect are stable
 
   /**
    * Handle navigating back from detail view
    */
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setSelectedAnnotation(null);
     onAnnotationSelect?.(null);
-  };
+  }, [onAnnotationSelect]);
+
+  /**
+   * Auto-navigate back if selected annotation was deleted
+   */
+  useEffect(() => {
+    if (selectedAnnotation && !annotations.find(a => a.id === selectedAnnotation.id)) {
+      setSelectedAnnotation(null);
+      onAnnotationSelect?.(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAnnotation, annotations.length]); // Run when annotations change
 
   // Show detail view if annotation is selected
   if (selectedAnnotation) {
@@ -122,9 +134,8 @@ export function AnnotationManager({
       (a) => a.id === selectedAnnotation.id
     );
 
-    // If annotation was deleted, go back to list
+    // If annotation was deleted, return null (useEffect will handle navigation)
     if (!latestAnnotation) {
-      handleBack();
       return null;
     }
 
@@ -136,10 +147,10 @@ export function AnnotationManager({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-manager" data-dev-caddy>
-        <div data-testid="annotation-manager-loading">
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
+        <div className="annotation-items" data-testid="annotation-manager-loading">
+          <AnnotationItemSkeleton />
+          <AnnotationItemSkeleton />
+          <AnnotationItemSkeleton />
         </div>
       </div>
     );

@@ -172,7 +172,7 @@ export const mockAnnotationMinimal: Annotation = {
 export const mockAnnotationLongContent: Annotation = {
   ...mockAnnotation,
   id: 8,
-  page: '/products',
+  page: '/products/jewelry/watches/some-really-really-long-watch-product-name',
   element_tag: 'div',
   element_id: 'product-card',
   element_test_id: 'product-card-123',
@@ -181,7 +181,7 @@ export const mockAnnotationLongContent: Annotation = {
   element_parent_selector: '.products-grid',
   element_nth_child: 5,
   content: 'This is a very long annotation content that spans multiple lines and contains detailed feedback about the product card design. The designer wants to see better spacing between elements, improved typography, and a more prominent call-to-action button. Additionally, the product image should be larger and the price should be highlighted more clearly to improve conversion rates.',
-  status_id: ANNOTATION_STATUS.NEW,
+  status_id: ANNOTATION_STATUS.IN_PROGRESS,
   created_by: 'designer-456',
   created_by_email: 'designer@example.com',
   created_at: '2025-11-13T13:15:00Z',

@@ -14,8 +14,7 @@
     border-radius: var(--dc-radius-sm);
     white-space: nowrap;
     display: inline-block;
-    transition:
-      transform var(--dc-duration-fast) var(--dc-ease-spring),
+    transition: transform var(--dc-duration-fast) var(--dc-ease-spring),
       box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
 
     // Playful tilt on hover
@@ -78,20 +77,26 @@
     }
   }
 
-  // Page Badge - subtle with border
+  // Page Badge - subtle with border, truncated with ellipsis
   .annotation-page-badge {
     font-size: var(--dc-text-xs);
     font-weight: var(--dc-weight-semibold);
     padding: 2px var(--dc-gap-sm);
     border-radius: var(--dc-radius-sm);
-    white-space: nowrap;
     display: inline-block;
     border-width: var(--dc-border-width-thin);
     border-style: solid;
-    transition:
-      transform var(--dc-duration-fast) var(--dc-ease-spring),
-      border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+    max-width: 172px;
+    transition: border-color var(--dc-duration-normal) var(--dc-ease-smooth),
       background-color var(--dc-duration-normal) var(--dc-ease-smooth);
+
+    // Truncate long paths with ellipsis
+    summary {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
 
     &.current-page {
       color: var(--dc-success);
@@ -99,7 +104,6 @@
       background-color: rgba(80, 200, 180, 0.1);
 
       &:hover {
-        transform: scale(1.05);
         background-color: rgba(80, 200, 180, 0.15);
       }
     }
@@ -110,7 +114,6 @@
       border-color: var(--dc-border);
 
       &:hover {
-        transform: scale(1.05);
         border-color: var(--dc-border-em);
       }
     }
