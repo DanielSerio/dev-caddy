@@ -194,7 +194,7 @@ export function DevCaddy({
   const [devCaddyIsActive, setDevCaddyIsActive] = useState(false);
 
   const UI_MODE = useMemo(() => {
-    return window.__DEV_CADDY_UI_MODE__ ?? null;
+    return typeof window !== 'undefined' ? window.__DEV_CADDY_UI_MODE__ ?? null : null;
   }, []);
 
   const toggleStyles = getCornerStyles("toggle", corner, offset);
