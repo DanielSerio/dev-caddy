@@ -6,24 +6,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Documentation Structure
 
-DevCaddy uses a streamlined documentation hierarchy. **Always start with `docs/README.md`** and then navigate to specific documents as needed:
+DevCaddy uses a feature-based documentation structure with active development docs and archived historical docs.
 
-```
-docs/
-├── README.md           → START HERE - Project overview, architecture, current state
-├── TASKS.md            → Active development tasks organized by phase
-├── IMPLEMENTATION.md   → Development principles, decisions, testing strategy
-├── SETUP.md            → Complete setup guide (Supabase + role assignment)
-├── MAGIC_LINKS.md      → Magic link authentication guide and troubleshooting
-└── archive/            → Historical docs (not needed for active development)
-```
+### Documentation Workflow
+
+Feature development uses 3 directories under `docs/`:
+
+1. **`docs/specs/`** - Gherkin specs for features currently in development
+2. **`docs/implementations/`** - Implementation details for active features
+3. **`docs/tasks/`** - Progress tracking for active features
+
+**When features are completed:**
+
+1. Specs are summarized and added to `archive/specs/YYYY-MM-DD.md` (all specs completed on that date)
+2. Implementations are summarized and added to `archive/implementations/YYYY-MM-DD.md`
+3. Tasks are summarized and added to `archive/tasks/YYYY-MM-DD.md`
+4. Original files are removed from `docs/specs/`, `docs/implementations/`, and `docs/tasks/`
+
+### Archive Structure
+
+Docs in the `archive/` folder are **no longer considered in-scope** for active development context:
+
+- **`archive/PROTOTYPE.md`** - Summary of all information used during prototyping
+- **`archive/specs/YYYY-MM-DD.md`** - Completed specs by date
+- **`archive/implementations/YYYY-MM-DD.md`** - Completed implementations by date
+- **`archive/tasks/YYYY-MM-DD.md`** - Completed tasks by date
+
+### Active Documentation (docs/)
+
+Docs in `docs/` represent the current development context/scope:
+
+- **`docs/README.md`** - START HERE - Project overview, architecture, current state
+- **`docs/AUDIT.md`** - Current audit status information
+- **`docs/TASKS.md`** - Active development tasks organized by phase
+- **`docs/IMPLEMENTATION.md`** - Development principles, decisions, testing strategy
+- **`docs/SETUP.md`** - Complete setup guide (Supabase + role assignment)
+- **`docs/MAGIC_LINKS.md`** - Magic link authentication guide and troubleshooting
+- **`docs/specs/`** - Gherkin specs for features in development
+- **`docs/implementations/`** - Implementation details for active features
+- **`docs/tasks/`** - Task tracking for active features
+
+### Root Documentation
+
+Docs in the root are primarily for human users and repository developers:
+
+- **`README.md`** - Main repository readme file
+- **`CLAUDE.md`** - Guidance for Claude Code (this file)
+- **`MARKETING.md`** - Marketing information about the project
+- **`SETUP.md`** - How to set up this project
+- **`packages/README.md`** - How users use the package
+
+### Quick Reference
 
 **When to use each document:**
 - **Starting work?** Read `docs/README.md` for context
+- **Current audit status?** Check `docs/AUDIT.md`
 - **Need to understand a decision?** Check `docs/IMPLEMENTATION.md`
 - **Setting up Supabase or roles?** See `docs/SETUP.md`
-- **Looking for specific tasks?** Check `docs/TASKS.md`
+- **Looking for specific tasks?** Check `docs/TASKS.md` or `docs/tasks/`
 - **Magic link issues?** See `docs/MAGIC_LINKS.md`
+- **Need feature specs?** Check `docs/specs/`
+- **Historical context?** See `archive/PROTOTYPE.md`
 
 ---
 
