@@ -1,4 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Configure test app and port based on environment variable
+const testApp = process.env.TEST_APP || 'simple';
+const testPort = testApp.includes('tanstack') ? '3000' : '5173';
+const baseURL = `http://localhost:${testPort}`;
 
 /**
  * Playwright Configuration for DevCaddy E2E Tests
@@ -24,16 +34,20 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['list'], // Show test results in terminal
+    ['html', { open: 'never' }] // Generate HTML report but don't auto-open
+  ],
 
   /* Global setup and teardown */
-  globalSetup: require.resolve('./tests/setup/global-setup.ts'),
-  globalTeardown: require.resolve('./tests/setup/global-teardown.ts'),
+  // TODO: Enable when Supabase is linked (run: npx supabase link)
+  // globalSetup: resolve(__dirname, './tests/setup/global-setup.ts'),
+  // globalTeardown: resolve(__dirname, './tests/setup/global-teardown.ts'),
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -62,9 +76,11 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    command: `npm run dev -w examples/${testApp}`,
+    url: baseURL,
+    // Set to false to always start fresh server and shut down after tests
+    // Set to true to reuse existing server (faster for local development)
+    reuseExistingServer: false,
     timeout: 120 * 1000, // 2 minutes
   },
 });

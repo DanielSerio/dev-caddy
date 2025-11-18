@@ -11,7 +11,8 @@
   "license": "MIT",
   "workspaces": [
     "packages",
-    "examples/*"
+    "examples/*",
+    "examples/*/*"
   ],
   "scripts": {
     "build": "npm run build -w packages",
@@ -24,8 +25,11 @@
     "migrations:bundle": "node scripts/bundle-migrations.js",
     "storybook": "npm run storybook -w packages",
     "build-storybook": "npm run build-storybook -w packages",
-    "test:integration": "vitest",
+    "test:integration": "vitest run",
+    "test:integration:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:simple": "cross-env TEST_APP=simple playwright test",
+    "test:e2e:tanstack": "cross-env TEST_APP=tanstack/ssr-app playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:all": "npm run test:integration && npm run test:e2e",
     "test:cleanup": "tsx tests/scripts/cleanup-branches.ts",
@@ -34,6 +38,7 @@
     "test:branch:reset": "npx supabase db reset --branch testing"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "typescript": "~5.9.3"
   },
   "engines": {
