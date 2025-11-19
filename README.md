@@ -34,7 +34,7 @@ DevCaddy transforms your live application into a collaborative canvas where stak
 - 🔄 **Real-time sync** — Developers see client feedback instantly via Supabase
 - 🎭 **Dual UI modes** — Automatically adapts for developers (local) and clients (staging)
 - 🔐 **Magic link access** — Clients authenticate via time-limited email links (coming soon)
-- 🏗️ **Framework agnostic** — Works with React, Vue, Svelte, and more (Vite-based)
+- ⚛️ **React + Vite** — Built for React applications using Vite
 - 📍 **Context-aware** — Annotations include element selectors, page URLs, and timestamps
 - 🎨 **Compact & playful** — Beautiful, unobtrusive UI that doesn't get in the way
 - 🔒 **Production-safe** — Only appears in development/staging, never in production
@@ -93,8 +93,8 @@ function App() {
 Unlike generic feedback tools (Markup.io, Usersnap), DevCaddy is:
 
 1. **Developer-first** — Installs as a Vite plugin, not a third-party script
-2. **Self-hosted** — Your data stays in your Supabase instance
-3. **Zero config** — Works out of the box with intelligent environment detection
+2. **Self-hosted** — Your data stays in your Supabase instance (you control everything)
+3. **Intelligent defaults** — Environment detection and automatic UI mode switching
 4. **Open source** — Customize, extend, and contribute
 
 ---
