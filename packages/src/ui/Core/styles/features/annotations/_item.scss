@@ -1,0 +1,110 @@
+/**
+ * Annotation Item (Card) Component
+ *
+ * Individual annotation cards with animated left stripe on hover
+ * Pulsing indicator for new annotations draws attention
+ */
+
+.dev-caddy .annotation-item {
+  max-width: 302px;
+  background-color: var(--dc-background-raised);
+  border: var(--dc-border-width-thin) solid var(--dc-border-muted);
+  border-radius: var(--dc-radius-md);
+  padding: var(--dc-space-2) var(--dc-space-3);
+  flex-direction: column;
+  gap: var(--dc-gap-xs);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden; // Hide stripe overflow
+  transition: background-color var(--dc-duration-normal) var(--dc-ease-smooth),
+    border-color var(--dc-duration-normal) var(--dc-ease-smooth);
+
+  // Animated left stripe (using ::before pseudo-element)
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: width var(--dc-duration-fast) var(--dc-ease-spring);
+  }
+
+  // Hover state - expand stripe and subtle background change
+  &:hover {
+    background-color: var(--dc-background);
+    border-color: var(--dc-border);
+
+    &::before {
+      width: 6px;
+    }
+  }
+
+  // Active state - compress slightly
+  &:active {
+    transform: scale(0.98);
+    transition-duration: var(--dc-duration-instant);
+  }
+
+  // Status-based stripe colors
+  &.status-new::before {
+    background: var(--dc-primary);
+  }
+
+  &.status-in_progress::before,
+  &.status-in-progress::before {
+    background: var(--dc-accent);
+  }
+
+  &.status-in_review::before,
+  &.status-in-review::before {
+    background: var(--dc-success);
+  }
+
+  &.status-hold::before {
+    background: var(--dc-danger);
+  }
+
+  &.status-resolved {
+    opacity: 0.7;
+
+    &::before {
+      background: var(--dc-secondary);
+    }
+  }
+
+  // Pulsing dot for new annotations (using ::after pseudo-element)
+  &.status-new::after {
+    content: "";
+    position: absolute;
+    top: var(--dc-space-2);
+    right: var(--dc-space-2);
+    width: 8px;
+    height: 8px;
+    background: var(--dc-primary);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--dc-primary);
+  }
+
+  .annotation-meta-author,
+  .annotation-meta-date {
+    display: block;
+    text-align: left;
+    font-size: 0.83em;
+  }
+}
+
+// Pulsing dot animation for new annotations
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+  }
+}

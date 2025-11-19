@@ -1,0 +1,59 @@
+/**
+ * Color Tokens
+ *
+ * Design philosophy: "Vibrant Dark" - Make colors pop while maintaining dark theme
+ * All colors use HSL for easier manipulation and theming
+ */
+
+:root:has(.dev-caddy) {
+  // Background layers - darker foundation
+  --dc-background: hsl(210, 8%, 10%);
+  --dc-background-raised: hsl(210, 8%, 15%);
+  --dc-background-lowered: hsl(210, 8%, 5%);
+
+  // Skeleton loading
+  --dc-skeleton-bg: hsl(210, 8%, 15%);
+  --dc-skeleton-shimmer: hsl(255, 95%, 65%, 0.3); // Purple shimmer instead of white
+
+  // Borders - subtle depth
+  --dc-border: hsl(210, 8%, 30%);
+  --dc-border-em: hsl(210, 8%, 50%);
+  --dc-border-muted: hsl(210, 8%, 20%);
+
+  // Text hierarchy
+  --dc-text: hsl(210, 8%, 80%);
+  --dc-text-em: hsl(210, 8%, 95%);
+  --dc-text-muted: hsl(210, 8%, 50%);
+
+  // Primary (Purple) - Brighter and more vibrant
+  --dc-primary-highlight: hsl(255, 100%, 70%);
+  --dc-primary-light: hsl(255, 95%, 65%);
+  --dc-primary: hsl(255, 95%, 60%);
+  --dc-primary-dark: hsl(255, 95%, 50%);
+
+  // Accent (Orange) - More saturated
+  --dc-accent-light: hsl(30, 95%, 65%);
+  --dc-accent: hsl(30, 95%, 60%);
+  --dc-accent-dark: hsl(30, 95%, 50%);
+
+  // Secondary (Gray-Green) - Keep subtle
+  --dc-secondary-light: hsl(120, 7%, 55%);
+  --dc-secondary: hsl(120, 6%, 50%);
+  --dc-secondary-dark: hsl(120, 7%, 45%);
+
+  // Danger (Red) - More vibrant
+  --dc-danger-light: hsl(345, 95%, 65%);
+  --dc-danger: hsl(345, 95%, 60%);
+  --dc-danger-dark: hsl(345, 95%, 50%);
+
+  // Success (Teal) - Brighter
+  --dc-success-light: hsl(165, 85%, 60%);
+  --dc-success: hsl(165, 85%, 55%);
+  --dc-success-dark: hsl(165, 85%, 45%);
+
+  // Gradients - Add visual interest
+  --dc-gradient-primary: linear-gradient(135deg, hsl(255, 95%, 65%), hsl(280, 95%, 60%));
+  --dc-gradient-accent: linear-gradient(135deg, hsl(30, 95%, 60%), hsl(15, 95%, 55%));
+  --dc-gradient-success: linear-gradient(135deg, hsl(165, 85%, 55%), hsl(180, 85%, 50%));
+  --dc-gradient-danger: linear-gradient(135deg, hsl(345, 95%, 60%), hsl(0, 95%, 55%));
+}

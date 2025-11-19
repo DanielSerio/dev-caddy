@@ -1,3 +1,26 @@
-@forward "../critical";
-@forward "../client";
-@forward "../developer";
+/**
+ * DevCaddy Styles - Main Entry Point
+ *
+ * Organized structure:
+ * 1. Foundation - Design tokens (colors, typography, spacing, motion)
+ * 2. Base - Resets and foundational styles
+ * 3. Components - Reusable UI components
+ * 4. Features - Feature-specific styles
+ * 5. Mode overrides - Client/Developer specific styles
+ */
+
+// Foundation: Design tokens
+@use "../foundation";
+
+// Base: Resets and foundational styles
+@use "../base";
+
+// Components: Organized by category
+@use "../components";
+
+// Features: Feature-specific styles
+@use "../features";
+
+// Mode-specific overrides
+@use "../client";
+@use "../developer";

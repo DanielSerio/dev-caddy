@@ -409,6 +409,39 @@ CREATE POLICY "clients_can_update_own_annotations"
 - Anon key is safe for client use (RLS protects data)
 - Service role key never exposed to client
 
+### Production Safety
+
+DevCaddy is **production-safe by default**:
+
+**Automatic safeguards:**
+- ✅ UI disabled in production builds (`mode: 'production'` + `command: 'build'`)
+- ✅ No code injected when `enabled: false`
+- ✅ Warning displayed if accidentally enabled in production build
+
+**Recommended configuration:**
+```typescript
+// vite.config.ts
+export default defineConfig((context) => ({
+  plugins: [
+    DevCaddyPlugin({
+      context,
+      // Disable in production builds
+      enabled: process.env.NODE_ENV !== 'production',
+    })
+  ],
+}));
+```
+
+**What happens in production:**
+- If `enabled: false` → DevCaddy code completely removed from bundle
+- If accidentally `enabled: true` → Warning displayed in build output
+
+**Override for specific cases:**
+```typescript
+// Enable in production staging environment only
+enabled: process.env.VITE_ENABLE_DEVCADDY === 'true'
+```
+
 📖 Full architecture: See [docs/README.md](../docs/README.md#architecture-summary)
 
 ---

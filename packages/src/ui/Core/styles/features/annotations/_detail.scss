@@ -1,0 +1,238 @@
+/**
+ * Annotation Detail View
+ *
+ * Compact, playful detail view for annotations with:
+ * - Tight spacing for compact feel
+ * - Subtle hover animations
+ * - Rounded corners and soft shadows
+ * - Gradient accents
+ */
+
+.dev-caddy {
+  .dev-caddy-annotation-detail {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 0; // Remove gaps for maximum compactness
+  }
+
+  // Header with back button
+  .annotation-detail-header {
+    padding: var(--dc-space-2); // 8px all around
+    border-bottom: var(--dc-border-width-thin) solid var(--dc-border-muted);
+    display: flex;
+    justify-content: flex-start; // Align to left
+    align-items: center;
+  }
+
+  // Main content area
+  .detail-content {
+    flex: 1;
+    padding: var(--dc-space-2); // 8px all around - more compact
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dc-gap-sm); // 8px - tighter section spacing
+  }
+
+  // Individual detail section
+  .detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dc-gap-xs); // 4px - tight label/value spacing
+    transition: transform var(--dc-duration-fast) var(--dc-ease-spring);
+
+    // Subtle lift on hover for playfulness
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  // Section labels - compact and friendly
+  .detail-label {
+    font-size: var(--dc-text-xs); // 10px
+    font-weight: var(--dc-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--dc-text-muted);
+    margin: 0;
+    padding: 0;
+  }
+
+  // Section values - with playful styling
+  .detail-value {
+    font-size: var(--dc-text-base); // 12px
+    color: var(--dc-text);
+    line-height: var(--dc-leading-normal);
+
+    // Code blocks (element selectors)
+    code {
+      display: block;
+      font-family: var(--dc-font-mono);
+      font-size: var(--dc-text-sm); // 11px
+      background: var(--dc-background-raised);
+      border: var(--dc-border-width-thin) solid var(--dc-border);
+      border-radius: var(--dc-radius-sm); // 6px - soft corners
+      padding: var(--dc-space-1) var(--dc-space-2); // 4px 8px - more compact
+      word-break: break-all;
+      transition:
+        border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+        box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
+
+      // Subtle glow on hover
+      &:hover {
+        border-color: var(--dc-border-em);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  // Annotation content text
+  .annotation-content-text {
+    margin: 0;
+    padding: var(--dc-space-1) var(--dc-space-2); // 4px 8px - more compact
+    background: var(--dc-background-raised);
+    border: var(--dc-border-width-thin) solid var(--dc-border);
+    border-radius: var(--dc-radius-sm); // 6px - consistent with other elements
+    line-height: var(--dc-leading-normal); // Tighter line height
+    transition:
+      background-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
+
+    // Playful lift on hover
+    &:hover {
+      background-color: var(--dc-background);
+      border-color: var(--dc-border-em);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+  }
+
+  // Author display
+  .detail-author {
+    font-size: var(--dc-text-base);
+    color: var(--dc-text);
+    padding: var(--dc-space-1) var(--dc-space-2); // 4px 8px
+    background: var(--dc-background-raised);
+    border-radius: var(--dc-radius-sm); // 6px
+    display: inline-block;
+    border: var(--dc-border-width-thin) solid transparent;
+    transition:
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      transform var(--dc-duration-fast) var(--dc-ease-spring);
+
+    // Playful tilt on hover
+    &:hover {
+      border-color: var(--dc-border);
+      transform: rotate(-1deg) scale(1.02);
+    }
+  }
+
+  // Date display
+  .detail-date {
+    font-size: var(--dc-text-sm); // 11px
+    color: var(--dc-text-muted);
+    font-family: var(--dc-font-mono);
+  }
+
+  // Element info container
+  .element-info {
+    code {
+      // Gradient border effect for element code
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: var(--dc-radius-sm);
+        padding: 1px;
+        background: linear-gradient(
+          135deg,
+          var(--dc-primary) 0%,
+          var(--dc-accent) 100%
+        );
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity var(--dc-duration-normal) var(--dc-ease-smooth);
+      }
+
+      &:hover::before {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  // Action buttons container
+  .detail-actions {
+    padding: var(--dc-space-2); // 8px - match content padding
+    border-top: var(--dc-border-width-thin) solid var(--dc-border-muted);
+    display: flex;
+    gap: var(--dc-gap-xs); // 4px - tighter button spacing
+    background: transparent; // Remove darker background
+
+    // Buttons inherit from base, just set flex layout
+    button {
+      flex: 1;
+    }
+  }
+
+  // Status select in detail view
+  .detail-section select {
+    padding: var(--dc-space-1) var(--dc-space-2); // 4px 8px - compact
+    font-size: var(--dc-text-base);
+    background: var(--dc-background-raised);
+    border: var(--dc-border-width-thin) solid var(--dc-border);
+    border-radius: var(--dc-radius-sm); // 6px
+    color: var(--dc-text);
+    font-family: var(--dc-font-sans);
+    font-weight: var(--dc-weight-medium);
+    cursor: pointer;
+    transition:
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      box-shadow var(--dc-duration-normal) var(--dc-ease-smooth),
+      background-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      transform var(--dc-duration-fast) var(--dc-ease-spring);
+
+    // Playful glow on focus
+    &:focus {
+      outline: none;
+      border-color: var(--dc-primary);
+      background-color: var(--dc-background);
+      box-shadow:
+        0 0 0 3px rgba(155, 100, 255, 0.2),
+        0 0 20px rgba(155, 100, 255, 0.1);
+      transform: scale(1.02);
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--dc-border-em);
+      background-color: var(--dc-background);
+    }
+  }
+
+  // Selector code display (parent selector)
+  .selector-code {
+    display: block;
+    font-family: var(--dc-font-mono);
+    font-size: var(--dc-text-xs); // 10px - extra compact for long selectors
+    background: var(--dc-background-raised);
+    border: var(--dc-border-width-thin) solid var(--dc-border);
+    border-radius: var(--dc-radius-sm);
+    padding: var(--dc-space-1) var(--dc-space-2); // 4px 8px
+    word-break: break-all;
+    color: var(--dc-text-muted);
+    transition:
+      color var(--dc-duration-normal) var(--dc-ease-smooth),
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth);
+
+    &:hover {
+      color: var(--dc-text);
+      border-color: var(--dc-border-em);
+    }
+  }
+}

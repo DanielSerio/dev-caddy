@@ -3,7 +3,18 @@
     "allow": [
       "Bash(git mv:*)",
       "Bash(npm run build:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(npx tsc:*)",
+      "Bash(for file in StatusBadge EmptyState ErrorDisplay FilterGroup FormField BackButton DetailSection ActionButton)",
+      "Bash(do)",
+      "Bash(if [ -f \"$file.stories.tsx\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi:*)",
+      "Bash(done)",
+      "Bash(npm run lint)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:scss:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,19 @@
+/**
+ * Border Tokens
+ *
+ * Design philosophy: "Soft Corners" - More rounded = more friendly
+ * Larger radius values create a more playful, approachable feel
+ */
+
+:root:has(.dev-caddy) {
+  // Border radius scale - doubled for friendlier feel
+  --dc-radius-sm: 6px; // Was 3px - small elements (badges, buttons)
+  --dc-radius-md: 10px; // Was 3px - medium elements (inputs, cards)
+  --dc-radius-lg: 16px; // New - large elements (modals, panels)
+  --dc-radius-full: 999px; // Pills (toggle button)
+
+  // Border widths
+  --dc-border-width-thin: 1px;
+  --dc-border-width-normal: 2px;
+  --dc-border-width-thick: 3px;
+}

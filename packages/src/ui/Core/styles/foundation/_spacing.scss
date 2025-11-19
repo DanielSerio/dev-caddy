@@ -1,0 +1,26 @@
+/**
+ * Spacing Tokens
+ *
+ * Design philosophy: 4px base scale for consistency
+ * Provides predictable spacing throughout the UI
+ */
+
+:root:has(.dev-caddy) {
+  // Spacing scale (4px increments)
+  --dc-space-1: 4px;
+  --dc-space-2: 8px;
+  --dc-space-3: 12px;
+  --dc-space-4: 16px;
+  --dc-space-5: 20px;
+  --dc-space-6: 24px;
+  --dc-space-8: 32px;
+  --dc-space-10: 40px;
+  --dc-space-12: 48px;
+
+  // Semantic spacing
+  --dc-gap-xs: var(--dc-space-1); // 4px
+  --dc-gap-sm: var(--dc-space-2); // 8px
+  --dc-gap-md: var(--dc-space-3); // 12px
+  --dc-gap-lg: var(--dc-space-4); // 16px
+  --dc-gap-xl: var(--dc-space-6); // 24px
+}

@@ -1,0 +1,72 @@
+/**
+ * Skeleton Loading Component
+ *
+ * Enhanced shimmer animation with playful purple accent
+ * Makes loading feel delightful instead of frustrating
+ */
+
+// Skeleton shimmer animation - faster and bouncier
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  // Prevent text selection and interaction
+  vertical-align: middle;
+  user-select: none;
+  pointer-events: none;
+
+  // Enhanced shimmer with purple accent (inline styles in component handle base)
+  // Note: Base styles are in the component for flexibility
+  // This ensures proper animation timing
+  animation: skeleton-shimmer 1.8s var(--dc-ease-smooth) infinite;
+}
+
+// Annotation Item Skeleton - matches actual annotation item structure
+.dev-caddy .annotation-item-skeleton {
+  max-width: 302px;
+  background-color: var(--dc-background-raised);
+  border: var(--dc-border-width-thin) solid var(--dc-border-muted);
+  border-radius: var(--dc-radius-md);
+  padding: var(--dc-space-2) var(--dc-space-3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dc-space-2);
+
+  // Animated status stripe (matches annotation item ::before)
+  .skeleton-stripe {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--dc-skeleton-shimmer);
+    animation: skeleton-shimmer 1.8s var(--dc-ease-smooth) infinite;
+  }
+
+  // Header badges
+  .skeleton-header {
+    display: flex;
+    gap: var(--dc-space-1);
+    align-items: center;
+  }
+
+  // Content lines
+  .skeleton-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dc-space-1);
+  }
+
+  // Metadata
+  .skeleton-meta {
+    display: flex;
+  }
+}

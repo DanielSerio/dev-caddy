@@ -1,0 +1,120 @@
+/**
+ * Button Base Styles
+ *
+ * Foundation for all button variants with playful interactions
+ * Unified compact design across the entire UI
+ */
+
+.dev-caddy {
+  button {
+    border: var(--dc-border-width-thin) solid transparent;
+    font-weight: var(--dc-weight-semibold);
+    font-size: var(--dc-text-sm); // Compact 11px
+    cursor: pointer;
+    border-radius: var(--dc-radius-sm);
+    padding: var(--dc-space-1) var(--dc-space-2); // Compact 4px 8px
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--dc-gap-xs); // 4px gap for icons
+    transition:
+      transform var(--dc-duration-fast) var(--dc-ease-spring),
+      box-shadow var(--dc-duration-normal) var(--dc-ease-smooth),
+      background var(--dc-duration-normal) var(--dc-ease-smooth),
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth);
+    position: relative;
+    overflow: hidden;
+
+    // Icon sizing (for buttons with icons)
+    svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    // Universal squish on click - tactile feedback
+    &:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    // Disabled state
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    // Primary actions (resolve, edit, save) - gradient
+    &.btn-resolve,
+    &.btn-edit,
+    &.btn-save {
+      background: var(--dc-gradient-primary);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 2px 6px rgba(155, 100, 255, 0.3);
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 3px 10px rgba(155, 100, 255, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0) scale(0.96);
+      }
+    }
+
+    // Danger actions (delete) - gradient
+    &.btn-delete {
+      background: var(--dc-gradient-danger);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 2px 6px rgba(255, 100, 120, 0.3);
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 3px 10px rgba(255, 100, 120, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0) scale(0.96);
+      }
+    }
+
+    // Secondary actions (cancel, edit, back) - subtle border
+    &.btn-cancel,
+    &.btn-secondary {
+      background: var(--dc-background);
+      border-color: var(--dc-border);
+      color: var(--dc-text);
+
+      &:hover:not(:disabled) {
+        background: var(--dc-background-raised);
+        border-color: var(--dc-border-em);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0) scale(0.96);
+      }
+    }
+
+    // Default/neutral buttons (add annotation, back)
+    &.btn-default {
+      background: var(--dc-background);
+      border-color: var(--dc-border);
+      color: var(--dc-text);
+
+      &:hover:not(:disabled) {
+        background: var(--dc-background-raised);
+        border-color: var(--dc-border-em);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0) scale(0.96);
+      }
+    }
+  }
+}

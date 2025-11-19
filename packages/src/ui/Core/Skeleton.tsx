@@ -88,7 +88,7 @@ export function Skeleton({
       "linear-gradient(90deg, transparent, var(--dc-skeleton-shimmer), transparent)",
     backgroundSize: "200% 100%",
     backgroundRepeat: "no-repeat",
-    animation: "skeleton-shimmer 1.5s ease-in-out infinite",
+    animation: "skeleton-shimmer 1.8s var(--dc-ease-smooth) infinite",
     display: "inline-block",
     ...style,
   };

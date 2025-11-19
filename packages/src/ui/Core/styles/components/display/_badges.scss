@@ -1,0 +1,128 @@
+/**
+ * Badge Components
+ *
+ * Status and page badges with gradient backgrounds and playful tilts
+ */
+
+.dev-caddy {
+  // Status Badge - gradient backgrounds with hover tilt
+  .annotation-status {
+    font-size: var(--dc-text-xs);
+    font-weight: var(--dc-weight-semibold);
+    text-transform: uppercase;
+    padding: 2px var(--dc-gap-sm);
+    border-radius: var(--dc-radius-sm);
+    white-space: nowrap;
+    display: inline-block;
+    transition: transform var(--dc-duration-fast) var(--dc-ease-spring),
+      box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
+
+    // Playful tilt on hover
+    &:hover {
+      transform: rotate(-2deg) scale(1.05);
+      cursor: default;
+    }
+
+    // Status-specific gradient backgrounds
+    &.status-new {
+      background: var(--dc-gradient-primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(155, 100, 255, 0.3);
+
+      &:hover {
+        box-shadow: 0 3px 10px rgba(155, 100, 255, 0.4);
+      }
+    }
+
+    &.status-in_progress,
+    &.status-in-progress {
+      background: var(--dc-gradient-accent);
+      color: white;
+      box-shadow: 0 2px 6px rgba(255, 140, 60, 0.3);
+
+      &:hover {
+        box-shadow: 0 3px 10px rgba(255, 140, 60, 0.4);
+      }
+    }
+
+    &.status-in_review,
+    &.status-in-review {
+      background: var(--dc-gradient-success);
+      color: black;
+      box-shadow: 0 2px 6px rgba(80, 200, 180, 0.3);
+
+      &:hover {
+        box-shadow: 0 3px 10px rgba(80, 200, 180, 0.4);
+      }
+    }
+
+    &.status-hold {
+      background: var(--dc-gradient-danger);
+      color: white;
+      box-shadow: 0 2px 6px rgba(255, 100, 120, 0.3);
+
+      &:hover {
+        box-shadow: 0 3px 10px rgba(255, 100, 120, 0.4);
+      }
+    }
+
+    &.status-resolved {
+      background-color: var(--dc-secondary);
+      color: black;
+      box-shadow: 0 2px 6px rgba(100, 100, 100, 0.2);
+
+      &:hover {
+        box-shadow: 0 3px 10px rgba(100, 100, 100, 0.3);
+      }
+    }
+  }
+
+  // Page Badge - subtle with border, truncated with ellipsis
+  .annotation-page-badge {
+    font-size: var(--dc-text-xs);
+    font-weight: var(--dc-weight-semibold);
+    padding: 2px var(--dc-gap-sm);
+    border-radius: var(--dc-radius-sm);
+    display: inline-block;
+    border-width: var(--dc-border-width-thin);
+    border-style: solid;
+    max-width: 172px;
+    transition: border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      background-color var(--dc-duration-normal) var(--dc-ease-smooth);
+
+    // Truncate long paths with ellipsis
+    summary {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
+
+    &.current-page {
+      color: var(--dc-success);
+      border-color: var(--dc-success);
+      background-color: rgba(80, 200, 180, 0.1);
+
+      &:hover {
+        background-color: rgba(80, 200, 180, 0.15);
+      }
+    }
+
+    &.other-page {
+      background-color: var(--dc-background-raised);
+      color: var(--dc-text-muted);
+      border-color: var(--dc-border);
+
+      &:hover {
+        border-color: var(--dc-border-em);
+      }
+    }
+  }
+
+  // Badge container
+  .annotation-badges {
+    display: flex;
+    gap: var(--dc-gap-xs);
+    align-items: center;
+  }
+}

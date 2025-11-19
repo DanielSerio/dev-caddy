@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback, type KeyboardEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { validateAnnotationContent } from '../../plugin/utility/validate';
+import { useElementPosition } from './hooks';
+import { PopoverHeader, PopoverForm } from './components/composite';
 
 /**
  * Props for AnnotationPopover component
@@ -18,9 +19,9 @@ interface AnnotationPopoverProps {
  * Popover component for creating annotations
  *
  * Displays a popover near the selected element with:
- * - Textarea for annotation content
- * - Submit and Cancel buttons
- * - Keyboard shortcuts (Enter to submit, Escape to cancel)
+ * - Header with title and close button
+ * - Form with textarea, validation, and keyboard shortcuts
+ * - Automatic positioning with screen bounds checking
  *
  * @example
  * <AnnotationPopover
@@ -34,22 +35,21 @@ export function AnnotationPopover({
   onSubmit,
   onCancel,
 }: AnnotationPopoverProps) {
-  const [content, setContent] = useState('');
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [error, setError] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
+
+  // Use useElementPosition hook for automatic position tracking
+  const { position } = useElementPosition(selectedElement, { throttleMs: 100 });
 
   /**
-   * Calculate popover position based on selected element
+   * Calculate popover position with screen bounds checking
    */
-  const calculatePosition = useCallback(() => {
-    const rect = selectedElement.getBoundingClientRect();
+  useEffect(() => {
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
 
     // Position below the element by default
-    let top = rect.bottom + scrollY + 8;
-    let left = rect.left + scrollX;
+    let top = position.top + position.height + scrollY + 8;
+    let left = position.left + scrollX;
 
     // If popover would go off-screen to the right, align to right edge
     const popoverWidth = 320; // Approximate width
@@ -60,126 +60,11 @@ export function AnnotationPopover({
     // If popover would go off-screen at the bottom, position above
     const popoverHeight = 200; // Approximate height
     if (top + popoverHeight > window.innerHeight + scrollY) {
-      top = rect.top + scrollY - popoverHeight - 8;
+      top = position.top + scrollY - popoverHeight - 8;
     }
 
-    setPosition({ top, left });
-  }, [selectedElement]);
-
-  /**
-   * Initial position calculation
-   */
-  useEffect(() => {
-    calculatePosition();
-  }, [calculatePosition]);
-
-  /**
-   * Update position when scrollable parent containers scroll
-   *
-   * This ensures the popover follows the element when:
-   * - Element is inside a modal with scrollable content
-   * - Element is in any scrollable container (overflow: auto/scroll)
-   */
-  useEffect(() => {
-    // Find all scrollable ancestors
-    const scrollableAncestors: HTMLElement[] = [];
-    let parent = selectedElement.parentElement;
-
-    while (parent) {
-      const computedStyle = window.getComputedStyle(parent);
-      const overflow = computedStyle.overflow + computedStyle.overflowY + computedStyle.overflowX;
-
-      if (overflow.includes('scroll') || overflow.includes('auto')) {
-        scrollableAncestors.push(parent);
-      }
-
-      parent = parent.parentElement;
-    }
-
-    // Throttle position updates to avoid excessive recalculations
-    let throttleTimer: number | null = null;
-
-    const handleScroll = () => {
-      if (throttleTimer !== null) {
-        return;
-      }
-
-      throttleTimer = window.setTimeout(() => {
-        calculatePosition();
-        throttleTimer = null;
-      }, 100);
-    };
-
-    // Add scroll listeners to all scrollable ancestors
-    scrollableAncestors.forEach(el => {
-      el.addEventListener('scroll', handleScroll, { passive: true });
-    });
-
-    // Cleanup
-    return () => {
-      scrollableAncestors.forEach(el => {
-        el.removeEventListener('scroll', handleScroll);
-      });
-
-      if (throttleTimer !== null) {
-        clearTimeout(throttleTimer);
-      }
-    };
-  }, [selectedElement, calculatePosition]);
-
-  /**
-   * Auto-focus textarea on mount
-   */
-  useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
-
-  /**
-   * Handle form submission
-   */
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault();
-
-    try {
-      // Validate and trim content
-      const validatedContent = validateAnnotationContent(content);
-
-      // Clear any previous errors
-      setError(null);
-
-      // Submit and reset form
-      onSubmit(validatedContent);
-      setContent('');
-    } catch (err) {
-      // Show validation error
-      setError(err instanceof Error ? err.message : 'Invalid annotation content');
-    }
-  };
-
-  /**
-   * Handle keyboard shortcuts
-   */
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    // Enter without Shift = submit
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-
-    // Escape = cancel
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      onCancel();
-    }
-  };
-
-  /**
-   * Handle cancel
-   */
-  const handleCancel = () => {
-    setContent('');
-    onCancel();
-  };
+    setPopoverPosition({ top, left });
+  }, [position]);
 
   const popover = (
     <div
@@ -190,76 +75,13 @@ export function AnnotationPopover({
       aria-label="Create annotation"
       style={{
         position: 'absolute',
-        top: `${position.top}px`,
-        left: `${position.left}px`,
+        top: `${popoverPosition.top}px`,
+        left: `${popoverPosition.left}px`,
         zIndex: 999999,
       }}
     >
-      <form onSubmit={handleSubmit} className="popover-form">
-        <div className="popover-header">
-          <h4>Add Annotation</h4>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="btn-close"
-            aria-label="Close"
-            data-testid="close-popover"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="popover-body">
-          <label htmlFor="annotation-content" className="sr-only">
-            Annotation content
-          </label>
-          <textarea
-            id="annotation-content"
-            ref={textareaRef}
-            value={content}
-            onChange={(e) => {
-              setContent(e.target.value);
-              // Clear error when user starts typing
-              if (error) setError(null);
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder="Describe the issue or feedback..."
-            rows={4}
-            className={`annotation-textarea ${error ? 'has-error' : ''}`}
-            aria-required="true"
-            aria-invalid={!!error}
-            aria-describedby={error ? "annotation-error" : undefined}
-            data-testid="annotation-content"
-          />
-          {error && (
-            <p className="error-message" id="annotation-error" role="alert" data-testid="annotation-error">
-              {error}
-            </p>
-          )}
-          <p className="hint">
-            Press Enter to submit, Shift+Enter for new line, Esc to cancel
-          </p>
-        </div>
-
-        <div className="popover-actions">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="btn-cancel"
-            data-testid="cancel-annotation"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn-submit"
-            disabled={!content.trim()}
-            data-testid="submit-annotation"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
+      <PopoverHeader title="Add Annotation" onClose={onCancel} />
+      <PopoverForm onSubmit={onSubmit} onCancel={onCancel} />
     </div>
   );
 

@@ -17,6 +17,8 @@ interface AnnotationFiltersProps {
   filters: FilterOptions;
   /** Callback when filters change */
   onFiltersChange: (filters: FilterOptions) => void;
+  /** If the filters are visible to the user */
+  isOpen: boolean;
   /** All unique page paths from annotations */
   availablePages: string[];
 }
@@ -37,9 +39,12 @@ export function AnnotationFilters({
   filters,
   onFiltersChange,
   availablePages,
+  isOpen,
 }: AnnotationFiltersProps) {
+  const classNames = ["manager-filters", isOpen ? "open" : "closed"];
+
   return (
-    <div className="manager-filters">
+    <div className={classNames.join(" ")}>
       <div className="filter-group">
         <label htmlFor="page-filter">Page:</label>
         <select
@@ -67,8 +72,7 @@ export function AnnotationFilters({
           onChange={(e) =>
             onFiltersChange({
               ...filters,
-              status:
-                e.target.value === "all" ? "all" : Number(e.target.value),
+              status: e.target.value === "all" ? "all" : Number(e.target.value),
             })
           }
         >

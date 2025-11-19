@@ -1,0 +1,87 @@
+/**
+ * Toggle Button Component
+ *
+ * The main entry point for DevCaddy - make it irresistible to click!
+ * High-impact playful interactions to draw users in.
+ */
+
+.caddy-mode-toggle {
+  display: inline-grid;
+  place-content: center;
+  line-height: 0;
+  padding: 0;
+  height: 38px;
+  width: 38px;
+  border-radius: var(--dc-radius-full);
+  background: var(--dc-background);
+  color: white;
+  border: var(--dc-border-width-thin) solid var(--dc-border);
+  cursor: pointer;
+  transition:
+    background var(--dc-duration-normal) var(--dc-ease-smooth),
+    transform var(--dc-duration-fast) var(--dc-ease-spring),
+    box-shadow var(--dc-duration-normal) var(--dc-ease-smooth);
+
+  // Wobble on hover - makes it feel alive
+  &:hover {
+    transform: scale(1.08);
+    animation: wobble 0.5s var(--dc-ease-bounce);
+  }
+
+  // Squish and rotate on click - playful feedback
+  &:active {
+    transform: scale(0.92) rotate(12deg);
+    transition-duration: var(--dc-duration-instant);
+  }
+
+  // Active state - gradient background with glow
+  &.active {
+    background: var(--dc-gradient-primary);
+    border-color: var(--dc-primary);
+    box-shadow:
+      0 0 20px rgba(155, 100, 255, 0.4),
+      0 0 40px rgba(155, 100, 255, 0.2);
+
+    // Pulse glow when active
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  .toggle-icon {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
+    transition: transform var(--dc-duration-normal) var(--dc-ease-spring);
+  }
+
+  // Icon spins when toggling
+  &:active .toggle-icon {
+    transform: rotate(180deg);
+  }
+}
+
+// Wobble animation - playful hover state
+@keyframes wobble {
+  0%, 100% {
+    transform: scale(1.08) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-8deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(8deg);
+  }
+}
+
+// Pulse glow - subtle active state indicator
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(155, 100, 255, 0.4),
+      0 0 40px rgba(155, 100, 255, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(155, 100, 255, 0.6),
+      0 0 60px rgba(155, 100, 255, 0.3);
+  }
+}

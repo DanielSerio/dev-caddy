@@ -1,0 +1,24 @@
+/**
+ * Action Button Component
+ *
+ * Special layout for full-width buttons and navigation buttons
+ */
+
+.dev-caddy {
+  // Full-width action buttons (like "Add Annotation")
+  .btn-add-annotation {
+    width: 100%;
+    margin-block: var(--dc-space-1) calc(var(--dc-space-1) / 2);
+  }
+
+  // Back button - special left-slide animation
+  .btn-back {
+    &:hover:not(:disabled) {
+      transform: translateX(-2px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateX(0) scale(0.96);
+    }
+  }
+}

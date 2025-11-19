@@ -1,0 +1,37 @@
+/**
+ * Layout Positioning
+ *
+ * CRITICAL: Fixed positioning and corner placement for DevCaddy UI
+ * This ensures the toggle and window are always accessible and positioned correctly
+ */
+
+.dev-caddy {
+  font-size: calc(14 / 16) * 1rem;
+
+  em {
+    font-style: normal;
+    font-size: 1.125em;
+  }
+
+  .caddy-window,
+  .caddy-mode-toggle {
+    position: fixed;
+    z-index: 999995;
+
+    // Z-index hierarchy (bottom to top):
+    // 999995: Toggle button & Caddy window (always accessible, above modals)
+    // 999997: Element highlight overlay (shows selection outline)
+    // 999998: Annotation badges (count indicators on elements)
+    // 999999: Popover, ErrorBoundary, AuthPrompt (top-level overlays)
+  }
+
+  .top-left .caddy-window,
+  .top-right .caddy-window {
+    order: 2;
+  }
+
+  .bottom-left .caddy-window,
+  .bottom-right .caddy-window {
+    order: 1;
+  }
+}

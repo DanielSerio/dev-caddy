@@ -22,6 +22,18 @@ export function DevCaddyPlugin(options: DevCaddyPluginOptions): PluginOption {
         }
       });
       if (isEnabled) {
+        // Warn if enabled in production mode
+        if (options.context.mode === 'production' && options.context.command === 'build') {
+          console.warn(
+            '\n⚠️  [DevCaddy] WARNING: DevCaddy is enabled in production build mode!\n' +
+            '   This will expose the DevCaddy UI in your production bundle.\n' +
+            '   Consider:\n' +
+            '   - Setting enabled: false for production builds\n' +
+            '   - Using environment-specific configuration\n' +
+            '   Example: enabled: process.env.NODE_ENV !== \'production\'\n'
+          );
+        }
+
         constructedLog({
           value: `ENV COMMAND: ${options.context.command}`,
           colors: {

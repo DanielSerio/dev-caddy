@@ -1,22 +1,16 @@
-import { useState, useEffect } from "react";
-import { useAnnotations } from "../Core/context";
-import { getStatusName } from "../Core/lib/status";
-import { Skeleton } from "../Core";
+import { useState, useEffect, useCallback } from "react";
+import { useAnnotations } from "../Core/hooks";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { sanitizeContent } from "../Core/utility/sanitize";
 import type { Annotation } from "../../types/annotations";
-import {
-  navigateToAnnotation,
-  checkPendingAnnotation,
-  isCurrentPage,
-} from "../Core/utility/navigation";
+import { useAnnotationNavigation } from "../Core/hooks";
+import { AnnotationItemSkeleton } from "../Core/AnnotationItemSkeleton";
+import { EmptyState, ErrorDisplay } from "../Core/components/display";
+import { AnnotationListItem } from "./components";
 
 /**
  * Props for AnnotationList component
  */
 interface AnnotationListProps {
-  /** Current user ID to filter annotations */
-  currentUserId: string;
   /** Callback when an annotation is selected for viewing */
   onAnnotationSelect?: (annotation: Annotation | null) => void;
 }
@@ -32,15 +26,16 @@ interface AnnotationListProps {
  *
  * Note: Clients can view ALL annotations but can only edit/delete their own.
  * Clients cannot change annotation status - only developers can do that.
+ * User ID is obtained from auth context in AnnotationDetail for permission checks.
  *
  * @example
- * <AnnotationList currentUserId="user-123" />
+ * <AnnotationList />
  */
 export function AnnotationList({
-  currentUserId,
   onAnnotationSelect,
 }: AnnotationListProps) {
   const { annotations, loading, error } = useAnnotations();
+  const { navigateToAnnotation, checkPendingAnnotation } = useAnnotationNavigation();
   const [selectedAnnotation, setSelectedAnnotation] =
     useState<Annotation | null>(null);
 
@@ -65,23 +60,27 @@ export function AnnotationList({
         onAnnotationSelect?.(annotation);
       });
     }
-  }, [loading, annotations, onAnnotationSelect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, annotations.length]); // checkPendingAnnotation and onAnnotationSelect are stable
 
   /**
    * Handle navigating back from detail view
    */
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setSelectedAnnotation(null);
     onAnnotationSelect?.(null);
-  };
+  }, [onAnnotationSelect]);
 
   /**
-   * Format date for display
+   * Auto-navigate back if selected annotation was deleted
    */
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
+  useEffect(() => {
+    if (selectedAnnotation && !annotations.find(a => a.id === selectedAnnotation.id)) {
+      setSelectedAnnotation(null);
+      onAnnotationSelect?.(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAnnotation, annotations.length]); // Run when annotations change
 
   // Show detail view if annotation is selected
   if (selectedAnnotation) {
@@ -89,9 +88,8 @@ export function AnnotationList({
     // This ensures we always show the most up-to-date data after real-time updates
     const latestAnnotation = annotations.find(a => a.id === selectedAnnotation.id);
 
-    // If annotation was deleted, go back to list
+    // If annotation was deleted, return null (useEffect will handle navigation)
     if (!latestAnnotation) {
-      handleBack();
       return null;
     }
 
@@ -99,7 +97,6 @@ export function AnnotationList({
       <AnnotationDetail
         annotation={latestAnnotation}
         onBack={handleBack}
-        currentUserId={currentUserId}
       />
     );
   }
@@ -108,31 +105,10 @@ export function AnnotationList({
   if (loading) {
     return (
       <div className="dev-caddy-annotation-list">
-        {/* Title skeleton matching "My Annotations (X)" */}
-        <Skeleton variant="text" width="60%" height="24px" />
-
-        <div className="annotation-items">
-          {/* Skeleton for 3 annotation items */}
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="annotation-item">
-              {/* Header with element tag and status badge */}
-              <div className="annotation-header">
-                <Skeleton variant="text" width="40%" height="16px" />
-                <Skeleton variant="text" width="20%" height="20px" />
-              </div>
-
-              {/* Content text */}
-              <div className="annotation-content">
-                <Skeleton variant="text" width="90%" height="14px" />
-                <Skeleton variant="text" width="75%" height="14px" />
-              </div>
-
-              {/* Meta information (date) */}
-              <div className="annotation-meta">
-                <Skeleton variant="text" width="35%" height="12px" />
-              </div>
-            </div>
-          ))}
+        <div className="annotation-items" data-testid="annotation-list-loading">
+          <AnnotationItemSkeleton />
+          <AnnotationItemSkeleton />
+          <AnnotationItemSkeleton />
         </div>
       </div>
     );
@@ -142,7 +118,7 @@ export function AnnotationList({
   if (error) {
     return (
       <div className="dev-caddy-annotation-list">
-        <p className="error">Error: {error.message}</p>
+        <ErrorDisplay error={error} />
       </div>
     );
   }
@@ -151,9 +127,7 @@ export function AnnotationList({
   if (annotations.length === 0) {
     return (
       <div className="dev-caddy-annotation-list">
-        <p className="empty-state">
-          No annotations in this project yet. Click "Add Annotation" to create the first one.
-        </p>
+        <EmptyState message='No annotations in this project yet. Click "Add Annotation" to create the first one.' />
       </div>
     );
   }
@@ -164,52 +138,11 @@ export function AnnotationList({
       <h3>All Annotations ({annotations.length})</h3>
       <div className="annotation-items">
         {annotations.map((annotation) => (
-          <div
+          <AnnotationListItem
             key={annotation.id}
-            className={`annotation-item status-${getStatusName(
-              annotation.status_id
-            )}`}
-            onClick={() => handleSelectAnnotation(annotation)}
-            data-testid="annotation-list-item"
-          >
-            <div className="annotation-header">
-              <span className="annotation-element">
-                {annotation.element_tag}
-                {annotation.element_id && `#${annotation.element_id}`}
-              </span>
-              <div className="annotation-badges">
-                <span
-                  className={`annotation-page-badge ${
-                    isCurrentPage(annotation) ? "current-page" : "other-page"
-                  }`}
-                >
-                  {isCurrentPage(annotation) ? "Current Page" : annotation.page}
-                </span>
-                <span
-                  className={`annotation-status status-${getStatusName(
-                    annotation.status_id
-                  )}`}
-                >
-                  {getStatusName(annotation.status_id)}
-                </span>
-              </div>
-            </div>
-
-            <div className="annotation-content">
-              <p>{sanitizeContent(annotation.content)}</p>
-            </div>
-
-            <div className="annotation-meta">
-              <span className="annotation-date">
-                {formatDate(annotation.created_at)}
-              </span>
-              {annotation.resolved_at && (
-                <span className="annotation-resolved">
-                  Resolved: {formatDate(annotation.resolved_at)}
-                </span>
-              )}
-            </div>
-          </div>
+            annotation={annotation}
+            onClick={handleSelectAnnotation}
+          />
         ))}
       </div>
     </div>

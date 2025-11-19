@@ -1,0 +1,135 @@
+/**
+ * Window Component
+ *
+ * Main DevCaddy panel container
+ * Slide-in animation makes appearance feel smooth and intentional
+ */
+
+.dev-caddy > .caddy-window {
+  border: var(--dc-border-width-thin) solid var(--dc-border);
+  width: 320px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--dc-radius-md);
+  overflow: hidden;
+
+  // Smooth fade + scale in animation
+  // NOTE: Uses opacity only to avoid conflicts with inline transform positioning
+  animation: fadeInWindow var(--dc-duration-slow) var(--dc-ease-smooth);
+
+  // Header - sticky to top with proper spacing
+  header {
+    flex-shrink: 0;
+    padding: var(--dc-space-3);
+    border-bottom: var(--dc-border-width-thin) solid var(--dc-border);
+    background: var(--dc-background);
+  }
+
+  .manager-header-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: visible; // Allow filter button outline and popup to overflow
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  // Main content section - takes remaining space, no scroll here
+  section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; // Prevent section from scrolling
+    min-height: 0; // Important for flexbox scrolling
+  }
+
+  // Content wrapper inside section - manages layout
+  .caddy-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    gap: var(--dc-space-3);
+    padding: var(--dc-space-3);
+
+    // Toolbar and other fixed elements
+    .caddy-toolbar,
+    > h3,
+    > div:not(.dev-caddy-annotation-list):not(.annotation-items) {
+      flex-shrink: 0;
+    }
+
+    // Annotation list container
+    .dev-caddy-annotation-list,
+    .dev-caddy-annotation-manager {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: visible; // Allow filter popup to overflow
+      min-height: 0;
+
+      > h3 {
+        flex-shrink: 0;
+        margin-bottom: var(--dc-space-2);
+      }
+
+      .annotation-meta-author {
+        display: block;
+      }
+
+      // Scrollable annotation items
+      .annotation-items {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        padding-top: var(--dc-space-2);
+        gap: var(--dc-space-2); // Compact spacing between cards
+
+        // Smooth scrolling
+        scroll-behavior: smooth;
+
+        // Custom scrollbar styling
+        &::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: var(--dc-border);
+          border-radius: var(--dc-radius-full);
+
+          &:hover {
+            background: var(--dc-text-muted);
+          }
+        }
+      }
+    }
+  }
+
+  // Footer - sticky to bottom (if present)
+  footer {
+    flex-shrink: 0;
+    padding: var(--dc-space-3);
+    border-top: var(--dc-border-width-thin) solid var(--dc-border);
+    background: var(--dc-background);
+  }
+}
+
+// Window entrance animation - opacity fade only
+// Avoids ALL transform conflicts with inline positioning
+@keyframes fadeInWindow {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

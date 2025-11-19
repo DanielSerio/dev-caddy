@@ -1,23 +1,26 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { DevCaddyMode, DevCaddyProps } from "../../types";
 import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
 import { getCornerStyles } from "./utility";
-import { AnnotationProvider, useAnnotations } from "./context";
+import { AnnotationProvider } from "./context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "./AnnotationPopover";
-import { AnnotationBadges } from "./AnnotationBadges";
 import { ElementHighlight } from "./ElementHighlight";
 import { AuthPrompt } from "./AuthPrompt";
 import { ModeSwitcher } from "./ModeSwitcher";
-import { useElementSelector, useAuth } from "./hooks";
+import { useElementSelector, useAuth, useAnnotations } from "./hooks";
 import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
-import type { CreateAnnotationInput, Annotation } from "../../types/annotations";
+import type {
+  CreateAnnotationInput,
+  Annotation,
+} from "../../types/annotations";
 import type { SelectionMode } from "./hooks/useElementSelector";
 import "./styles/output/dev-caddy.scss";
-import { Skeleton } from "./Skeleton";
+import { AnnotationItemSkeleton } from "./AnnotationItemSkeleton";
+import { PlusIcon, CancelIcon } from "./icons";
 
 /**
  * Inner component that has access to AnnotationProvider context
@@ -85,13 +88,11 @@ function DevCaddyContent({
   if (authLoading) {
     return (
       <CaddyWindow uiMode={uiMode} style={windowStyles}>
-        <div
-          className="caddy-content"
-          data-testid="devcaddy-panel"
-        >
-          <div className="auth-loading" data-testid="auth-loading">
-            {/* <p>Checking authentication...</p> */}
-            <Skeleton />
+        <div className="caddy-content" data-testid="devcaddy-panel">
+          <div className="annotation-items" data-testid="auth-loading">
+            <AnnotationItemSkeleton />
+            <AnnotationItemSkeleton />
+            <AnnotationItemSkeleton />
           </div>
         </div>
       </CaddyWindow>
@@ -116,19 +117,28 @@ function DevCaddyContent({
                   setMode(mode === "selecting" ? "idle" : "selecting")
                 }
                 className={`btn-add-annotation ${
-                  mode === "selecting" ? "active" : ""
+                  mode === "selecting" ? "btn-cancel" : "btn-default"
                 }`}
                 aria-label="Add annotation to UI element"
                 data-testid="add-annotation-btn"
               >
-                {mode === "selecting" ? "Cancel Selection" : "+ Add Annotation"}
+                {mode === "selecting" ? (
+                  <>
+                    <CancelIcon />
+                    <span>Cancel</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon />
+                    <span>Add Annotation</span>
+                  </>
+                )}
               </button>
             </div>
           )}
 
           {uiMode === "client" && (
             <AnnotationList
-              currentUserId={currentUserId}
               onAnnotationSelect={setViewingAnnotation}
             />
           )}
@@ -146,9 +156,7 @@ function DevCaddyContent({
         />
       )}
 
-      {viewingAnnotation && (
-        <ElementHighlight annotation={viewingAnnotation} />
-      )}
+      {viewingAnnotation && <ElementHighlight annotation={viewingAnnotation} />}
     </>
   );
 }
@@ -159,14 +167,20 @@ function DevCaddyContent({
 function DevCaddyWithBadges({
   uiMode,
   windowStyles,
-  devCaddyIsActive,
 }: {
   uiMode: DevCaddyMode;
   windowStyles: React.CSSProperties;
-  devCaddyIsActive: boolean;
 }) {
-  const { mode, setMode, selectedElement, clearSelection } = useElementSelector();
-  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(null);
+  const { mode, setMode, selectedElement, clearSelection } =
+    useElementSelector();
+  const [viewingAnnotation, setViewingAnnotation] = useState<Annotation | null>(
+    null
+  );
+
+  // Memoize the callback to ensure stable reference
+  const handleAnnotationSelect = useCallback((annotation: Annotation | null) => {
+    setViewingAnnotation(annotation);
+  }, []);
 
   return (
     <>
@@ -178,13 +192,7 @@ function DevCaddyWithBadges({
         selectedElement={selectedElement}
         clearSelection={clearSelection}
         viewingAnnotation={viewingAnnotation}
-        setViewingAnnotation={setViewingAnnotation}
-      />
-      <AnnotationBadges
-        isActive={devCaddyIsActive}
-        selectionMode={mode}
-        selectedElement={selectedElement}
-        viewingAnnotation={viewingAnnotation}
+        setViewingAnnotation={handleAnnotationSelect}
       />
     </>
   );
@@ -197,7 +205,7 @@ export function DevCaddy({
   const [devCaddyIsActive, setDevCaddyIsActive] = useState(false);
 
   const UI_MODE = useMemo(() => {
-    return window.__DEV_CADDY_UI_MODE__ ?? null;
+    return typeof window !== 'undefined' ? window.__DEV_CADDY_UI_MODE__ ?? null : null;
   }, []);
 
   const toggleStyles = getCornerStyles("toggle", corner, offset);
@@ -216,7 +224,6 @@ export function DevCaddy({
           <DevCaddyWithBadges
             uiMode={UI_MODE}
             windowStyles={windowStyles}
-            devCaddyIsActive={devCaddyIsActive}
           />
         </AnnotationProvider>
       )}

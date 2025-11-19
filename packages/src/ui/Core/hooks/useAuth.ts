@@ -137,6 +137,10 @@ export async function sendMagicLink(
  *
  * Clears the current session and signs the user out.
  *
+ * @internal
+ * Reserved for future sign-out functionality. Currently exported but not
+ * used in UI. May be needed for user profile menu or manual logout.
+ *
  * @returns Promise that resolves when sign out is complete
  * @throws {Error} If sign out fails
  *

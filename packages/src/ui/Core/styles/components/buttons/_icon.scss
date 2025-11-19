@@ -1,0 +1,21 @@
+/**
+ * Icon Button Component
+ *
+ * Compact icon-only buttons matching unified button system
+ */
+
+.dev-caddy {
+  button.icon {
+    // Make square with same height as text buttons
+    // Base button has: padding: 4px 8px, font-size: 11px
+    // Height = padding-top + font-size + line-height + padding-bottom
+    // Approximately 26px total height
+    min-width: 26px;
+    padding: var(--dc-space-1); // 4px all around for square
+
+    svg {
+      width: 16px; // Slightly larger icon for icon-only buttons
+      height: 16px;
+    }
+  }
+}

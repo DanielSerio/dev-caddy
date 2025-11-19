@@ -1,5 +1,8 @@
 /**
- * React Context providers and hooks for DevCaddy
+ * React Context providers for DevCaddy
+ *
+ * Note: useAnnotations hook is exported from hooks/useAnnotations.ts
  */
 
-export { AnnotationProvider, useAnnotations } from './AnnotationContext';
+export { AnnotationProvider } from './AnnotationProvider';
+export { AnnotationContext, type AnnotationContextValue } from './AnnotationContext';

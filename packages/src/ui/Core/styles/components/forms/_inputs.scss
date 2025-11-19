@@ -1,0 +1,49 @@
+/**
+ * Form Input Components
+ *
+ * Text inputs with playful glow effect on focus
+ */
+
+.dev-caddy {
+  input[type="text"],
+  input[type="email"],
+  input[type="search"] {
+    width: 100%;
+    padding: var(--dc-space-2) var(--dc-space-3);
+    background-color: var(--dc-background);
+    border: var(--dc-border-width-thin) solid var(--dc-border);
+    border-radius: var(--dc-radius-sm);
+    color: var(--dc-text);
+    font-family: var(--dc-font-sans);
+    font-size: var(--dc-text-base);
+    font-weight: var(--dc-weight-normal);
+    box-sizing: border-box;
+    transition:
+      border-color var(--dc-duration-normal) var(--dc-ease-smooth),
+      box-shadow var(--dc-duration-normal) var(--dc-ease-smooth),
+      background-color var(--dc-duration-normal) var(--dc-ease-smooth);
+
+    // Playful glow on focus
+    &:focus {
+      outline: none;
+      border-color: var(--dc-primary);
+      background-color: var(--dc-background-raised);
+      box-shadow:
+        0 0 0 3px rgba(155, 100, 255, 0.2),
+        0 0 20px rgba(155, 100, 255, 0.1);
+    }
+
+    // Disabled state
+    &:disabled {
+      background: var(--dc-background-lowered);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    // Placeholder styling
+    &::placeholder {
+      color: var(--dc-text-muted);
+      opacity: 0.7;
+    }
+  }
+}

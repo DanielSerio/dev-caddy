@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
-import { useAnnotations } from "../Core/context";
-import { getStatusName } from "../Core/lib/status";
-import { ANNOTATION_STATUS } from "../../types/annotations";
-import { sanitizeContent } from "../Core/utility/sanitize";
+import { useAnnotations } from "../Core/hooks";
 import type { Annotation } from "../../types/annotations";
+import { DetailSection } from "../Core/components/layout";
+import { StatusSelect } from "../Core/components/form";
+import {
+  AnnotationDetailHeader,
+  AnnotationDetailContent,
+  AnnotationContentEditor,
+  AnnotationDetailActions,
+} from "../Core/components/annotation";
 
 /**
  * Props for AnnotationDetail component
@@ -59,6 +64,14 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
   };
 
   /**
+   * Handle canceling edit
+   */
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditContent(annotation.content);
+  };
+
+  /**
    * Handle status change
    */
   const handleStatusChange = async (newStatusId: number) => {
@@ -88,172 +101,66 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
     }
   };
 
-  /**
-   * Format date for display
-   */
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
-
-  const statusName = getStatusName(statusId);
-
   return (
     <div className="dev-caddy-annotation-detail">
-      <div className="detail-header">
-        <button
-          onClick={onBack}
-          className="btn-back"
-          data-testid="back-to-list-btn"
-        >
-          ← Back
-        </button>
-        <h3>Annotation Details</h3>
-      </div>
+      <AnnotationDetailHeader onBack={onBack} />
 
       <div className="detail-content">
-        <div className="detail-section">
-          <label className="detail-label">Element</label>
-          <div className="detail-value element-info">
-            <code>
-              {annotation.element_tag}
-              {annotation.element_id && `#${annotation.element_id}`}
-              {annotation.element_test_id &&
-                ` [data-testid="${annotation.element_test_id}"]`}
-              {annotation.element_role && ` [role="${annotation.element_role}"]`}
-            </code>
-          </div>
-        </div>
-
-        <div className="detail-section">
-          <label className="detail-label">Status</label>
-          <div className="detail-value">
-            <select
-              value={statusId}
-              onChange={(e) => handleStatusChange(Number(e.target.value))}
-              className={`annotation-status status-${statusName}`}
-              data-testid="annotation-status-select"
-            >
-              <option value={ANNOTATION_STATUS.NEW}>New</option>
-              <option value={ANNOTATION_STATUS.IN_PROGRESS}>In Progress</option>
-              <option value={ANNOTATION_STATUS.IN_REVIEW}>In Review</option>
-              <option value={ANNOTATION_STATUS.HOLD}>Hold</option>
-              <option value={ANNOTATION_STATUS.RESOLVED}>Resolved</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="detail-section">
-          <label className="detail-label">Feedback</label>
-          <div className="detail-value">
-            {isEditing ? (
-              <textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                autoFocus
-                data-testid="annotation-edit-textarea"
-                className="detail-textarea"
-              />
-            ) : (
-              <p className="annotation-content">{sanitizeContent(annotation.content)}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="detail-section">
-          <label className="detail-label">Author</label>
-          <div className="detail-value">
-            <span className="detail-author">
-              {annotation.created_by_email || annotation.created_by}
-            </span>
-          </div>
-        </div>
-
-        <div className="detail-section">
-          <label className="detail-label">Created</label>
-          <div className="detail-value">
-            <span className="detail-date">{formatDate(annotation.created_at)}</span>
-          </div>
-        </div>
-
-        {annotation.updated_at !== annotation.created_at && (
-          <div className="detail-section">
-            <label className="detail-label">Updated</label>
-            <div className="detail-value">
-              <span className="detail-date">
-                {formatDate(annotation.updated_at)}
-              </span>
-            </div>
-          </div>
+        {isEditing ? (
+          <AnnotationContentEditor
+            content={editContent}
+            onChange={setEditContent}
+            onSave={handleSaveEdit}
+            onCancel={handleCancelEdit}
+          />
+        ) : (
+          <AnnotationDetailContent annotation={annotation} />
         )}
 
+        <DetailSection label="Status">
+          <StatusSelect
+            value={statusId}
+            onChange={handleStatusChange}
+            data-testid="annotation-status-select"
+          />
+        </DetailSection>
+
+        <DetailSection label="Author">
+          <span className="detail-author">
+            {annotation.created_by_email || annotation.created_by}
+          </span>
+        </DetailSection>
+
+        <DetailSection label="Updated">
+          <span className="detail-date">
+            {new Date(annotation.updated_at).toLocaleString()}
+          </span>
+        </DetailSection>
+
         {annotation.resolved_at && (
-          <div className="detail-section">
-            <label className="detail-label">Resolved</label>
-            <div className="detail-value">
-              <span className="detail-date">
-                {formatDate(annotation.resolved_at)}
-              </span>
-            </div>
-          </div>
+          <DetailSection label="Resolved">
+            <span className="detail-date">
+              {new Date(annotation.resolved_at).toLocaleString()}
+            </span>
+          </DetailSection>
         )}
 
         {annotation.element_parent_selector && (
-          <div className="detail-section">
-            <label className="detail-label">Parent Selector</label>
-            <div className="detail-value">
-              <code className="selector-code">
-                {annotation.element_parent_selector}
-              </code>
-            </div>
-          </div>
+          <DetailSection label="Parent Selector">
+            <code className="selector-code">
+              {annotation.element_parent_selector}
+            </code>
+          </DetailSection>
         )}
       </div>
 
-      <div className="detail-actions">
-        {isEditing ? (
-          <>
-            <button
-              onClick={handleSaveEdit}
-              className="btn-save"
-              title="Save changes"
-              data-testid="save-annotation-btn"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                setIsEditing(false);
-                setEditContent(annotation.content);
-              }}
-              className="btn-cancel"
-              title="Cancel editing"
-              data-testid="cancel-edit-btn"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="btn-edit"
-              title="Edit annotation"
-              data-testid="edit-annotation-btn"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              className="btn-delete"
-              title="Delete annotation"
-              data-testid="delete-annotation-btn"
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </div>
+      <AnnotationDetailActions
+        isEditing={isEditing}
+        onEdit={() => setIsEditing(true)}
+        onDelete={handleDelete}
+        onSave={handleSaveEdit}
+        onCancel={handleCancelEdit}
+      />
     </div>
   );
 }

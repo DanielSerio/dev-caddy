@@ -11,7 +11,8 @@
   "license": "MIT",
   "workspaces": [
     "packages",
-    "examples/*"
+    "examples/*",
+    "examples/*/*"
   ],
   "scripts": {
     "build": "npm run build -w packages",
@@ -22,9 +23,22 @@
     "lint": "npm run lint -w packages",
     "clean": "rm -rf packages/dist && rm -rf examples/simple/dist",
     "migrations:bundle": "node scripts/bundle-migrations.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "storybook": "npm run storybook -w packages",
+    "build-storybook": "npm run build-storybook -w packages",
+    "test:integration": "vitest run",
+    "test:integration:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:simple": "cross-env TEST_APP=simple playwright test",
+    "test:e2e:tanstack": "cross-env TEST_APP=tanstack/ssr-app playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run test:integration && npm run test:e2e",
+    "test:cleanup": "tsx tests/scripts/cleanup-branches.ts",
+    "test:branch:create": "npx supabase branches create testing",
+    "test:branch:delete": "npx supabase branches delete testing --force",
+    "test:branch:reset": "npx supabase db reset --branch testing"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "typescript": "~5.9.3"
   },
   "engines": {

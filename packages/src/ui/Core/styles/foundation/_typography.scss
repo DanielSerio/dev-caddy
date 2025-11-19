@@ -1,0 +1,35 @@
+/**
+ * Typography Tokens
+ *
+ * Design philosophy: "Friendly Sans" - Clean, readable, slightly heavier weights
+ * Uses system font stack for performance
+ */
+
+:root:has(.dev-caddy) {
+  // Font families
+  --dc-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --dc-font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+    "DejaVu Sans Mono", monospace;
+
+  // Font weights - slightly heavier for friendlier feel
+  --dc-weight-normal: 450;
+  --dc-weight-medium: 550;
+  --dc-weight-semibold: 600;
+  --dc-weight-bold: 650;
+
+  // Font sizes
+  --dc-text-xs: 10px;
+  --dc-text-sm: 11px;
+  --dc-text-base: 12px;
+  --dc-text-md: 13px;
+  --dc-text-lg: 14px;
+  --dc-text-xl: 16px;
+  --dc-text-2xl: 20px;
+  --dc-text-3xl: 24px;
+
+  // Line heights
+  --dc-leading-tight: 1.2;
+  --dc-leading-normal: 1.4;
+  --dc-leading-relaxed: 1.6;
+}

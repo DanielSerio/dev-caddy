@@ -1,0 +1,46 @@
+/**
+ * Utility Classes
+ *
+ * Common utility classes for text, spacing, and display
+ */
+
+.dev-caddy {
+  // Text color utilities
+  .text-muted {
+    color: var(--dc-text-muted);
+  }
+
+  .text-em {
+    color: var(--dc-text-em);
+  }
+
+  // Text size utilities
+  .text-xs {
+    font-size: var(--dc-text-xs);
+  }
+
+  .text-sm {
+    font-size: var(--dc-text-sm);
+  }
+
+  .text-base {
+    font-size: var(--dc-text-base);
+  }
+
+  .text-lg {
+    font-size: var(--dc-text-lg);
+  }
+
+  // Font weight utilities
+  .font-medium {
+    font-weight: var(--dc-weight-medium);
+  }
+
+  .font-semibold {
+    font-weight: var(--dc-weight-semibold);
+  }
+
+  .font-bold {
+    font-weight: var(--dc-weight-bold);
+  }
+}
