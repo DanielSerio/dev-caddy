@@ -18,6 +18,7 @@ import type {
 } from '../../../types/annotations';
 import type { RealtimeEventType } from '../../../client';
 import { AnnotationContext, type AnnotationContextValue } from './AnnotationContext';
+import { applyAnnotationEvent } from '../lib/annotations';
 
 /**
  * Props for AnnotationProvider
@@ -92,25 +93,9 @@ export function AnnotationProvider({
   useEffect(() => {
     const unsubscribe = subscribeToAllAnnotations(
       (annotation, eventType: RealtimeEventType) => {
-        setAnnotations((prev) => {
-          if (eventType === 'DELETE') {
-            // Remove deleted annotation
-            return prev.filter((a) => a.id !== annotation.id);
-          }
-
-          // Check if annotation already exists
-          const existingIndex = prev.findIndex((a) => a.id === annotation.id);
-
-          if (existingIndex > -1) {
-            // Update existing annotation
-            const updated = [...prev];
-            updated[existingIndex] = annotation;
-            return updated;
-          } else {
-            // Add new annotation
-            return [annotation, ...prev];
-          }
-        });
+        setAnnotations((prev) =>
+          applyAnnotationEvent(prev, annotation, eventType)
+        );
       }
     );
 

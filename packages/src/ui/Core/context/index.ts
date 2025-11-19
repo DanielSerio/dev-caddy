@@ -6,3 +6,6 @@
 
 export { AnnotationProvider } from './AnnotationProvider';
 export { AnnotationContext, type AnnotationContextValue } from './AnnotationContext';
+
+export { NotificationProvider } from './NotificationProvider';
+export { NotificationContext, type Notification, type NotificationType, type NotificationContextValue } from './NotificationContext';

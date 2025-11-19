@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAnnotations } from "../Core/hooks";
+import { useAnnotations, useNotification } from "../Core/hooks";
 import type { Annotation } from "../../types/annotations";
 import { DetailSection } from "../Core/components/layout";
 import { StatusSelect } from "../Core/components/form";
@@ -33,6 +33,7 @@ interface AnnotationDetailProps {
  */
 export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) {
   const { updateAnnotation, deleteAnnotation } = useAnnotations();
+  const { notify } = useNotification();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(annotation.content);
   const [statusId, setStatusId] = useState(annotation.status_id);
@@ -50,16 +51,17 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
    */
   const handleSaveEdit = async () => {
     if (!editContent.trim()) {
-      alert("Annotation content cannot be empty");
+      notify('error', 'Annotation content cannot be empty');
       return;
     }
 
     try {
       await updateAnnotation(annotation.id, { content: editContent });
+      notify('success', 'Annotation updated successfully');
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update annotation:", err);
-      alert("Failed to update annotation. Please try again.");
+      notify('error', 'Failed to update annotation. Please try again.');
     }
   };
 
@@ -77,10 +79,11 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
   const handleStatusChange = async (newStatusId: number) => {
     try {
       await updateAnnotation(annotation.id, { status_id: newStatusId });
+      notify('success', 'Status updated successfully');
       setStatusId(newStatusId);
     } catch (err) {
       console.error("Failed to update status:", err);
-      alert("Failed to update status. Please try again.");
+      notify('error', 'Failed to update status. Please try again.');
     }
   };
 
@@ -94,10 +97,11 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
 
     try {
       await deleteAnnotation(annotation.id);
+      notify('success', 'Annotation deleted successfully');
       onBack(); // Navigate back after deletion
     } catch (err) {
       console.error("Failed to delete annotation:", err);
-      alert("Failed to delete annotation. Please try again.");
+      notify('error', 'Failed to delete annotation. Please try again.');
     }
   };
 

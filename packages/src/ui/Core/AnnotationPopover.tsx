@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useElementPosition } from './hooks';
 import { PopoverHeader, PopoverForm } from './components/composite';
+import { POPOVER_DIMENSIONS, Z_INDEX } from './constants';
 
 /**
  * Props for AnnotationPopover component
@@ -48,19 +49,17 @@ export function AnnotationPopover({
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
 
     // Position below the element by default
-    let top = position.top + position.height + scrollY + 8;
+    let top = position.top + position.height + scrollY + POPOVER_DIMENSIONS.OFFSET;
     let left = position.left + scrollX;
 
     // If popover would go off-screen to the right, align to right edge
-    const popoverWidth = 320; // Approximate width
-    if (left + popoverWidth > window.innerWidth) {
-      left = window.innerWidth - popoverWidth - 16;
+    if (left + POPOVER_DIMENSIONS.WIDTH > window.innerWidth) {
+      left = window.innerWidth - POPOVER_DIMENSIONS.WIDTH - 16;
     }
 
     // If popover would go off-screen at the bottom, position above
-    const popoverHeight = 200; // Approximate height
-    if (top + popoverHeight > window.innerHeight + scrollY) {
-      top = position.top + scrollY - popoverHeight - 8;
+    if (top + POPOVER_DIMENSIONS.HEIGHT > window.innerHeight + scrollY) {
+      top = position.top + scrollY - POPOVER_DIMENSIONS.HEIGHT - POPOVER_DIMENSIONS.OFFSET;
     }
 
     setPopoverPosition({ top, left });
@@ -77,7 +76,7 @@ export function AnnotationPopover({
         position: 'absolute',
         top: `${popoverPosition.top}px`,
         left: `${popoverPosition.left}px`,
-        zIndex: 999999,
+        zIndex: Z_INDEX.POPOVER,
       }}
     >
       <PopoverHeader title="Add Annotation" onClose={onCancel} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAnnotations } from "../Core/hooks";
+import { useAnnotations, useNotification } from "../Core/hooks";
 import { getStatusName } from "../Core/lib/status";
 import type { Annotation } from "../../types/annotations";
 import { DetailSection } from "../Core/components/layout";
@@ -35,6 +35,7 @@ export function AnnotationDetail({
   onBack,
 }: AnnotationDetailProps) {
   const { updateAnnotation, deleteAnnotation } = useAnnotations();
+  const { notify } = useNotification();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(annotation.content);
 
@@ -50,16 +51,17 @@ export function AnnotationDetail({
    */
   const handleSaveEdit = async () => {
     if (!editContent.trim()) {
-      alert("Annotation content cannot be empty");
+      notify('error', 'Annotation content cannot be empty');
       return;
     }
 
     try {
       await updateAnnotation(annotation.id, { content: editContent });
+      notify('success', 'Annotation updated successfully');
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update annotation:", err);
-      alert("Failed to update annotation. Please try again.");
+      notify('error', 'Failed to update annotation. Please try again.');
     }
   };
 
@@ -81,10 +83,11 @@ export function AnnotationDetail({
 
     try {
       await deleteAnnotation(annotation.id);
+      notify('success', 'Annotation deleted successfully');
       onBack(); // Navigate back after deletion
     } catch (err) {
       console.error("Failed to delete annotation:", err);
-      alert("Failed to delete annotation. Please try again.");
+      notify('error', 'Failed to delete annotation. Please try again.');
     }
   };
 

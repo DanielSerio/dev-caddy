@@ -1,16 +1,15 @@
-import { useMemo, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { DevCaddyMode, DevCaddyProps } from "../../types";
 import { CaddyWindow } from "./CaddyWindow/CaddyWindow";
 import { ModeToggle } from "./ModeToggle";
-import { getCornerStyles } from "./utility";
-import { AnnotationProvider } from "./context";
+import { AnnotationProvider, NotificationProvider } from "./context";
 import { AnnotationList } from "../Client/AnnotationList";
 import { AnnotationManager } from "../Developer/AnnotationManager";
 import { AnnotationPopover } from "./AnnotationPopover";
 import { ElementHighlight } from "./ElementHighlight";
 import { AuthPrompt } from "./AuthPrompt";
 import { ModeSwitcher } from "./ModeSwitcher";
-import { useElementSelector, useAuth, useAnnotations } from "./hooks";
+import { useElementSelector, useAuth, useAnnotations, useDevCaddyMode, useDevCaddyStyles, useNotification } from "./hooks";
 import { getElementSelectors } from "./lib/selector/get-element-selectors";
 import { ANNOTATION_STATUS } from "../../types/annotations";
 import type {
@@ -46,6 +45,7 @@ function DevCaddyContent({
 }) {
   const { addAnnotation } = useAnnotations();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { notify } = useNotification();
 
   // Get user ID and email from authenticated session
   const currentUserId = user?.id || "";
@@ -77,10 +77,11 @@ function DevCaddyContent({
       };
 
       await addAnnotation(input);
+      notify('success', 'Annotation created successfully');
       clearSelection();
     } catch (err) {
       console.error("Failed to create annotation:", err);
-      alert("Failed to create annotation. Please try again.");
+      notify('error', 'Failed to create annotation. Please try again.');
     }
   };
 
@@ -203,13 +204,8 @@ export function DevCaddy({
   offset = 48,
 }: DevCaddyProps) {
   const [devCaddyIsActive, setDevCaddyIsActive] = useState(false);
-
-  const UI_MODE = useMemo(() => {
-    return typeof window !== 'undefined' ? window.__DEV_CADDY_UI_MODE__ ?? null : null;
-  }, []);
-
-  const toggleStyles = getCornerStyles("toggle", corner, offset);
-  const windowStyles = getCornerStyles("window", corner, offset);
+  const uiMode = useDevCaddyMode();
+  const styles = useDevCaddyStyles(corner, offset);
 
   return (
     <div className="dev-caddy" data-dev-caddy data-testid="devcaddy-root">
@@ -217,15 +213,17 @@ export function DevCaddy({
         isActive={devCaddyIsActive}
         onToggle={setDevCaddyIsActive}
         corner={corner}
-        style={toggleStyles}
+        style={styles.toggle}
       />
-      {devCaddyIsActive && UI_MODE && (
-        <AnnotationProvider>
-          <DevCaddyWithBadges
-            uiMode={UI_MODE}
-            windowStyles={windowStyles}
-          />
-        </AnnotationProvider>
+      {devCaddyIsActive && uiMode && (
+        <NotificationProvider>
+          <AnnotationProvider>
+            <DevCaddyWithBadges
+              uiMode={uiMode}
+              windowStyles={styles.window}
+            />
+          </AnnotationProvider>
+        </NotificationProvider>
       )}
     </div>
   );

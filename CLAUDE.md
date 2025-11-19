@@ -59,6 +59,7 @@ Docs in the root are primarily for human users and repository developers:
 ### Quick Reference
 
 **When to use each document:**
+
 - **Starting work?** Read `docs/README.md` for context
 - **Current audit status?** Check `docs/AUDIT.md`
 - **Need to understand a decision?** Check `docs/IMPLEMENTATION.md`
@@ -87,6 +88,7 @@ Docs in the root are primarily for human users and repository developers:
 ## Monorepo Structure
 
 This is a **npm workspaces** monorepo with:
+
 - `packages/` - The main DevCaddy package
 - `examples/` - Example applications using DevCaddy
 
@@ -128,6 +130,7 @@ npm run dev              # Test the plugin with example app
 ```
 
 **Testing Different UI Modes:**
+
 - `npm run dev:developer` - Opens with full developer access (view all annotations, filter by page/status/author, edit/delete all)
 - `npm run dev:client` - Opens in client mode (view all annotations, edit/delete own only)
 - Both commands automatically open the browser and use environment-based mode detection
@@ -174,6 +177,7 @@ The main plugin is exported from `packages/src/plugin/index.ts` as `DevCaddyPlug
 3. Configures server behavior based on command (`serve` vs `build`)
 
 **Plugin Options** (packages/src/types/plugin.ts):
+
 - `enabled: boolean` - Whether DevCaddy is active
 - `context: ConfigEnv` - Vite configuration context
 - `debug?: boolean` - Enable verbose logging (optional)
@@ -204,6 +208,7 @@ The package builds as both ESM and CommonJS via Vite library mode (packages/vite
 - Includes TypeScript declarations via `vite-plugin-dts`
 
 **Build Output Structure** (packages/dist/):
+
 - `index.es.js` - ES module format
 - `index.cjs.js` - CommonJS format
 - `index.d.ts` - TypeScript declarations
@@ -214,6 +219,7 @@ The package builds as both ESM and CommonJS via Vite library mode (packages/vite
 - `ui/` - UI component type definitions
 
 **Published Files** (defined in packages/package.json):
+
 - `dist/` - All build outputs
 - `migrations/` - SQL migration files for users
 - `README.md` - Package documentation
@@ -230,15 +236,15 @@ SCSS files in `packages/src/ui/styles/` are compiled to `dist/dev-caddy.css`:
 See `examples/simple/vite.config.ts` for plugin usage:
 
 ```ts
-import { DevCaddyPlugin } from 'dev-caddy';
+import { DevCaddyPlugin } from "dev-caddy";
 
 export default defineConfig((context) => ({
   plugins: [
     react(),
     DevCaddyPlugin({
       context,
-      enabled: process.env.VITE_DEVCADDY_ENABLED !== 'false', // enabled by default
-    })
+      enabled: process.env.VITE_DEVCADDY_ENABLED !== "false", // enabled by default
+    }),
   ],
 }));
 ```
@@ -277,7 +283,7 @@ Key types in `packages/src/types/`:
 
 ---
 
-## Development Principles (from docs/DEVELOPMENT.md)
+## Development Principles
 
 1. **Prefer simplicity over cleverness**
 2. **Follow SOLID principles**
@@ -302,17 +308,18 @@ DevCaddy uses a **hybrid approach** combining Spec-Driven Development (SDD) and 
 
 ### Test Layers
 
-| Layer                | Tool           | Purpose                                    | Mocking? |
-| -------------------- | -------------- | ------------------------------------------ | -------- |
-| **Specs**            | Gherkin        | Business requirements & acceptance criteria | N/A      |
-| **E2E Tests**        | Playwright     | Full user flows (annotation sync, etc.)     | ❌ No     |
-| **Integration Tests** | Playwright/Vitest | Multi-component behavior               | ❌ No     |
-| **Component Tests**  | Storybook      | Visual regression for isolated components   | Limited  |
-| **Unit Tests**       | ❌ None        | **DO NOT WRITE** — Prefer integration/E2E   | N/A      |
+| Layer                 | Tool              | Purpose                                     | Mocking? |
+| --------------------- | ----------------- | ------------------------------------------- | -------- |
+| **Specs**             | Gherkin           | Business requirements & acceptance criteria | N/A      |
+| **E2E Tests**         | Playwright        | Full user flows (annotation sync, etc.)     | ❌ No    |
+| **Integration Tests** | Playwright/Vitest | Multi-component behavior                    | ❌ No    |
+| **Component Tests**   | Storybook         | Visual regression for isolated components   | Limited  |
+| **Unit Tests**        | ❌ None           | **DO NOT WRITE** — Prefer integration/E2E   | N/A      |
 
 ### Example: Spec + E2E Test Pairing
 
 **Spec:** `specs/client-annotation.feature`
+
 ```gherkin
 Feature: Client Annotation Flow
   Scenario: Add annotation to UI element
@@ -323,23 +330,25 @@ Feature: Client Annotation Flow
 ```
 
 **E2E Test:** `tests/e2e/client-annotation.spec.ts`
+
 ```typescript
-test('annotation syncs from client to developer', async ({ browser }) => {
+test("annotation syncs from client to developer", async ({ browser }) => {
   const clientPage = await browser.newPage();
   const devPage = await browser.newPage();
 
   // Given: client on staging, developer on localhost
-  await clientPage.goto('/staging?token=abc123');
-  await devPage.goto('http://localhost:5173');
+  await clientPage.goto("/staging?token=abc123");
+  await devPage.goto("http://localhost:5173");
 
   // When: client adds annotation
-  await clientPage.click('button#submit');
-  await clientPage.fill('[data-annotation-input]', 'Fix this button');
-  await clientPage.click('[data-submit-annotation]');
+  await clientPage.click("button#submit");
+  await clientPage.fill("[data-annotation-input]", "Fix this button");
+  await clientPage.click("[data-submit-annotation]");
 
   // Then: developer sees it in real-time
-  await expect(devPage.locator('[data-annotation="Fix this button"]'))
-    .toBeVisible({ timeout: 3000 });
+  await expect(
+    devPage.locator('[data-annotation="Fix this button"]')
+  ).toBeVisible({ timeout: 3000 });
 });
 ```
 
@@ -404,6 +413,7 @@ Current implementation includes:
 **`configureBuild()`** - Remains minimal/empty since DevCaddy is disabled in production builds.
 
 **`configureServe()`** - Should handle development server setup:
+
 - Add middleware for magic link validation endpoint (`/api/devcaddy/validate-token`)
 - Optional logging when DevCaddy is active
 
@@ -412,23 +422,27 @@ Current implementation includes:
 ### Architecture
 
 **Supabase Client Initialization:**
+
 - Client-side initialization in `src/client/api/init.ts`
 - Singleton pattern prevents multiple instances
 - Anon key safe to use client-side with RLS
 
 **Real-time Annotation Sync:**
+
 - Use Supabase Realtime with project-wide channel (v0.2.0)
 - Channel format: `annotations:all` (single subscription)
 - All users see all annotations across entire project
 - Cross-page navigation via sessionStorage + window.location
 
 **Magic Links:**
+
 - **Generation:** Server-side only via CLI tool (not bundled with client)
 - **Token format:** JWT with short expiration
 - **Validation:** Client-side with Supabase Edge Function
 - Never bundle service keys in client code
 
 **Element Selection:**
+
 - Click-to-select mode with visual feedback
 - Hover shows `outline: 2px dashed blue`
 - Click selects element
@@ -456,6 +470,7 @@ Current implementation includes:
 ### Configuration
 
 **Environment Variables:**
+
 ```bash
 # .env (consumer's app)
 VITE_DEVCADDY_ENABLED=true
@@ -468,12 +483,14 @@ DEVCADDY_SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
 ```
 
 **Plugin Configuration:**
+
 - Keep minimal: `enabled`, `context`, `debug` only
 - Consumer provides Supabase credentials via `initDevCaddy()` in app code, not plugin config
 
 ### State Management
 
 Use **React Context** for annotation state:
+
 - No external dependencies (Zustand, Redux)
 - Context sufficient for 1-2 levels of nesting
 - Subscribe to Supabase Realtime for updates
@@ -481,15 +498,18 @@ Use **React Context** for annotation state:
 ### UI/UX Decisions
 
 **Toggle Button:**
+
 - Use SVG icons (not unicode characters)
 - Add ARIA labels for accessibility
 - No localStorage persistence initially
 
 **Annotation Input:**
+
 - Popover positioned near selected element using `createPortal`
 - Fixed position based on element's bounding rect
 
 **Window Positioning:**
+
 - Start with fixed corner positioning
 - No draggable/resizable features initially
 - Ship simple first, add features based on feedback
@@ -497,16 +517,19 @@ Use **React Context** for annotation state:
 ### Security
 
 **Rate Limiting:**
+
 - Implement in Supabase Edge Function
 - In-memory map or Upstash Redis
 - 10 attempts per IP per hour
 
 **Content Sanitization:**
+
 - Use DOMPurify before rendering annotation content
 - Plain text only, no HTML allowed
 - Prevents XSS attacks
 
 **RLS Policies:**
+
 - Clients (magic link users) can only insert
 - Developers (local env) have full access
 - Implement via `auth.jwt()->>'type'` checks
@@ -520,23 +543,27 @@ Use **React Context** for annotation state:
 DevCaddy uses **manual database setup** for the MVP:
 
 **How it works:**
+
 - SQL migration files provided in `packages/migrations/`
 - User runs migrations manually via Supabase Dashboard or CLI
 - No automatic schema creation (security and explicitness)
 
 **Setup process:**
+
 1. User creates Supabase project
 2. User runs provided SQL migrations
 3. User enables Realtime on annotation table
 4. User configures environment variables in their app
 
 **Why manual?**
+
 - Security: No service role keys in client code
 - Simplicity: Package focuses on UI, not infrastructure
 - Explicit: Users understand what's created in their database
 - Control: Users maintain full visibility and control
 
 **Future enhancement (Phase 2):**
+
 - CLI tool: `npx @devcaddy/cli setup`
 - Reads service role key from local `.env.local` only
 - Automates migration execution

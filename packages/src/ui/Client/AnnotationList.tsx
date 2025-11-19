@@ -1,8 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { useAnnotations } from "../Core/hooks";
+import { useAnnotations, useAnnotationSelection } from "../Core/hooks";
 import { AnnotationDetail } from "./AnnotationDetail";
 import type { Annotation } from "../../types/annotations";
-import { useAnnotationNavigation } from "../Core/hooks";
 import { AnnotationItemSkeleton } from "../Core/AnnotationItemSkeleton";
 import { EmptyState, ErrorDisplay } from "../Core/components/display";
 import { AnnotationListItem } from "./components";
@@ -35,67 +33,17 @@ export function AnnotationList({
   onAnnotationSelect,
 }: AnnotationListProps) {
   const { annotations, loading, error } = useAnnotations();
-  const { navigateToAnnotation, checkPendingAnnotation } = useAnnotationNavigation();
-  const [selectedAnnotation, setSelectedAnnotation] =
-    useState<Annotation | null>(null);
-
-  /**
-   * Handle selecting an annotation to view details
-   * Supports cross-page navigation
-   */
-  const handleSelectAnnotation = (annotation: Annotation) => {
-    navigateToAnnotation(annotation, (ann) => {
-      setSelectedAnnotation(ann);
-      onAnnotationSelect?.(ann);
-    });
-  };
-
-  /**
-   * Check for pending annotation after cross-page navigation
-   */
-  useEffect(() => {
-    if (!loading && annotations.length > 0) {
-      checkPendingAnnotation(annotations, (annotation) => {
-        setSelectedAnnotation(annotation);
-        onAnnotationSelect?.(annotation);
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, annotations.length]); // checkPendingAnnotation and onAnnotationSelect are stable
-
-  /**
-   * Handle navigating back from detail view
-   */
-  const handleBack = useCallback(() => {
-    setSelectedAnnotation(null);
-    onAnnotationSelect?.(null);
-  }, [onAnnotationSelect]);
-
-  /**
-   * Auto-navigate back if selected annotation was deleted
-   */
-  useEffect(() => {
-    if (selectedAnnotation && !annotations.find(a => a.id === selectedAnnotation.id)) {
-      setSelectedAnnotation(null);
-      onAnnotationSelect?.(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAnnotation, annotations.length]); // Run when annotations change
+  const { selected, handleSelect, handleBack } = useAnnotationSelection(
+    annotations,
+    loading,
+    onAnnotationSelect
+  );
 
   // Show detail view if annotation is selected
-  if (selectedAnnotation) {
-    // Find the latest version of the selected annotation from context
-    // This ensures we always show the most up-to-date data after real-time updates
-    const latestAnnotation = annotations.find(a => a.id === selectedAnnotation.id);
-
-    // If annotation was deleted, return null (useEffect will handle navigation)
-    if (!latestAnnotation) {
-      return null;
-    }
-
+  if (selected) {
     return (
       <AnnotationDetail
-        annotation={latestAnnotation}
+        annotation={selected}
         onBack={handleBack}
       />
     );
@@ -141,7 +89,7 @@ export function AnnotationList({
           <AnnotationListItem
             key={annotation.id}
             annotation={annotation}
-            onClick={handleSelectAnnotation}
+            onClick={handleSelect}
           />
         ))}
       </div>

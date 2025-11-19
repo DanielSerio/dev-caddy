@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { isBackdropElement } from '../lib/element';
+import { DEBOUNCE_TIMEOUTS } from '../constants';
 
 /**
  * Selection mode for element selector
@@ -87,7 +89,7 @@ export function useElementSelector() {
         if (!document.body.contains(selectedElement)) {
           clearSelection();
         }
-      }, 50);
+      }, DEBOUNCE_TIMEOUTS.DOM_MUTATION);
     });
 
     // Observe entire document for child list changes
@@ -153,23 +155,7 @@ export function useElementSelector() {
       }
 
       // Don't select modal backdrops/overlays
-      // Common patterns from popular modal libraries:
-      // - Material-UI: .MuiBackdrop-root, .MuiModal-backdrop
-      // - Chakra UI: .chakra-modal__overlay
-      // - Radix UI: [data-radix-portal] with overlay role
-      // - Headless UI: [data-headlessui-portal] with overlay
-      // - Generic: .modal-backdrop, .overlay, [data-backdrop]
-      const backdropSelectors = [
-        '.modal-backdrop',
-        '.overlay',
-        '[data-backdrop]',
-        '.MuiBackdrop-root',
-        '.MuiModal-backdrop',
-        '.chakra-modal__overlay',
-        '[role="presentation"]',
-      ];
-
-      if (backdropSelectors.some(selector => target.matches(selector))) {
+      if (isBackdropElement(target)) {
         // Let click pass through - user likely wants to close modal
         return;
       }
