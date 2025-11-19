@@ -3,7 +3,6 @@ import { useAnnotations } from "../Core/hooks";
 import { getStatusName } from "../Core/lib/status";
 import type { Annotation } from "../../types/annotations";
 import { DetailSection } from "../Core/components/layout";
-import { AnnotationMeta } from "../Core/components/composite";
 import {
   AnnotationDetailHeader,
   AnnotationDetailContent,
@@ -113,7 +112,17 @@ export function AnnotationDetail({
           </span>
         </DetailSection>
 
-        <AnnotationMeta annotation={annotation} showUpdated={false} />
+        <DetailSection label="Author">
+          <span className="detail-author">
+            {annotation.created_by_email || annotation.created_by}
+          </span>
+        </DetailSection>
+
+        <DetailSection label="Created">
+          <span className="detail-date">
+            {new Date(annotation.created_at).toLocaleString()}
+          </span>
+        </DetailSection>
 
         {annotation.resolved_at && (
           <DetailSection label="Resolved">

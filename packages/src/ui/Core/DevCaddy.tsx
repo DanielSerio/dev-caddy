@@ -20,6 +20,7 @@ import type {
 import type { SelectionMode } from "./hooks/useElementSelector";
 import "./styles/output/dev-caddy.scss";
 import { AnnotationItemSkeleton } from "./AnnotationItemSkeleton";
+import { PlusIcon, CancelIcon } from "./icons";
 
 /**
  * Inner component that has access to AnnotationProvider context
@@ -116,12 +117,22 @@ function DevCaddyContent({
                   setMode(mode === "selecting" ? "idle" : "selecting")
                 }
                 className={`btn-add-annotation ${
-                  mode === "selecting" ? "active" : "default"
+                  mode === "selecting" ? "btn-cancel" : "btn-default"
                 }`}
                 aria-label="Add annotation to UI element"
                 data-testid="add-annotation-btn"
               >
-                {mode === "selecting" ? "Cancel Selection" : "+ Add Annotation"}
+                {mode === "selecting" ? (
+                  <>
+                    <CancelIcon />
+                    <span>Cancel</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon />
+                    <span>Add Annotation</span>
+                  </>
+                )}
               </button>
             </div>
           )}

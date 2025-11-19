@@ -3,7 +3,6 @@ import { useAnnotations } from "../Core/hooks";
 import type { Annotation } from "../../types/annotations";
 import { DetailSection } from "../Core/components/layout";
 import { StatusSelect } from "../Core/components/form";
-import { AnnotationMeta } from "../Core/components/composite";
 import {
   AnnotationDetailHeader,
   AnnotationDetailContent,
@@ -132,7 +131,11 @@ export function AnnotationDetail({ annotation, onBack }: AnnotationDetailProps) 
           </span>
         </DetailSection>
 
-        <AnnotationMeta annotation={annotation} showUpdated={true} />
+        <DetailSection label="Updated">
+          <span className="detail-date">
+            {new Date(annotation.updated_at).toLocaleString()}
+          </span>
+        </DetailSection>
 
         {annotation.resolved_at && (
           <DetailSection label="Resolved">

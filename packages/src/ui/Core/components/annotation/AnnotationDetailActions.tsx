@@ -1,4 +1,5 @@
 import { ActionButton } from "../button";
+import { EditIcon, DeleteIcon, SaveIcon, CancelIcon } from "../../icons";
 
 /**
  * Props for AnnotationDetailActions component
@@ -50,7 +51,8 @@ export function AnnotationDetailActions({
             title="Save changes"
             data-testid="save-annotation-btn"
           >
-            Save
+            <SaveIcon className="button-icon" />
+            <span>Save</span>
           </ActionButton>
           <ActionButton
             variant="secondary"
@@ -58,7 +60,8 @@ export function AnnotationDetailActions({
             title="Cancel editing"
             data-testid="cancel-edit-btn"
           >
-            Cancel
+            <CancelIcon className="button-icon" />
+            <span>Cancel</span>
           </ActionButton>
         </>
       ) : (
@@ -69,7 +72,8 @@ export function AnnotationDetailActions({
             title="Edit annotation"
             data-testid="edit-annotation-btn"
           >
-            Edit
+            <EditIcon className="button-icon" />
+            <span>Edit</span>
           </ActionButton>
           <ActionButton
             variant="danger"
@@ -77,7 +81,8 @@ export function AnnotationDetailActions({
             title="Delete annotation"
             data-testid="delete-annotation-btn"
           >
-            Delete
+            <DeleteIcon className="button-icon" />
+            <span>Delete</span>
           </ActionButton>
         </>
       )}

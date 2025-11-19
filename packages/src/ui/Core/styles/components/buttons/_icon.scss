@@ -1,35 +1,21 @@
 /**
  * Icon Button Component
  *
- * Square icon-only buttons with playful hover states
+ * Compact icon-only buttons matching unified button system
  */
 
 .dev-caddy {
   button.icon {
-    height: 38px;
-    width: 38px;
-    font-size: var(--dc-text-xl);
-    display: grid;
-    place-content: center;
-    line-height: 0;
+    // Make square with same height as text buttons
+    // Base button has: padding: 4px 8px, font-size: 11px
+    // Height = padding-top + font-size + line-height + padding-bottom
+    // Approximately 26px total height
+    min-width: 26px;
+    padding: var(--dc-space-1); // 4px all around for square
 
-    &.btn-default:not(:disabled) {
-      color: var(--dc-text-muted);
-      background: var(--dc-background);
-      transition:
-        background var(--dc-duration-normal) var(--dc-ease-smooth),
-        color var(--dc-duration-fast) var(--dc-ease-smooth),
-        transform var(--dc-duration-fast) var(--dc-ease-spring);
-
-      &:hover {
-        background: var(--dc-background-raised);
-        color: var(--dc-text);
-        transform: scale(1.08);
-      }
-
-      &:active {
-        transform: scale(0.92);
-      }
+    svg {
+      width: 16px; // Slightly larger icon for icon-only buttons
+      height: 16px;
     }
   }
 }
